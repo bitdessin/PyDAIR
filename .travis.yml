@@ -1,0 +1,27 @@
+sudo: true
+
+language: python
+
+cache:
+    directories:
+        - $HOME/.cache/pip
+
+python:
+    - "2.7"
+
+
+before_install:
+    - sudo apt-get update
+    - sudo apt-get install ncbi-blast+
+
+install:
+    - pip install --upgrade pip wheel
+    - pip install nose
+    - pip install numpy
+    - pip install pandas
+    - pip install biopython
+    - pip install .
+
+script:
+    - nosetests -v
+

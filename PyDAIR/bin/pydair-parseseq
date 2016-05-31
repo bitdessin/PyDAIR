@@ -1,0 +1,118 @@
+#!/usr/bin/env python
+from __future__ import division
+import os
+import sys
+import argparse
+import logging
+import unittest
+from PyDAIR.seq.IgSeq import IgSeq
+from PyDAIR.io.PyDAIRIO import *
+from PyDAIR.utils.PyDAIRUtils import *
+from PyDAIR.utils.PyDAIRArgs import *
+from PyDAIR.app.PyDAIRAPP import *
+
+logging.basicConfig(level = logging.INFO, format = '%(levelname)-8s %(message)s')
+
+def main(args):
+    v_gene_align_args = PyDAIRBlastArgs(args.v_blastdb, args.v_match_score,
+                                       args.v_mismatch_score, args.v_gap_open_penalty,
+                                       args.v_gap_extend_penalty, args.v_wordsize, args.v_evalue_cutoff)
+    d_gene_align_args = PyDAIRBlastArgs(args.d_blastdb, args.d_match_score,
+                                       args.d_mismatch_score, args.d_gap_open_penalty,
+                                       args.d_gap_extend_penalty, args.d_wordsize, args.d_evalue_cutoff)
+    j_gene_align_args = PyDAIRBlastArgs(args.j_blastdb, args.j_match_score,
+                                       args.j_mismatch_score, args.j_gap_open_penalty,
+                                       args.j_gap_extend_penalty, args.j_wordsize, args.j_evalue_cutoff)
+    pydair_args = PyDAIRParseSeqArgs(args.q_fasta, args.v_fasta, args.d_fasta, args.j_fasta, args.output, args.output_format,
+                                   v_gene_align_args, d_gene_align_args, j_gene_align_args)
+    
+    logging.info('[ 1/10] Setting up parameters.')
+    pydair = PyDAIRAPPParseSeq(pydair_args)
+    logging.info('[ 2/10] BLAST for V genes.')
+    pydair.blast('v')
+    logging.info('[ 3/10] BLAST for J genes.')
+    pydair.blast('j')
+    logging.info('[ 4/10] Parsing VJ BLAST results.')
+    pydair.parse_VJ()
+    logging.info('[ 5/10] Writing temporary files.')
+    pydair.write_pydair()
+    logging.info('[ 6/10] Writing unaligned sequences.')
+    pydair.write_fasta('unaligned_seq')
+    logging.info('[ 7/10] BLAST for D genes.')
+    pydair.blast('d')
+    logging.info('[ 8/10] Parsing D BLAST result.')
+    pydair.parse_VDJ()
+    logging.info('[ 9/10] Writing result file.')
+    pydair.write_pydair()
+    pydair.write_pydair(file_format = 'simple')
+    logging.info('[10/10] Finishing.')
+    
+
+def parse_args():
+    parser = argparse.ArgumentParser(description = 'PyDAIR')
+    
+    ## general parameters
+    parser.add_argument('-q', '--q-fasta',  help = 'Path to FASTA file contained the query sequences.', required = True)
+    parser.add_argument('-o', '--output', help = 'Path to save to anaysis results.', required = True)
+    parser.add_argument('-f', '--output-format', help = 'Format of output file.', choices = ['pydair', 'tsv', 'simple'], default = 'pydair')
+    parser.add_argument('-v', '--v-fasta', help = 'Path to FASTA file contained the V sequences.', required = True)
+    parser.add_argument('-d', '--d-fasta', help = 'Path to FASTA file contained the D sequences.', required = True)
+    parser.add_argument('-j', '--j-fasta', help = 'Path to FASTA file contained the J sequences.', required = True)
+    
+    ## alignment parameters V
+    parser.add_argument('--v-blastdb',            help = 'Path to BLAST database.', required = True)
+    parser.add_argument('--v-match-score',        help = 'The score added when a match occurs.',                   type = int, default =  3)
+    parser.add_argument('--v-mismatch-score',     help = 'The score added when a mismatch occurs.',                type = int, default = -3)
+    parser.add_argument('--v-gap-open-penalty',   help = 'The penalty applied to creat a gap in the alignment.',   type = int, default =  6)
+    parser.add_argument('--v-gap-extend-penalty', help = 'The penalty applied to extend a gap in the alignment.',  type = int, default =  6)
+    parser.add_argument('--v-wordsize',           help = 'The penalty applied to extend a gap in the alignment.',  type = int, default = 21)
+    parser.add_argument('--v-evalue-cutoff',      help = 'Discard alignemnt if e-value is less than given value.', type = float, default = 1e-60)
+
+    ## alignment parameters D
+    parser.add_argument('--d-blastdb',            help = 'Path to BLAST database.', required = True)
+    parser.add_argument('--d-match-score',        help = 'The score added when a match occurs.',                   type = int, default  =  1)
+    parser.add_argument('--d-mismatch-score',     help = 'The score added when a mismatch occurs.',                type = int, default  = -1)
+    parser.add_argument('--d-gap-open-penalty',   help = 'The penalty applied to creat a gap in the alignment.',   type = int, default  =  0)
+    parser.add_argument('--d-gap-extend-penalty', help = 'The penalty applied to extend a gap in the alignment.',  type = int, default  =  2)
+    parser.add_argument('--d-wordsize',           help = 'The penalty applied to extend a gap in the alignment.',  type = int, default  =  4)
+    parser.add_argument('--d-evalue-cutoff',      help = 'Discard alignemnt if e-value is less than given value.', type = float, default = 1)
+
+    ## alignment parameters J
+    parser.add_argument('--j-blastdb',            help = 'Path to BLAST database.', required = True)
+    parser.add_argument('--j-match-score',        help = 'The score added when a match occurs.',                   type = int, default  =  3)
+    parser.add_argument('--j-mismatch-score',     help = 'The score added when a mismatch occurs.',                type = int, default  = -3)
+    parser.add_argument('--j-gap-open-penalty',   help = 'The penalty applied to creat a gap in the alignment.',   type = int, default  =  6)
+    parser.add_argument('--j-gap-extend-penalty', help = 'The penalty applied to extend a gap in the alignment.',  type = int, default  =  6)
+    parser.add_argument('--j-wordsize',           help = 'The penalty applied to extend a gap in the alignment.',  type = int, default  =  7)
+    parser.add_argument('--j-evalue-cutoff',      help = 'Discard alignemnt if e-value is less than given value.', type = float, default = 1e-5)
+    
+    # start main function
+    args = parser.parse_args()
+    return args
+
+
+
+if __name__ == '__main__':
+    desc = '''
+    PyDAIR (BLAST for analyzing IgH sequence)
+                                         ______
+                             <><        /      \  /
+                O        <><           / O      \/
+              O            <><         \        /\\
+        _    o  ___                     \______/  \\
+       /o\/    /o  \/         O O     __
+       \_/\    \___/\           O   \/ o\\
+             _            __   O    /\__/      __
+            /o\/        \/ o\ o               /o \/
+            \_/\        /\__/     ><>         \__/\\
+
+'''
+    print(desc)
+    args = parse_args()
+    main(args)
+
+
+
+
+
+
