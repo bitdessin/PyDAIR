@@ -11,7 +11,7 @@ except ImportError:
 
 setup(
     name        = 'PyDAIR',
-    version     = '0.1.0',
+    version     = '0.1.2',
     description = 'Python library for diversity analysis of immune repertoire.',
     classifiers = [
         'Development Status :: 5 - Production/Stable',
