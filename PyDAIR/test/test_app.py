@@ -19,7 +19,6 @@ class Test_app(unittest.TestCase):
     
     
     def test_app_parseseq(self):
-        return 1
         # variables settings
         v_gene_align_args = PyDAIRBlastArgs(_data_path + '/db/v', 3, -3, 6, 6, 21, 1e-60)
         d_gene_align_args = PyDAIRBlastArgs(_data_path + '/db/d', 1, -1, 0, 2,  4, 1)
@@ -31,7 +30,7 @@ class Test_app(unittest.TestCase):
         output_prefix = _data_path + '/test_output_app_parseseq'
         
         # PyDAIR arguemnts settings
-        pydair_args = PyDAIRParseSeqArgs(q_fasta, v_gene_fasta, d_gene_fasta, j_gene_fasta,
+        pydair_args = PyDAIRParseSeqArgs('fugu', q_fasta, v_gene_fasta, d_gene_fasta, j_gene_fasta,
                                        output_prefix, 'pydair',
                                        v_gene_align_args, d_gene_align_args, j_gene_align_args)
         

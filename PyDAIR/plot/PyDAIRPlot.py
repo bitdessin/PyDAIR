@@ -23,38 +23,6 @@ class PyDAIRPlot:
         ax.set_xlabel(xlab)
         ax.set_ylabel(ylab)
         return ax
-    '''
-    def __set_fig_params(self, ax, xlim = None, ylim = None, set_legend = True, legend_loc = None, grid_x = False, grid_y = False):
-        if xlim is not None:
-            ax.set_xlim(xlim[0], xlim[1])
-        if ylim is not None:
-            ax.set_ylim(ylim[0], ylim[1])
-        
-        ax.spines['top'].set_color(self.__col_frame)
-        ax.spines['bottom'].set_color(self.__col_frame)
-        ax.spines['left'].set_color(self.__col_frame)
-        ax.spines['right'].set_color(self.__col_frame)
-        ax.xaxis.label.set_color(self.__col_label)
-        ax.yaxis.label.set_color(self.__col_label)
-        ax.tick_params(axis = 'x', colors = self.__col_frame)
-        ax.tick_params(axis = 'y', colors = self.__col_frame)
-        
-        if set_legend:
-            axlegend = ax.legend(loc = legend_loc, frameon = True, fontsize = 'medium', fancybox = True, numpoints = 1)
-            axlegend.get_frame().set_edgecolor(self.__col_grid)
-            axlegend.get_frame().set_alpha(self.__alpha)
-            for axtext in axlegend.get_texts():
-                axtext.set_color(self.__col_label)
-        
-        if grid_y:
-            ax.yaxis.grid(True, which = 'major', linestyle = '-', color = self.__col_grid)
-        if grid_x:
-            ax.xaxis.grid(True, which = 'major', linestyle = '-', color = self.__col_grid)
-        ax.set_axisbelow(True)
-        
-        return ax
-    
-    '''
     
     def __get_dev_params(self, fig_name = None, fig_format = None, fig_width = None, fig_height = None, fig_dpi = None,
                          def_fig_width = None, def_fig_height = None):
@@ -90,12 +58,6 @@ class PyDAIRPlot:
                      main = '', xlab = None, ylab = None,
                      fig_name = None, fig_format = None,
                      fig_width = None, fig_height = None, fig_dpi = None):
-        '''
-        Plot bar chart for visualizing the frequency of usages of V, D, or J genes.
-        If gene_names is given, the x-axis will be sorted by gene_names. This method
-        only provides the function to plot the bar chart for V, D, and J genes.
-        The scatter plot of VDJ combinations cannot be draw by this method.
-        '''
         if gene.lower() not in ['v', 'd', 'j']:
             raise ValueError('The \'gene\' should be one of \'v\', \'d\', and \'j\'.')
         
@@ -112,6 +74,7 @@ class PyDAIRPlot:
             sample_names.append(bsample.name)
         
         freq_dataframe = pd.concat(sample_freqs, axis = 1).fillna(0)
+        freq_dataframe.columns = sample_names
         if prob:
             freq_dataframe = freq_dataframe / freq_dataframe.sum(axis = 0)
         
@@ -142,19 +105,13 @@ class PyDAIRPlot:
                     fig.tight_layout()
             plt.savefig(fig_name, format = fig_format)
             plt.close()
-        
+    
     
     
     def hist_cdr3_len(self, xlim = None, prob = False,
                       main = '', xlab = None, ylab = None,
                       fig_name = None, fig_format = None,
                       fig_width = None, fig_height = None, fig_dpi = None):
-        '''
-        Plot histogram for visualizing the distribution of length of CDR3 protein sequence.
-        The bin size of hisgtram is fixed to 1. The 'xlim' can be specified to restrict
-        the range of x-axis (sequence length). Indeed, the barplot is used for plotting
-        the histogram.
-        '''
         xlab = 'Length' if xlab is None else xlab
         if ylab is None:
             ylab = 'Frequency' if prob is False else ylab

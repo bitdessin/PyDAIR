@@ -24,16 +24,19 @@ class IgConstantTag:
         cdr3_motif_start_adjust: adjust the position of cdr3 start region
         cdr3_motif_end_adjust: adjust the position of cdr3 end region
     '''
-    def __init__(self, V = None, J = None,
+    
+    def __init__(self, V = None, J = None, species = None,
                  cdr3_motif_start_adjust = None, cdr3_motif_end_adjust = None):
-        if V is None:
-            V = [
-                'AVFFC', 'PVFFC',
-                'AVYYC', 'AAYYC', 'VVYYC', 'AVFYC',
-                'SVYYC'
-            ]
-        if J is None:
-            J = 'WG.G'
+        if species == 'fugu':
+            if V is None:
+                V = ['AVFFC', 'PVFFC', 'AVYYC', 'AAYYC', 'VVYYC', 'AVFYC', 'SVYYC']
+            if J is None:
+                J = 'WG.G'
+        if species == 'human':
+            if V is None:
+                V = ['AVYYC', 'AMYYC', 'AEYYC', 'VVYYC', 'DVYGC', 'AVYGC', 'GTYYC']
+            if J is None:
+                J = 'WG.G'
         self.V = V
         self.J = J
         
@@ -299,7 +302,9 @@ class IgSeq:
         --------------------------------------------------------------
        
     '''
-    def __init__(self, ig_seq_align_v = None, ig_seq_align_d = None, ig_seq_align_j = None, ig_seq_variable_region = None):
+    def __init__(self, species = None, ig_seq_align_v = None, ig_seq_align_d = None, ig_seq_align_j = None, ig_seq_variable_region = None):
+        if species is None:
+            species = 'fugu'
         if ig_seq_align_v is not None:
             self.query = IgSeqQuery(ig_seq_align_v.query.name, ig_seq_align_v.query.seq, ig_seq_align_v.query.strand)
         elif ig_seq_align_j is not None:
@@ -309,6 +314,7 @@ class IgSeq:
         else:
             self.query = None
         
+        self.species = species
         self.v = ig_seq_align_v
         self.d = ig_seq_align_d
         self.j = ig_seq_align_j
@@ -694,8 +700,8 @@ class IgSeq:
     
     
     def __seek_cdr3(self, v_end, j_start):
-        const_tag = IgConstantTag()
-        
+        const_tag = IgConstantTag(species = self.species)
+        print const_tag #debug
         cdr3_start, cdr3_end, orf = self.__seek_cdr3_inner(self.query.seq, v_end, j_start,
                                                            const_tag.V_re,
                                                            const_tag.J_re,
@@ -732,7 +738,9 @@ class IgSeq:
             aa = str(Seq(seq[slice_start:slice_end], generic_dna).translate())
             aa_left  = aa[:(j_aa_start - 1)]  # left + untemplated 
             aa_right = aa[v_aa_end:]          # untemplated + right
-
+            
+            print aa #debug
+            
             # find the CDR3 pattern in V region, and pass all patterns.
             # after for-loop, only the last one will be save in has_v_tagvariable.
             for has_v_tag in motif_start_re.finditer(aa_left):
@@ -780,6 +788,8 @@ class IgSeq:
         '''
         # only process for corect sequence
         has_valid_alignment = self.forward_ig_seq()
+        print has_valid_alignment #debug
+        raise ValueError()
         if has_valid_alignment:
             untmpl_start, untmpl_end = self.__seek_untemplated_region()
             cdr3_start, cdr3_end, self.query.orf = self.__seek_cdr3(untmpl_start - 1, untmpl_end)

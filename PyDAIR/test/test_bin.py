@@ -19,8 +19,7 @@ class Test_bin(unittest.TestCase):
     
     
     def test_bin_parseseq(self):
-        return 1
-        cmd = 'pydair-parseseq -q ' + _data_path + '/sample.fa -o ' + _data_path + '/test_output_bin_parseseq_ -f pydair '
+        cmd = 'pydair-parseseq -s fugu -q ' + _data_path + '/sample.fa -o ' + _data_path + '/test_output_bin_parseseq_ -f pydair '
         cmd += '-v ' + _data_path + '/db/v.fa -d ' + _data_path + '/db/d.fa -j ' + _data_path + '/db/j.fa '
         cmd += '--v-blastdb ' + _data_path + '/db/v '
         cmd += '--v-match-score 3 --v-mismatch-score -3 '

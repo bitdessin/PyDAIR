@@ -91,6 +91,7 @@ class PyDAIRStatsRecord:
         elif gene.lower() == 'd':
             freq = self.vdj.d.value_counts(dropna = False)
             freq.name = 'frequency'
+            freq.index = ['unidentifiable' if (type(_i) == np.float and np.isnan(_i)) else _i for _i in freq.index]
         elif gene.lower() == 'j':
             freq = self.vdj.j.value_counts(dropna = False)
             freq.name = 'frequency'

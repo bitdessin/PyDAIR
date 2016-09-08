@@ -5,6 +5,10 @@ from PyDAIR.stats import *
 from PyDAIR.plot import *
 from PyDAIR.app import *
 
+
+
+__version__ = '0.2.0'
+
 '''
         toC,tueaeoece                 yy,iehsterW.k
      uo.huseunaeSaeteoppo          tohurtle2gesotrair

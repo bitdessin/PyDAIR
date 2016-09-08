@@ -31,7 +31,7 @@ class Test_pydair_seq_IgSeq(unittest.TestCase):
         igseq_j_sbjct = IgSeqAlignSbjct( 'Jm5', j_seq, j_saligned_seq,   5,  51, '+')
         igseq_j = IgSeqAlign(igseq_j_query, igseq_j_sbjct)
         
-        igseq = IgSeq(igseq_v, igseq_d, igseq_j)
+        igseq = IgSeq('fugu', igseq_v, igseq_d, igseq_j)
         igseq.seek_cdr3()
         print [igseq.variable_region.untemplate_region,
                igseq.query.seq[igseq.variable_region.untemplate_region[0]:igseq.variable_region.untemplate_region[1]]]
@@ -66,9 +66,8 @@ class Test_pydair_seq_IgSeq(unittest.TestCase):
         igseq_j_sbjct = IgSeqAlignSbjct( 'Jm5', j_seq, j_saligned_seq,  13,  54, '-')
         igseq_j = IgSeqAlign(igseq_j_query, igseq_j_sbjct)
         
-        igseq = IgSeq(igseq_v, igseq_d, igseq_j)
+        igseq = IgSeq('fugu', igseq_v, igseq_d, igseq_j)
         igseq.seek_cdr3()
-        
         
         print [igseq.variable_region.untemplate_region,
                igseq.query.seq[igseq.variable_region.untemplate_region[0]:igseq.variable_region.untemplate_region[1]]]

@@ -21,7 +21,7 @@ class PyDAIRParseSeqArgs:
       jalign:   PyDAIRBlastArgs class object for V gene.
     
     '''
-    def __init__(self, q = None, v = None, d = None, j = None, o = None, f = None,
+    def __init__(self, species = None, q = None, v = None, d = None, j = None, o = None, f = None,
                  valign = None, dalign = None, jalign = None):
         if os.path.exists(q) is False:
             raise IOError('File [' + q + '] not found.')
@@ -41,7 +41,7 @@ class PyDAIRParseSeqArgs:
         self.v_align_args = valign
         self.d_align_args = dalign
         self.j_align_args = jalign
-
+        self.species = species
 
 
 
