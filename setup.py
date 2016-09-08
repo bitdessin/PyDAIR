@@ -1,4 +1,6 @@
 from setuptools import setup, find_packages
+import os
+
 
 
 try:
@@ -9,9 +11,17 @@ except ImportError:
     read_md = lambda f: open(f, 'r').read()
 
 
+# PyDAIR version
+with open(os.path.join(os.path.dirname(__file__), 'PyDAIR', '__init__.py')) as fh:
+    for buf in fh:
+        if buf.startswith('__version__'):
+            exec(buf)
+            break
+
+
 setup(
     name        = 'PyDAIR',
-    version     = '0.1.2',
+    version     = __version__,
     description = 'Python library for diversity analysis of immune repertoire.',
     classifiers = [
         'Development Status :: 5 - Production/Stable',
@@ -24,13 +34,14 @@ setup(
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
     ],
     keywords     = 'blast, bioinformatics',
-    author       = 'Jianqiang Sun, Xi Fu',
+    author       = 'Jianqiang Sun',
     author_email = 'wukong@bi.a.u-tokyo.ac.jp',
     url          = 'https://github.com/jqsunac/PyDAIR',
     license      = 'GNU',
     packages     = find_packages(exclude=['examples', 'tests']),
     scripts      = ['PyDAIR/bin/pydair-parseseq',
                     'PyDAIR/bin/pydair-analysis'],
+    test_suite   = 'test',
     include_package_data = True,
     zip_safe = True,
     long_description = read_md('README.md'),
