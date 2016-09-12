@@ -34,7 +34,7 @@ class IgConstantTag:
                 J = 'WG.G'
         if species == 'human':
             if V is None:
-                V = ['AVYYC', 'AMYYC', 'AEYYC', 'VVYYC', 'DVYGC', 'AVYGC', 'GTYYC']
+                V = ['AVYYC', 'AMYYC', 'AEYYC', 'VVYYC', 'DVYGC', 'AVYGC', 'GTYYC', 'AFYYC']
             if J is None:
                 J = 'WG.G'
         self.V = V
@@ -701,7 +701,6 @@ class IgSeq:
     
     def __seek_cdr3(self, v_end, j_start):
         const_tag = IgConstantTag(species = self.species)
-        print const_tag #debug
         cdr3_start, cdr3_end, orf = self.__seek_cdr3_inner(self.query.seq, v_end, j_start,
                                                            const_tag.V_re,
                                                            const_tag.J_re,
@@ -739,8 +738,6 @@ class IgSeq:
             aa_left  = aa[:(j_aa_start - 1)]  # left + untemplated 
             aa_right = aa[v_aa_end:]          # untemplated + right
             
-            print aa #debug
-            
             # find the CDR3 pattern in V region, and pass all patterns.
             # after for-loop, only the last one will be save in has_v_tagvariable.
             for has_v_tag in motif_start_re.finditer(aa_left):
@@ -757,9 +754,9 @@ class IgSeq:
                     orf = i
                     break
         if cdr3_start is not None:
-            cdr3_start += 1
+            cdr3_start += 1 + 3   # remove last C of ..YYC from CDR3 sequence
         if cdr3_end is not None:
-            cdr3_end += 1
+            cdr3_end += 1 - 3     # remove first W of WGxG from CDR3 sequence
         if orf is not None:
             orf += 1
         return [cdr3_start, cdr3_end, orf]
@@ -788,8 +785,6 @@ class IgSeq:
         '''
         # only process for corect sequence
         has_valid_alignment = self.forward_ig_seq()
-        print has_valid_alignment #debug
-        raise ValueError()
         if has_valid_alignment:
             untmpl_start, untmpl_end = self.__seek_untemplated_region()
             cdr3_start, cdr3_end, self.query.orf = self.__seek_cdr3(untmpl_start - 1, untmpl_end)
@@ -814,21 +809,39 @@ class IgSeq:
             cdr3_nucl = self.query.seq[(self.variable_region.cdr3[0] - 1 + v_adj):(self.variable_region.cdr3[1] - 1 + j_adj)]
             seq_prot  = str(Seq(seq_nucl, generic_dna).translate())
             cdr3_prot = str(Seq(cdr3_nucl, generic_dna).translate())
+            
+            v_nucl = self.query.seq[(self.query.orf - 1):(self.variable_region.cdr3[0] - 1 + v_adj)]
+            j_nucl = self.query.seq[(self.variable_region.cdr3[1] - 1 + j_adj):int(math.floor((len(self.query.seq) - self.query.orf - 1) / 3) * 3 + self.query.orf - 1)]
+            v_prot = str(Seq(v_nucl, generic_dna).translate())
+            j_prot = str(Seq(j_nucl, generic_dna).translate())
+            
+            # find the last stop codon in V region.
+            re_stop = re.compile('\*')
+            stop_pos = None
+            for stop_pos in re_stop.finditer(v_prot):
+                pass
+            # if stop codon is existed, then check the methionine after the last
+            # stopcodon to check ORF.
+            ##print self.query.name
+            ##print "++++ Original: -----------------------"
+            ##print seq_prot
+            ##print v_prot + '=' + cdr3_prot + '=' + j_prot
+            ##print (stop_pos)
+            if stop_pos:
+                v_prot = v_prot[(stop_pos.start() + 1):]
+                ##print "++++ Trimmed: -----------------------"
+                ##print v_prot
+        
         
         query_prot_nocdr3 = seq_prot.replace(cdr3_prot, '')
         stop_codon_tag = '.'
         if cdr3_prot == '':
-            stop_codon_tag = 'X'     # no-seq
-        elif '*' in cdr3_prot and '*' in query_prot_nocdr3:
-            stop_codon_tag = 'B'     # stop codon in both seqs
-        elif '*' in cdr3_prot and '*' not in query_prot_nocdr3:
-            stop_codon_tag = 'C'     # stop codon in cdr3 seq
-        elif '*' not in cdr3_prot and '*' in query_prot_nocdr3:
-            stop_codon_tag = 'Q'     # stop codon in non-cdr3 seq
-        elif '*' not in cdr3_prot and '*' not in query_prot_nocdr3:
-            stop_codon_tag = 'N'     # no-stop codon
+            stop_codon_tag = 'U'     # no-seq
         else:
-            raise SystemError('The stop_codon_tag has invalid type!')
+            if ('*' in v_prot) or ('*' in cdr3_prot) or ('*' in j_prot):
+                stop_codon_tag = '*'
+            else:
+                stop_codon_tag = 'N'
         
         if cdr3_nucl == '':
             cdr3_nucl = None

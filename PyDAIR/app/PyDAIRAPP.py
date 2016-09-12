@@ -388,7 +388,7 @@ class PyDAIRAPPStats:
         
         self.stats = PyDAIRStats(self.__pydair_files, 'pydair', self.__sample_names,
                                  self.__contain_ambiguous_D, self.__contain_stopcodon)
-        self.plots = None
+        self.plots = PyDAIRPlot(self.stats)
     
     
     
