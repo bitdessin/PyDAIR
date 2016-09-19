@@ -4,7 +4,10 @@ language: python
 
 cache:
     directories:
+        - $HOME/.ccache
         - $HOME/.cache/pip
+        - $HOME/.cache/matplotlib
+
 
 python:
     - "2.7"
