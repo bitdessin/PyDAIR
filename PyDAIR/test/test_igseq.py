@@ -41,7 +41,7 @@ class Test_pydair_seq_IgSeq(unittest.TestCase):
                    Seq(igseq.query.seq[igseq.variable_region.cdr3[0]:igseq.variable_region.cdr3[1]], generic_dna).translate()]
             ## => [[247, 286], Seq('CSRTPITDEFDKW', ExtendedIUPACProtein())]
         cdr3_data = igseq.get_cdr3_data()
-        print [cdr3_data.nucl_seq, cdr3_data.prot_seq, cdr3_data.stop_codon_tag]
+        print [cdr3_data.nucl_seq, cdr3_data.prot_seq]
     
     def test_revcomp_igseq(self):
         # rev. comp. query and forward subjcet
@@ -77,9 +77,9 @@ class Test_pydair_seq_IgSeq(unittest.TestCase):
                    Seq(igseq.query.seq[igseq.variable_region.cdr3[0]:igseq.variable_region.cdr3[1]], generic_dna).translate()]
         cdr3_data = igseq.get_cdr3_data()
         
-        print [cdr3_data.nucl_seq, cdr3_data.prot_seq, cdr3_data.stop_codon_tag]
+        print [cdr3_data.nucl_seq, cdr3_data.prot_seq]
         cdr3_data = igseq.get_cdr3_data(v_adj = -12, j_adj = 9)
-        print [cdr3_data.nucl_seq, cdr3_data.prot_seq, cdr3_data.stop_codon_tag]
+        print [cdr3_data.nucl_seq, cdr3_data.prot_seq]
     
     
 

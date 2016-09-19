@@ -340,7 +340,10 @@ class PyDAIRStats:
                 cdr3_data = igseq.get_cdr3_data()
                 cdr3_prot_seq.append(cdr3_data.prot_seq)
                 cdr3_nucl_seq.append(cdr3_data.nucl_seq)
-                stop_codon_tag.append(cdr3_data.stop_codon_tag)
+                if igseq.query.orf is not None:
+                    stop_codon_tag.append('N')
+                else:
+                    stop_codon_tag.append('*')
             
             sample_record = PyDAIRStatsRecord(self.__pydair_id[i], v, d, j,
                                               cdr3_nucl_seq, cdr3_prot_seq, stop_codon_tag,

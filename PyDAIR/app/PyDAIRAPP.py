@@ -267,10 +267,10 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
             for igseq in pydair_fh.parse():
                 cdr3_data = igseq.get_cdr3_data()
                 if mol_type == 'nucl' and (cdr3_data.nucl_seq is not None and cdr3_data.nucl_seq != ''):
-                    output_fa_fh.write('>' + igseq.query.name + ' | ' + cdr3_data.stop_codon_tag + '\n' + \
+                    output_fa_fh.write('>' + igseq.query.name + '\n' + \
                                        cdr3_data.nucl_seq + '\n')
                 elif mol_type == 'prot' and (cdr3_data.prot_seq is not None and cdr3_data.prot_seq != ''):
-                    output_fa_fh.write('>' + igseq.query.name + ' | ' + cdr3_data.stop_codon_tag + '\n' + \
+                    output_fa_fh.write('>' + igseq.query.name + '\n' + \
                                        cdr3_data.prot_seq + '\n')
         logging.info('Data (cdr3 sequences) has been saved into ' + filename + '.\n')
     

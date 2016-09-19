@@ -224,15 +224,10 @@ class IgSeqQuery:
             self.strand = strand
         else:
             raise ValueError('The strand should be + or -.')
-        self.orf = None
         if orf is not None:
             self.orf = int(orf)
-            slice_start = self.orf
-            slice_end = int(math.floor((len(self.seq) - self.orf) / 3)) * 3 + self.orf
-            if '*' in str(Seq(self.seq[slice_start:slice_end], generic_dna).translate()):
-                self.has_stop_codon = True
-            else:
-                self_has_stop_codon = False
+        else:
+            self.orf = orf
     
     def get_record(self):
         return [self.name, self.seq, self.strand, self.orf]
@@ -541,9 +536,9 @@ class IgSeq:
         # untmpl:  5'                                          tagtcgatgtacgtagggacttcgagct3'
         # cdr3  :  5'                                    tgatgctagtcgatgtacgtagggacttcgagctattcgga3'
         if self.variable_region is not None:
-            aligned_untmpl = self.query.seq[(self.variable_region.untemplate_region[0] - 1):(self.variable_region.untemplate_region[1] - 1)]
+            aligned_untmpl = self.query.seq[(self.variable_region.untemplate_region[0]):(self.variable_region.untemplate_region[1])]
             if self.variable_region.cdr3 is not None:
-                aligned_cdr3 = self.query.seq[(self.variable_region.cdr3[0] - 1):(self.variable_region.cdr3[1] - 1)]
+                aligned_cdr3 = self.query.seq[(self.variable_region.cdr3[0]):(self.variable_region.cdr3[1])]
                 diff_left    = self.variable_region.untemplate_region[0] - self.variable_region.cdr3[0]
                 diff_right   = self.variable_region.untemplate_region[1] - self.variable_region.cdr3[1]
                 delete_blank = 0
@@ -553,8 +548,8 @@ class IgSeq:
                 elif diff_left < 0:
                     aligned_cdr3 = ''.join([' '] * (- diff_left)) + aligned_cdr3
                     delete_blank = 0
-                aligned_untmpl = ''.join([' '] * (len(add_blank_to_q + q_left + self.v.query.aligned_seq) - delete_blank)) + aligned_untmpl
-                aligned_cdr3   = ''.join([' '] * (len(add_blank_to_q + q_left + self.v.query.aligned_seq) - delete_blank)) + aligned_cdr3
+                aligned_untmpl = ''.join([' '] * (len(add_blank_to_q + q_left + self.v.query.aligned_seq) - delete_blank + 1)) + aligned_untmpl
+                aligned_cdr3   = ''.join([' '] * (len(add_blank_to_q + q_left + self.v.query.aligned_seq) - delete_blank + 1)) + aligned_cdr3
             else:
                 aligned_untmpl = ''.join([' '] * (len(add_blank_to_q + q_left + self.v.query.aligned_seq))) + aligned_untmpl
                 aligned_cdr3   = ''.join([' '] * (len(add_blank_to_q + q_left + self.v.query.aligned_seq))) + aligned_cdr3
@@ -698,68 +693,73 @@ class IgSeq:
     
     
     
-    
-    def __seek_cdr3(self, v_end, j_start):
-        const_tag = IgConstantTag(species = self.species)
-        cdr3_start, cdr3_end, orf = self.__seek_cdr3_inner(self.query.seq, v_end, j_start,
-                                                           const_tag.V_re,
-                                                           const_tag.J_re,
-                                                           const_tag.cdr3_motif_start_len,
-                                                           const_tag.cdr3_motif_end_len)
-        # if cannot find the motifs by perfect match,
-        # then assume that there is a mismatch in the motifs
-        if cdr3_start is None:
-            cdr3_start, cdr3_end, orf = self.__seek_cdr3_inner(self.query.seq, v_end, j_start,
-                                                           const_tag.V_1mismatch_re,
-                                                           const_tag.J_re,
-                                                           const_tag.cdr3_motif_start_len,
-                                                           const_tag.cdr3_motif_end_len)
-        return [cdr3_start, cdr3_end, orf]
-    
-    
-    
-    def __seek_cdr3_inner(self, seq, v_end, j_start, motif_start_re, motif_end_re, motif_start_len, motif_end_len):
-        cdr3_start = None
-        cdr3_end   = None
-        orf = None
-        # find pattern
-        for i in range(3):  # ORF: 0, 1, 2
-            has_v_tag = None
-            has_j_tag = None
+    def __seek_cdr3_YYC(self, seq, v_end, j_start, const_tag):
+        cdr3_start     = None
+        
+        # try three ORFs
+        for i in range(3):
+            has_v_tag     = None
             cdr3_aa_start = None
-            cdr3_aa_end   = None
-            v_aa_end   = int(v_end / 3 + 1)
-            j_aa_start = int(j_start / 3 - 1)
-            
+            # claulate ORF
             slice_start = i
             slice_end = int(math.floor((len(seq) - i) / 3)) * 3 + i
-            
+            v_aa_end   = int(v_end / 3 + 1)
+            j_aa_start = int(j_start / 3 - 1)
+            # translate nucleotides to amino acid
             aa = str(Seq(seq[slice_start:slice_end], generic_dna).translate())
-            aa_left  = aa[:(j_aa_start - 1)]  # left + untemplated 
-            aa_right = aa[v_aa_end:]          # untemplated + right
-            
-            # find the CDR3 pattern in V region, and pass all patterns.
-            # after for-loop, only the last one will be save in has_v_tagvariable.
-            for has_v_tag in motif_start_re.finditer(aa_left):
+            aa_left  = aa[:(j_aa_start - 1)]
+            # find the last YYC motif in the sequence
+            for has_v_tag in const_tag.V_re.finditer(aa_left):
                 pass
-            
-            # if can find V gene, then find J
             if has_v_tag:
-                cdr3_aa_start = has_v_tag.start() + motif_start_len   # remove AVYYC, ...
-                has_j_tag = motif_end_re.search(aa_right)
-                if has_j_tag:
-                    cdr3_aa_end = has_j_tag.end() + v_aa_end - motif_end_len # remove G.G
-                    cdr3_start  = cdr3_aa_start * 3 + i
-                    cdr3_end    = cdr3_aa_end * 3 + i
-                    orf = i
+                cdr3_aa_start = has_v_tag.start() + const_tag.cdr3_motif_start_len
+                cdr3_start = (cdr3_aa_start + 1) * 3 + i
+                break
+        # assume that there is one mismatch in YYC motifs
+        if cdr3_start is None:
+            for i in range(3):
+                has_v_tag     = None
+                cdr3_aa_start = None
+                slice_start = i
+                slice_end = int(math.floor((len(seq) - i) / 3)) * 3 + i
+                v_aa_end   = int(v_end / 3 + 1)
+                j_aa_start = int(j_start / 3 - 1)
+
+                aa = str(Seq(seq[slice_start:slice_end], generic_dna).translate())
+                aa_left  = aa[:(j_aa_start - 1)]
+                for has_v_tag in const_tag.V_1mismatch_re.finditer(aa_left):
+                    pass
+                if has_v_tag:
+                    cdr3_aa_start = has_v_tag.start() + const_tag.cdr3_motif_start_len
+                    cdr3_start = (cdr3_aa_start + 1) * 3 + i
                     break
-        if cdr3_start is not None:
-            cdr3_start += 1 + 3   # remove last C of ..YYC from CDR3 sequence
-        if cdr3_end is not None:
-            cdr3_end += 1 - 3     # remove first W of WGxG from CDR3 sequence
-        if orf is not None:
-            orf += 1
-        return [cdr3_start, cdr3_end, orf]
+        
+        return cdr3_start
+    
+   
+    
+    def __seek_cdr3_WGxG(self, seq, v_end, j_start, const_tag):
+        cdr3_end     = None
+        
+        # try three ORFs
+        for i in range(3):
+            has_j_tag     = None
+            cdr3_aa_end = None
+            # claulate ORF
+            slice_start = i
+            slice_end = int(math.floor((len(seq) - i) / 3)) * 3 + i
+            v_aa_end   = int(v_end / 3 + 1)
+            j_aa_start = int(j_start / 3 - 1)
+            # translate nucleotides to amino acid
+            aa = str(Seq(seq[slice_start:slice_end], generic_dna).translate()) 
+            aa_right  = aa[v_aa_end:]
+            # find the first WGxG motif in the sequence
+            has_j_tag = const_tag.J_re.search(aa_right)
+            if has_j_tag:
+                cdr3_aa_end = has_j_tag.end() + v_aa_end - const_tag.cdr3_motif_end_len
+                cdr3_end = cdr3_aa_end * 3 + i
+                break
+        return cdr3_end
     
     
     
@@ -775,6 +775,42 @@ class IgSeq:
         return [un_templated_seq_start, un_templated_seq_end]
         
 
+
+     
+    def __seek_orf(self, orf_upper = None, exact_orf = None):
+        '''
+        Seek the first M in V region.
+        '''
+        orf = None
+        if exact_orf is None:
+            exact_orf = [0, 1, 2]
+        else:
+            exact_orf = [exact_orf]
+        
+        re_start = re.compile('M')
+        
+        aa_orf = None
+        aa = None
+        for exact_orf_i in exact_orf:
+            slice_start = exact_orf_i
+            slice_end = int(math.floor((len(self.query.seq) - exact_orf_i) / 3)) * 3 + exact_orf_i
+            aa = str(Seq(self.query.seq[slice_start:slice_end], generic_dna).translate())
+            for start_pos in re_start.finditer(aa):
+                aa_orf = aa[(start_pos.start() + 1):]
+                if '*' not in aa_orf:
+                    orf = start_pos.start() * 3 + exact_orf_i
+                    break
+            if orf is not None:
+                break
+        
+        # if ORF is exceed out of V region, set ORF to None
+        if orf is not None and orf_upper is not None:
+            if orf > orf_upper:
+                orf = None
+        
+        return orf
+
+
     def seek_cdr3(self):
         '''
         Search cdr3 region.
@@ -786,76 +822,59 @@ class IgSeq:
         # only process for corect sequence
         has_valid_alignment = self.forward_ig_seq()
         if has_valid_alignment:
+            # seek unaligned region
             untmpl_start, untmpl_end = self.__seek_untemplated_region()
-            cdr3_start, cdr3_end, self.query.orf = self.__seek_cdr3(untmpl_start - 1, untmpl_end)
+            # seek CDR3
+            const_tag = IgConstantTag(species = self.species)
+            cdr3_start = self.__seek_cdr3_YYC( self.query.seq, untmpl_start - 1, untmpl_end, const_tag)
+            cdr3_end   = self.__seek_cdr3_WGxG(self.query.seq, untmpl_start - 1, untmpl_end, const_tag)
+            
+            # fix the end position (assume that the YYC is the base position)
+            if cdr3_start is not None and cdr3_end is not None:
+                codons = (cdr3_end - (cdr3_start)) % 3
+                if codons == 1:
+                    cdr3_end += -1
+                elif codons == 2:
+                    cdr3_end += -2
+            # setup data to object
             self.variable_region = IgSeqVariableRegion(self.query.name, self.query.seq, untmpl_start, untmpl_end, cdr3_start, cdr3_end)
+            # ORF of IgH
+            orf_upper = self.j.query.start
+            if cdr3_start is not None:
+                orf_upper = cdr3_start
+            self.query.orf = self.__seek_orf(orf_upper = orf_upper)
         #else:
         #    logging.warning('The alignments of ' + self.query.name + ' is not correct. Discarded this sequence.')
     
     
     
     
-    def get_cdr3_data(self, v_adj = 0, j_adj = 0):
+    def get_cdr3_data(self, v_adj = -15, j_adj = 12):
         if (v_adj % 3 != 0) or (j_adj % 3 != 0):
             raise ValueError('The v_adj and j_adj arguments in get_cdr3_data should be 0 or divisible by 3.')
         
-        seq_nucl = ''
-        seq_prot = ''
-        cdr3_nucl = ''
-        cdr3_prot = ''
+        seq_nucl = None
+        seq_prot = None
+        cdr3_nucl = None
+        cdr3_prot = None
         
-        if (self.query.orf is not None) and (self.variable_region.cdr3 is not None):
-            seq_nucl  = self.query.seq[(self.query.orf - 1):int(math.floor((len(self.query.seq) - self.query.orf - 1) / 3) * 3 + self.query.orf - 1)]
-            cdr3_nucl = self.query.seq[(self.variable_region.cdr3[0] - 1 + v_adj):(self.variable_region.cdr3[1] - 1 + j_adj)]
-            seq_prot  = str(Seq(seq_nucl, generic_dna).translate())
+        untemplate_range = self.variable_region.untemplate_region
+        cdr3_range = self.variable_region.cdr3
+        orf = self.query.orf
+        
+        # get CDR3 sequence
+        if cdr3_range is not None:
+            cdr3_nucl = self.query.seq[(cdr3_range[0] + v_adj):(cdr3_range[1] + j_adj)]
+            if len(cdr3_nucl) % 3 != 0:
+                cdr3_nucl = cdr3_nucl[:-(len(cdr3_nucl) % 3)]
             cdr3_prot = str(Seq(cdr3_nucl, generic_dna).translate())
-            
-            v_nucl = self.query.seq[(self.query.orf - 1):(self.variable_region.cdr3[0] - 1 + v_adj)]
-            j_nucl = self.query.seq[(self.variable_region.cdr3[1] - 1 + j_adj):int(math.floor((len(self.query.seq) - self.query.orf - 1) / 3) * 3 + self.query.orf - 1)]
-            v_prot = str(Seq(v_nucl, generic_dna).translate())
-            j_prot = str(Seq(j_nucl, generic_dna).translate())
-            
-            # find the last stop codon in V region.
-            re_stop = re.compile('\*')
-            stop_pos = None
-            for stop_pos in re_stop.finditer(v_prot):
-                pass
-            # if stop codon is existed, then check the methionine after the last
-            # stopcodon to check ORF.
-            ##print self.query.name
-            ##print "++++ Original: -----------------------"
-            ##print seq_prot
-            ##print v_prot + '=' + cdr3_prot + '=' + j_prot
-            ##print (stop_pos)
-            if stop_pos:
-                v_prot = v_prot[(stop_pos.start() + 1):]
-                ##print "++++ Trimmed: -----------------------"
-                ##print v_prot
-        
-        
-        query_prot_nocdr3 = seq_prot.replace(cdr3_prot, '')
-        stop_codon_tag = '.'
-        if cdr3_prot == '':
-            stop_codon_tag = 'U'     # no-seq
-        else:
-            if ('*' in v_prot) or ('*' in cdr3_prot) or ('*' in j_prot):
-                stop_codon_tag = '*'
-            else:
-                stop_codon_tag = 'N'
-        
-        if cdr3_nucl == '':
-            cdr3_nucl = None
-        if cdr3_prot == '':
-            cdr3_prot = None
-        
-        cdr3_data = CDR3Data(cdr3_nucl, cdr3_prot, stop_codon_tag)
+        cdr3_data = CDR3Data(cdr3_nucl, cdr3_prot)
         return cdr3_data
 
 
 
 
 class CDR3Data:
-    def __init__(self, nucl_seq, prot_seq, stop_codon_tag):
+    def __init__(self, nucl_seq, prot_seq):
         self.nucl_seq = nucl_seq
         self.prot_seq = prot_seq
-        self.stop_codon_tag = stop_codon_tag

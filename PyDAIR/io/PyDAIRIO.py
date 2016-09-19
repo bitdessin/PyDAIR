@@ -143,7 +143,6 @@ VALIGN      %s
 JALIGN      %s
 UALIGN      %s
 CALGIN      %s
-#CDR3AASEQ  %s
 #ALIGNPOSHD QSTART\tQEND\tSSTART\tSEND\tIDENTITY\tSCORE
 ALIGNPOS QV %s\t%s\t%s\t%s\t%s\t%s
 ALIGNPOS QD %s\t%s\t%s\t%s\t%s\t%s
@@ -154,7 +153,7 @@ ALIGNPOS QC %s\t%s\t%s\t%s\t%s\t%s
 '''
         metadata_list = [r[0], r[4], r[7], r[10], r[3]]
         metadata_list.extend(alignment)
-        metadata_list.append(str(Seq(alignment[4].replace('-', '').replace(' ', ''), generic_dna).translate()))
+        #metadata_list.append(str(Seq(alignment[4].replace('-', '').replace(' ', ''), generic_dna).translate()))
         metadata_list.extend([r[14], r[15], r[17], r[18], r[19], r[20]])  # V
         metadata_list.extend([  '.',   '.',   '.',   '.', r[27], r[28]])  # D
         metadata_list.extend([r[30], r[31], r[33], r[34], r[35], r[36]])  # J
@@ -170,7 +169,7 @@ ALIGNPOS QC %s\t%s\t%s\t%s\t%s\t%s
         cdr3_data = igseq.get_cdr3_data()
         
         # qname, vname, dname, jname, cdr3_nucl, CDR3_prot, stop_codon
-        record = [r[0], r[4], r[7], r[10], cdr3_data.nucl_seq, cdr3_data.prot_seq, cdr3_data.stop_codon_tag]
+        record = [r[0], r[4], r[7], r[10], cdr3_data.nucl_seq, cdr3_data.prot_seq]
         record = self.__utils.none_to_dot(record)
         return '\t'.join(record) + '\n'
     
