@@ -849,7 +849,7 @@ class IgSeq:
     
     
     
-    def get_cdr3_data(self, v_adj = -12, j_adj = 0):
+    def get_cdr3_data(self, v_adj = 0, j_adj = 0):
         if (v_adj % 3 != 0) or (j_adj % 3 != 0):
             raise ValueError('The v_adj and j_adj arguments in get_cdr3_data should be 0 or divisible by 3.')
         

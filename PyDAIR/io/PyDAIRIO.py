@@ -182,11 +182,15 @@ ALIGNPOS QC %s\t%s\t%s\t%s\t%s\t%s
         return self
     
         
-    def next(self):
+    def __next__(self):
         '''
         Read data from PyDAIR format file and return the data as IgSeq class object.
         '''
         self.parse()
+    
+    
+    def next(self):
+        return self.__next__()
     
         
     def parse(self):

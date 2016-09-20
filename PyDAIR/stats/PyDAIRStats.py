@@ -270,13 +270,16 @@ class PyDAIRStatsRecords:
         self.__index = 0
         return self
     
-    def next(self):
+    def __next__(self):
         try:
             stats_record = self.__records[self.__index]
         except IndexError:
             raise StopIteration
         self.__index += 1
         return stats_record
+    
+    def next(self):
+        return self.__next__()
     
     def append(self, stats_record):
         self.__records.append(stats_record)
@@ -344,11 +347,11 @@ class PyDAIRStats:
                     stop_codon_tag.append('N')
                 else:
                     stop_codon_tag.append('*')
-            
             sample_record = PyDAIRStatsRecord(self.__pydair_id[i], v, d, j,
                                               cdr3_nucl_seq, cdr3_prot_seq, stop_codon_tag,
                                               self.__contain_ambiguous_D, self.__contain_stopcodon)
             self.samples.append(sample_record)
+            pydair_fh.close()
     
     
     

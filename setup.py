@@ -30,11 +30,12 @@ setup(
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
     ],
     keywords     = 'blast, bioinformatics',
-    author       = 'Jianqiang Sun',
+    author       = 'Jianqiang Sun, Xi Fu',
     author_email = 'wukong@bi.a.u-tokyo.ac.jp',
     url          = 'https://github.com/jqsunac/PyDAIR',
     license      = 'GNU',
@@ -45,6 +46,6 @@ setup(
     include_package_data = True,
     zip_safe = True,
     long_description = read_md('README.md'),
-    install_requires = ['matplotlib', 'pandas', 'biopython'],
+    install_requires = ['matplotlib>=1.4', 'pandas', 'biopython'],
 )
 

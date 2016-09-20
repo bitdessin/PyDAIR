@@ -33,15 +33,15 @@ class Test_pydair_seq_IgSeq(unittest.TestCase):
         
         igseq = IgSeq('fugu', igseq_v, igseq_d, igseq_j)
         igseq.seek_cdr3()
-        print [igseq.variable_region.untemplate_region,
-               igseq.query.seq[igseq.variable_region.untemplate_region[0]:igseq.variable_region.untemplate_region[1]]]
+        print([igseq.variable_region.untemplate_region,
+               igseq.query.seq[igseq.variable_region.untemplate_region[0]:igseq.variable_region.untemplate_region[1]]])
         ## => [[255, 269], 'gactcctataacgg']
         if igseq.query.orf is not None:
-            print [igseq.variable_region.cdr3,
-                   Seq(igseq.query.seq[igseq.variable_region.cdr3[0]:igseq.variable_region.cdr3[1]], generic_dna).translate()]
+            print([igseq.variable_region.cdr3,
+                   Seq(igseq.query.seq[igseq.variable_region.cdr3[0]:igseq.variable_region.cdr3[1]], generic_dna).translate()])
             ## => [[247, 286], Seq('CSRTPITDEFDKW', ExtendedIUPACProtein())]
         cdr3_data = igseq.get_cdr3_data()
-        print [cdr3_data.nucl_seq, cdr3_data.prot_seq]
+        print([cdr3_data.nucl_seq, cdr3_data.prot_seq])
     
     def test_revcomp_igseq(self):
         # rev. comp. query and forward subjcet
@@ -69,17 +69,17 @@ class Test_pydair_seq_IgSeq(unittest.TestCase):
         igseq = IgSeq('fugu', igseq_v, igseq_d, igseq_j)
         igseq.seek_cdr3()
         
-        print [igseq.variable_region.untemplate_region,
-               igseq.query.seq[igseq.variable_region.untemplate_region[0]:igseq.variable_region.untemplate_region[1]]]
+        print([igseq.variable_region.untemplate_region,
+               igseq.query.seq[igseq.variable_region.untemplate_region[0]:igseq.variable_region.untemplate_region[1]]])
         
         if igseq.query.orf is not None:
-            print [igseq.variable_region.cdr3,
-                   Seq(igseq.query.seq[igseq.variable_region.cdr3[0]:igseq.variable_region.cdr3[1]], generic_dna).translate()]
+            print([igseq.variable_region.cdr3,
+                   Seq(igseq.query.seq[igseq.variable_region.cdr3[0]:igseq.variable_region.cdr3[1]], generic_dna).translate()])
         cdr3_data = igseq.get_cdr3_data()
         
-        print [cdr3_data.nucl_seq, cdr3_data.prot_seq]
+        print([cdr3_data.nucl_seq, cdr3_data.prot_seq])
         cdr3_data = igseq.get_cdr3_data(v_adj = -12, j_adj = 9)
-        print [cdr3_data.nucl_seq, cdr3_data.prot_seq]
+        print([cdr3_data.nucl_seq, cdr3_data.prot_seq])
     
     
 

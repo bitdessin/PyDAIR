@@ -8,15 +8,14 @@ cache:
         - $HOME/.cache/pip
         - $HOME/.cache/matplotlib
 
-
 python:
     - "2.7"
-
+    - "3.4"
+    - "3.5"
 
 before_install:
     - sudo apt-get update
     - sudo apt-get install ncbi-blast+
-
 
 install:
     - pip install --upgrade pip wheel
@@ -27,7 +26,6 @@ install:
     - pip install biopython
     - pip install .
 
-
 before_script:
     - "export DISPLAY=:99.0"
     - "sh -e /etc/init.d/xvfb start"
@@ -36,6 +34,4 @@ before_script:
 
 script:
     - nosetests -v
-
-
 

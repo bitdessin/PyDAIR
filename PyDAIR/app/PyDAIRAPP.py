@@ -272,6 +272,7 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
                 elif mol_type == 'prot' and (cdr3_data.prot_seq is not None and cdr3_data.prot_seq != ''):
                     output_fa_fh.write('>' + igseq.query.name + '\n' + \
                                        cdr3_data.prot_seq + '\n')
+            pydair_fh.close()
         logging.info('Data (cdr3 sequences) has been saved into ' + filename + '.\n')
     
     
@@ -298,6 +299,7 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
                         untemplate_region_seq = igseq.query.seq[(igseq.variable_region.untemplate_region[0] - 1):(igseq.variable_region.untemplate_region[1] - 1)]
                         if untemplate_region_seq != '':
                             output_fa_fh.write('>' + igseq.query.name  + ' [Unaligned_region]\n' + untemplate_region_seq + '\n')
+            pydair_fh.close()
         logging.info('Data (unaligned sequences) has been saved into ' + filename + '.\n')
     
     
@@ -329,6 +331,7 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
                     igseq.set_igseqalign(igseqd, 'd')
             self.__pydair_records[i] = igseq
         self.__log_parsed_d = True
+        pydair_vj.close()
 
 
 
