@@ -93,13 +93,14 @@ class PyDAIRStatsArgs:
     
     '''
     def __init__(self, sample_names, pydair_files, contain_ambiguous_D, contain_stopcodon,
-                 output_prefix, figure_format = 'pdf'):
+                 output_prefix, figure_format = 'pdf', figure_style = 'ggplot'):
         self.sample_names        = sample_names
         self.pydair_files         = pydair_files
         self.contain_ambiguous_D = contain_ambiguous_D
         self.contain_stopcodon   = contain_stopcodon
         self.output_prefix       = output_prefix
         self.figure_format       = figure_format
+        self.figure_style        = figure_style
         
 
 

@@ -27,7 +27,8 @@ def main(args):
                                 contain_ambiguous_D = args.contain_ambiguous_D,
                                 contain_stopcodon = args.contain_stopcodon,
                                 output_prefix = args.output,
-                                figure_format = args.figure_format)
+                                figure_format = args.figure_format,
+                                figure_style = args.figure_style)
     pydairapp = PyDAIRAPPStats(pydair_args)
     
     logging.info('[2/4] Write statistical data.')
@@ -65,6 +66,7 @@ PyDAIR: Python library for Diversity Analysis of Immune Repertoire.
     parser.add_argument('--contain_stopcodon',   help = 'Contain immunoglobulin heavy chain sequences that has stop codons when calculating the frequencies.',            action = 'store_true')
     parser.add_argument('--figure-format',   help = 'Format of figures.', default = 'png')
     parser.add_argument('--figure-dpi',      help = 'DPI of figures',     default = 300)
+    parser.add_argument('--figure-style',    help = 'Stylesheet of figures', choices = ['classic', 'ggplot', 'fivethirtyeight'], default = 'ggplot')
     parser.add_argument('--estimate-cdr3-population', help = 'Estimation of CDR-H3 population sizes by sampling-resampling study.', action = 'store_true')
     parser.add_argument('--estimate-vdj-combination', help = 'Estimation of the numbers of VDJ combinations by rarefaction study.', action = 'store_true')
     

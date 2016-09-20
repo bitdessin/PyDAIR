@@ -345,11 +345,12 @@ class PyDAIRAPPStats:
     def __init__(self, args):
         self.__args = args
         self.__sample_names        = args.sample_names
-        self.__pydair_files         = args.pydair_files
+        self.__pydair_files        = args.pydair_files
         self.__contain_ambiguous_D = args.contain_ambiguous_D
         self.__contain_stopcodon   = args.contain_stopcodon
         self.__output_prefix       = args.output_prefix
         self.__figure_format       = args.figure_format
+        self.__figure_style        = args.figure_style
         self.__out_file_rarefaction  = self.__output_prefix + '.rarefaction.tsv'
         self.__out_file_samplingresamplig  = self.__output_prefix + '.samplingresamplig.tsv'
         
@@ -388,7 +389,7 @@ class PyDAIRAPPStats:
         
         self.stats = PyDAIRStats(self.__pydair_files, 'pydair', self.__sample_names,
                                  self.__contain_ambiguous_D, self.__contain_stopcodon)
-        self.plots = PyDAIRPlot(self.stats)
+        self.plots = PyDAIRPlot(self.stats, self.__figure_style)
     
     
     

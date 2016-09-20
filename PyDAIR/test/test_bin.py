@@ -52,6 +52,7 @@ class Test_bin(unittest.TestCase):
         cmd += '-n sample_1 smaple_2 sample_3 '
         cmd += '-o ' + _data_path + '/test_output_bin_analysis_hasambigoD '
         cmd += '--contain_ambiguous_D '
+        cmd += '--figure-style ggplot '
         print(cmd)
         subprocess.call(cmd, shell = True)
 

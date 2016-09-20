@@ -5,17 +5,18 @@ import numpy as np
 import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.cm as cmx
-#matplotlib.style.use('ggplot')
+#from mpl_toolkits.mplot3d import Axes3D
+#import matplotlib.cm as cmx
 from PyDAIR.stats.PyDAIRStats import *
-
+#from ggplot import *
 
 
 
 class PyDAIRPlot:
-    def __init__(self, stats):
+    def __init__(self, stats, figure_style = 'fivethirtyeight'):
         self.__stats = stats
+        self.__style = figure_style
+        plt.style.use(figure_style)
     
        
     def __set_fig_labels(self, ax, main = '', xlab = '', ylab = ''):
@@ -80,31 +81,45 @@ class PyDAIRPlot:
         
         freq_dataframe.columns = sample_names
         if sort:
-            freq_dataframe = freq_dataframe.ix[freq_dataframe.mean(axis = 1).order(ascending = False).index]
+            freq_dataframe = freq_dataframe.ix[freq_dataframe.mean(axis = 1).sort_values(ascending = False).index]
         if gene_names is not None:
             freq_dataframe = freq_dataframe.reindex(gene_names).fillna(0)
         
-        if fig_name is None:
-            fig = plt.figure()
-        else:
+        if self.__style == 'ggplot_dev':
             fig_name, fig_format, fig_width, fig_height, fig_dpi = self.__get_dev_params(
-                fig_name, fig_format, fig_width, fig_height, fig_dpi, int(0.8 * freq_dataframe.shape[0]), 6)
-            fig = plt.figure(figsize = (fig_width, fig_height), dpi = fig_dpi)
-        
-        ax = fig.add_subplot(111)
-        ax = self.__set_fig_labels(ax, main, xlab, ylab)
-        freq_dataframe.plot.bar(ax = ax)
-        
-        if fig_name is None:
-            plt.show()
+                    fig_name, fig_format, fig_width, fig_height, fig_dpi, int(0.8 * freq_dataframe.shape[0]), 6)
+            freq_dataframe = pd.concat([pd.Series(freq_dataframe.index, name = 'Gene',
+                                                  index = freq_dataframe.index), freq_dataframe], axis = 1)
+            datadf = pd.melt(freq_dataframe, id_vars = ['Gene'], var_name  = 'Sample')
+            p = ggplot(aes(x = 'Gene', y = 'value', fill = 'Sample'), data = datadf)
+            p = p + geom_bar(position = 'dodge', stat = 'identity')
+            #p = p + theme_bw()
+            #p = p + scale_fill_brewer(type = 'qual', palette = 'Set1')
+            #p = p + labs(title = main, x = xlab, y = ylab)
+            p.save(fig_name)
+            #ggsave(plot = p, filename = fig_name)
         else:
-            if fig_format != 'tiff':
-                if matplotlib.get_backend().lower() in ['agg', 'macosx']:
-                    fig.set_tight_layout(True)
-                else:
-                    fig.tight_layout()
-            plt.savefig(fig_name, format = fig_format)
-            plt.close()
+            if fig_name is None:
+                fig = plt.figure()
+            else:
+                fig_name, fig_format, fig_width, fig_height, fig_dpi = self.__get_dev_params(
+                    fig_name, fig_format, fig_width, fig_height, fig_dpi, int(0.8 * freq_dataframe.shape[0]), 6)
+                fig = plt.figure(figsize = (fig_width, fig_height), dpi = fig_dpi)
+        
+            ax = fig.add_subplot(111)
+            ax = self.__set_fig_labels(ax, main, xlab, ylab)
+            freq_dataframe.plot.bar(ax = ax)
+            
+            if fig_name is None:
+                plt.show()
+            else:
+                if fig_format != 'tiff':
+                    if matplotlib.get_backend().lower() in ['agg', 'macosx']:
+                        fig.set_tight_layout(True)
+                    else:
+                        fig.tight_layout()
+                plt.savefig(fig_name, format = fig_format)
+                plt.close()
     
     
     
@@ -137,27 +152,39 @@ class PyDAIRPlot:
             len_xlim.append(i)
         dist_dataframe = dist_dataframe.reindex(len_xlim).fillna(0)
         
-        if fig_name is None:
-            fig = plt.figure()
-        else:
+        if self.__style == 'ggplot_dev':
             fig_name, fig_format, fig_width, fig_height, fig_dpi = self.__get_dev_params(
-                fig_name, fig_format, fig_width, fig_height, fig_dpi, int(0.8 * dist_dataframe.shape[0]), 6)
-            fig = plt.figure(figsize = (fig_width, fig_height), dpi = fig_dpi)
-        
-        ax = fig.add_subplot(111)
-        ax = self.__set_fig_labels(ax, main, xlab, ylab)
-        dist_dataframe.plot.bar(ax = ax)
-        
-        if fig_name is None:
-            plt.show()
+                    fig_name, fig_format, fig_width, fig_height, fig_dpi, int(0.8 * dist_dataframe.shape[0]), 6)
+            dist_dataframe = pd.concat([pd.Series(dist_dataframe.index, name = 'Length',
+                                                  index = dist_dataframe.index), dist_dataframe], axis = 1)
+            datadf = pd.melt(dist_dataframe, id_vars = ['Length'], var_name  = 'Sample')
+            p = ggplot(aes(x = 'Length', y = 'value', fill = 'factor(Sample)'), data = datadf)
+            p = p + geom_bar(position = 'dodge', stat = 'identity')
+            p = p + theme_bw()
+            p = p + scale_fill_brewer(type = 'qual', palette = 'Set1')
+            p = p + labs(title = main, x = xlab, y = ylab)
+            p.save(fig_name)
         else:
-            if fig_format != 'tiff':
-                if matplotlib.get_backend().lower() in ['agg', 'macosx']:
-                    fig.set_tight_layout(True)
-                else:
-                    fig.tight_layout()
-            plt.savefig(fig_name, format = fig_format)
-            plt.close()
+            if fig_name is None:
+                fig = plt.figure()
+            else:
+                fig_name, fig_format, fig_width, fig_height, fig_dpi = self.__get_dev_params(
+                    fig_name, fig_format, fig_width, fig_height, fig_dpi, int(0.8 * dist_dataframe.shape[0]), 6)
+                fig = plt.figure(figsize = (fig_width, fig_height), dpi = fig_dpi)
+            ax = fig.add_subplot(111)
+            ax = self.__set_fig_labels(ax, main, xlab, ylab)
+            dist_dataframe.plot.bar(ax = ax)
+
+            if fig_name is None:
+                plt.show()
+            else:
+                if fig_format != 'tiff':
+                    if matplotlib.get_backend().lower() in ['agg', 'macosx']:
+                        fig.set_tight_layout(True)
+                    else:
+                        fig.tight_layout()
+                plt.savefig(fig_name, format = fig_format)
+                plt.close()
         
  
         

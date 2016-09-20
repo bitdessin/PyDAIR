@@ -849,7 +849,7 @@ class IgSeq:
     
     
     
-    def get_cdr3_data(self, v_adj = -15, j_adj = 12):
+    def get_cdr3_data(self, v_adj = -12, j_adj = 0):
         if (v_adj % 3 != 0) or (j_adj % 3 != 0):
             raise ValueError('The v_adj and j_adj arguments in get_cdr3_data should be 0 or divisible by 3.')
         
@@ -869,6 +869,7 @@ class IgSeq:
                 cdr3_nucl = cdr3_nucl[:-(len(cdr3_nucl) % 3)]
             cdr3_prot = str(Seq(cdr3_nucl, generic_dna).translate())
         cdr3_data = CDR3Data(cdr3_nucl, cdr3_prot)
+        
         return cdr3_data
 
 
