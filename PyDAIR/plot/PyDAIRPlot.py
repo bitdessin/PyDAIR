@@ -68,20 +68,7 @@ class PyDAIRPlot:
             ylab = 'Frequency' if prob is False else ylab
             ylab = 'Probability' if prob is True else ylab
         
-        sample_freqs = []
-        sample_names = []
-        for bsample in self.__stats.samples:
-            sample_freqs.append(bsample.get_freq(gene))
-            sample_names.append(bsample.name)
-        
-        freq_dataframe = pd.concat(sample_freqs, axis = 1).fillna(0)
-        freq_dataframe.columns = sample_names
-        if prob:
-            freq_dataframe = freq_dataframe / freq_dataframe.sum(axis = 0)
-        
-        freq_dataframe.columns = sample_names
-        if sort:
-            freq_dataframe = freq_dataframe.ix[freq_dataframe.mean(axis = 1).sort_values(ascending = False).index]
+        freq_dataframe = self.__stats.get_freq(gene, sort = sort, prob = prob)
         if gene_names is not None:
             freq_dataframe = freq_dataframe.reindex(gene_names).fillna(0)
         
@@ -132,17 +119,7 @@ class PyDAIRPlot:
             ylab = 'Frequency' if prob is False else ylab
             ylab = 'Probability' if prob is True else ylab
         
-        sample_dists = []
-        sample_names = []
-        for bsample in self.__stats.samples:
-            sample_dists.append(bsample.get_freq('cdr3_prot_len'))
-            sample_names.append(bsample.name)
-        
-        dist_dataframe = pd.concat(sample_dists, axis = 1).fillna(0)
-        dist_dataframe.columns = sample_names
-        if prob:
-            dist_dataframe = dist_dataframe / dist_dataframe.sum(axis = 0)
-        dist_dataframe = dist_dataframe.set_index([[int(dx) for dx in dist_dataframe.index.values]])
+        dist_dataframe = self.__stats.get_cdr3len_freq(prob = prob)
         
         if xlim is None:
             xlim = [0, max([int(dx) for dx in dist_dataframe.index.values])]

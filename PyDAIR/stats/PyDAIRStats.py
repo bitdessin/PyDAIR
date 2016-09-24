@@ -354,6 +354,72 @@ class PyDAIRStats:
             pydair_fh.close()
     
     
+    def get_freq(self, gene, sort = True, prob = False):
+        '''Get the frequence of usage with data frame class object.
+        
+        Args:
+            gene (str): A gene name. Specify 'v', 'd', 'j'.
+            sort (bool): Sort data frame by freqeunces.
+            freq (bool): If `True`, return the frequences of counts.
+            prob (bool): If prob is `True`, return the probability, and omit `freq`.
+        
+        Returns:
+            A Pandas DataFrame class object.
+        
+        Get the frequence of usages of the `gene` as DataFrame class object.
+        '''
+        
+        if gene not in ['v', 'd', 'j']:
+            raise ValueError('One of \'v\', \'d\', \'j\' should be specified.')
+        
+        sample_freqs = []
+        sample_names = []
+        for sample in self.samples:
+            sample_freqs.append(sample.get_freq(gene))
+            sample_names.append(sample.name)
+        
+        freq_dataframe = pd.concat(sample_freqs, axis = 1).fillna(0)
+        freq_dataframe.columns = sample_names
+        
+        if prob:
+            freq_dataframe = freq_dataframe / freq_dataframe.sum(axis = 0)
+        
+        freq_dataframe.columns = sample_names
+        
+        if sort:
+            freq_dataframe = freq_dataframe.ix[freq_dataframe.mean(axis = 1).sort_values(ascending = False).index]
+        
+        return freq_dataframe
+       
+    
+    def get_cdr3len_freq(self, prob = False):
+        
+        sample_dists = []
+        sample_names = []
+        for bsample in self.samples:
+            sample_dists.append(bsample.get_freq('cdr3_prot_len'))
+            sample_names.append(bsample.name)
+
+        dist_dataframe = pd.concat(sample_dists, axis = 1).fillna(0)
+        dist_dataframe.columns = sample_names
+        
+        if prob:
+            dist_dataframe = dist_dataframe / dist_dataframe.sum(axis = 0)
+        
+        dist_dataframe = dist_dataframe.set_index([[int(dx) for dx in dist_dataframe.index.values]])
+        
+        return dist_dataframe
+
+        
+        
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
