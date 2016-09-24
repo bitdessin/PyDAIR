@@ -7,6 +7,7 @@ from PyDAIR.seq.IgSeq import IgSeq
 from PyDAIR.io.PyDAIRIO import *
 
 _data_path = os.path.join(os.path.dirname(__file__), 'data')
+_result_path = os.path.join(os.path.dirname(__file__), 'data/results')
 
 
 class Test_pydair_io(unittest.TestCase):
@@ -16,8 +17,8 @@ class Test_pydair_io(unittest.TestCase):
         # Inputs
         self.pydair_input_path       = _data_path + '/sample.pydair'
         # Outputs
-        self.pydair_output_path       = _data_path + '/test_output_io.pydair'
-        self.pydairsimple_output_path = _data_path + '/test_output_io.pydair.simple'
+        self.pydair_output_path       = _result_path + '/test_output_io.pydair'
+        self.pydairsimple_output_path = _result_path + '/test_output_io.pydair.simple'
     
     
     def test_pydair_io(self):

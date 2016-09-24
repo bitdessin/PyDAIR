@@ -10,7 +10,7 @@ from PyDAIR.utils.PyDAIRArgs import *
 from PyDAIR.app.PyDAIRAPP import *
 
 _data_path = os.path.join(os.path.dirname(__file__), 'data')
-
+_result_path = os.path.join(os.path.dirname(__file__), 'data/results')
 
 class Test_app(unittest.TestCase):
     
@@ -27,7 +27,7 @@ class Test_app(unittest.TestCase):
         v_gene_fasta = _data_path + '/db/v.fa'
         d_gene_fasta = _data_path + '/db/d.fa'
         j_gene_fasta = _data_path + '/db/j.fa'
-        output_prefix = _data_path + '/test_output_app_parseseq'
+        output_prefix = _result_path + '/test_output_app_parseseq'
         
         # PyDAIR arguemnts settings
         pydair_args = PyDAIRParseSeqArgs('fugu', q_fasta, v_gene_fasta, d_gene_fasta, j_gene_fasta,
@@ -54,11 +54,11 @@ class Test_app(unittest.TestCase):
         pydair_files  = [_data_path + '/sample.1.pydair',
                          _data_path + '/sample.2.pydair',
                          _data_path + '/sample.3.pydair']
-        pydair_args = PyDAIRStatsArgs(sample_names, pydair_files, True, False, _data_path + '/test_output_app_analysis_hasambigoD', 'pdf')
+        pydair_args = PyDAIRStatsArgs(sample_names, pydair_files, True, False, _result_path + '/test_output_app_analysis_hasambigoD', 'pdf')
         pydairapp = PyDAIRAPPStats(pydair_args)
         pydairapp.write_freq()
         pydairapp.write_cdr3_len_freq()
-        pydair_args = PyDAIRStatsArgs(sample_names, pydair_files, False, False, _data_path + '/test_output_app_analysis', 'pdf')
+        pydair_args = PyDAIRStatsArgs(sample_names, pydair_files, False, False, _result_path + '/test_output_app_analysis', 'pdf')
         pydairapp = PyDAIRAPPStats(pydair_args)
         pydairapp.write_freq()
         pydairapp.write_cdr3_len_freq()

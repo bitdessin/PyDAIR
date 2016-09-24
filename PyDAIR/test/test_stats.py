@@ -8,6 +8,7 @@ from PyDAIR.io.PyDAIRIO import *
 from PyDAIR.stats.PyDAIRStats import *
 
 _data_path = os.path.join(os.path.dirname(__file__), 'data')
+_result_path = os.path.join(os.path.dirname(__file__), 'data/results')
 
 class Test_pydair_stats(unittest.TestCase):
     
@@ -18,12 +19,12 @@ class Test_pydair_stats(unittest.TestCase):
                                    _data_path + '/sample.2.pydair',
                                    _data_path + '/sample.3.pydair']
         self.pydair_id = ['Sample 1', 'Sample 2', 'Sample 3']
-        self.pydair_div_f = [_data_path + '/test_output_stat_f.1.txt',
-                             _data_path + '/test_output_stat_f.2.txt',
-                             _data_path + '/test_output_stat_f.3.txt']
-        self.pydair_div_s = [_data_path + '/test_output_stat_s.1.txt',
-                             _data_path + '/test_output_stat_s.2.txt',
-                             _data_path + '/test_output_stat_s.3.txt']
+        self.pydair_div_f = [_result_path + '/test_output_stat_f.1.txt',
+                             _result_path + '/test_output_stat_f.2.txt',
+                             _result_path + '/test_output_stat_f.3.txt']
+        self.pydair_div_s = [_result_path + '/test_output_stat_s.1.txt',
+                             _result_path + '/test_output_stat_s.2.txt',
+                             _result_path + '/test_output_stat_s.3.txt']
     
     
     def test_stats_samplingresampling(self):
@@ -70,7 +71,24 @@ class Test_pydair_stats(unittest.TestCase):
             print(bsample.cdr3.head(5))
             print(bsample.get_freq('cdr3_nucl_len').head(5))
             print(bsample.get_freq('cdr3_prot_len').head(5))
-
+    
+    
+    def test_stats_methods(self):
+        pydair_files = self.pydair_input_files
+        pydair_id    = self.pydair_id
+        bstats = PyDAIRStats(pydair_files, 'pydair', pydair_id)
+        
+        df_freq_v = bstats.get_freq('v')
+        df_freq_d = bstats.get_freq('d')
+        df_freq_j = bstats.get_freq('j', prob = True)
+        df_freq_cdr3len_1 = bstats.get_cdr3len_freq(prob = True)
+        df_freq_cdr3len_2 = bstats.get_cdr3len_freq(prob = True)
+        
+        print(df_freq_v)
+        print(df_freq_d)
+        print(df_freq_j)
+        print(df_freq_cdr3len_1)
+        print(df_freq_cdr3len_2)
 
 
 if __name__ == '__main__':

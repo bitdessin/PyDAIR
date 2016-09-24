@@ -10,6 +10,7 @@ from PyDAIR.utils.PyDAIRArgs import *
 from PyDAIR.app.PyDAIRAPP import *
 
 _data_path = os.path.join(os.path.dirname(__file__), 'data')
+_result_path = os.path.join(os.path.dirname(__file__), 'data/results')
 
 
 class Test_bin(unittest.TestCase):
@@ -19,7 +20,7 @@ class Test_bin(unittest.TestCase):
     
     
     def test_bin_parseseq(self):
-        cmd = 'pydair-parseseq -s fugu -q ' + _data_path + '/sample.fa -o ' + _data_path + '/test_output_bin_parseseq_ -f pydair '
+        cmd = 'pydair-parseseq -s fugu -q ' + _data_path + '/sample.fa -o ' + _result_path + '/test_output_bin_parseseq_ -f pydair '
         cmd += '-v ' + _data_path + '/db/v.fa -d ' + _data_path + '/db/d.fa -j ' + _data_path + '/db/j.fa '
         cmd += '--v-blastdb ' + _data_path + '/db/v '
         cmd += '--v-match-score 3 --v-mismatch-score -3 '
@@ -41,7 +42,7 @@ class Test_bin(unittest.TestCase):
     def test_bin_stats(self):
         cmd = 'pydair-analysis -i ' + _data_path + '/sample.1.pydair ' + _data_path + '/sample.2.pydair ' + _data_path + '/sample.3.pydair '
         cmd += '-n sample_1 smaple_2 sample_3 '
-        cmd += '-o ' + _data_path + '/test_output_bin_analysis '
+        cmd += '-o ' + _result_path + '/test_output_bin_analysis '
         print(cmd)
         subprocess.call(cmd, shell = True)
     
@@ -50,7 +51,7 @@ class Test_bin(unittest.TestCase):
     def test_bin_stats_2(self):
         cmd = 'pydair-analysis -i ' + _data_path + '/sample.1.pydair ' + _data_path + '/sample.2.pydair ' + _data_path + '/sample.3.pydair '
         cmd += '-n sample_1 smaple_2 sample_3 '
-        cmd += '-o ' + _data_path + '/test_output_bin_analysis_hasambigoD '
+        cmd += '-o ' + _result_path + '/test_output_bin_analysis_hasambigoD '
         cmd += '--contain_ambiguous_D '
         cmd += '--figure-style ggplot '
         print(cmd)

@@ -8,6 +8,7 @@ from PyDAIR.stats.PyDAIRStats import *
 from PyDAIR.plot.PyDAIRPlot import *
 
 _data_path = os.path.join(os.path.dirname(__file__), 'data')
+_result_path = os.path.join(os.path.dirname(__file__), 'data/results')
 
 
 class Test_pydair_plot(unittest.TestCase):
@@ -21,16 +22,16 @@ class Test_pydair_plot(unittest.TestCase):
         pydair_id    = ['Sample 1', 'Sample 2', 'Sample 3']
         
         # output settings
-        self.freq_v_png = _data_path + '/test_output_plot.freq.v.png'
-        self.freq_d_png = _data_path + '/test_output_plot.freq.d.png'
-        self.freq_j_png = _data_path + '/test_output_plot.freq.j.png'
-        self.prob_v_pdf = _data_path + '/test_output_plot.prob.v.pdf'
-        self.prob_d_pdf = _data_path + '/test_output_plot.prob.d.pdf'
-        self.prob_j_pdf = _data_path + '/test_output_plot.prob.j.pdf'
+        self.freq_v_png = _result_path + '/test_output_plot.freq.v.png'
+        self.freq_d_png = _result_path + '/test_output_plot.freq.d.png'
+        self.freq_j_png = _result_path + '/test_output_plot.freq.j.png'
+        self.prob_v_pdf = _result_path + '/test_output_plot.prob.v.pdf'
+        self.prob_d_pdf = _result_path + '/test_output_plot.prob.d.pdf'
+        self.prob_j_pdf = _result_path + '/test_output_plot.prob.j.pdf'
         
-        self.dist_cdr3_png_1 = _data_path + '/test_output_plot.cdr3len.1.png'
-        self.dist_cdr3_png_2 = _data_path + '/test_output_plot.cdr3len.2.png'
-        self.dist_cdr3_png_3 = _data_path + '/test_output_plot.cdr3len.3.png'
+        self.dist_cdr3_png_1 = _result_path + '/test_output_plot.cdr3len.1.png'
+        self.dist_cdr3_png_2 = _result_path + '/test_output_plot.cdr3len.2.png'
+        self.dist_cdr3_png_3 = _result_path + '/test_output_plot.cdr3len.3.png'
         
         # create stat object
         self.stats   = PyDAIRStats(pydair_files, 'pydair', pydair_id)
