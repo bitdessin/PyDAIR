@@ -1,9 +1,9 @@
-
 from PyDAIR.io.PyDAIRIO import *
+from PyDAIR.io.PyDAIRReport import *
 
 
 
-__all__ = ['PyDAIRIO']
+__all__ = ['PyDAIRIO', 'PyDAIRReport']
 
 
 
@@ -12,5 +12,4 @@ __all__ = ['PyDAIRIO']
 v2s,'srnomWn'k'l'wmh'p'h'E'w0aei'a'o'E'oimwea'a'era'e'oh.py
 vo,srt'I'oagb,'u'ore'e'brt',','.'.hw'o',gee'gmes-thIubl'kcB
 '''
-
 

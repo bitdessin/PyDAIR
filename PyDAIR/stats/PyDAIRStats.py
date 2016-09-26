@@ -72,7 +72,7 @@ class PyDAIRStatsRecord:
     
     
     def len(self):
-        return self.__len__
+        return self.__len__()
     
     
     def get_freq(self, gene):
