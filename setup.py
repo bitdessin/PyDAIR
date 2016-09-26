@@ -48,7 +48,7 @@ setup(
     include_package_data = True,
     zip_safe = True,
     long_description = read_md('README.md'),
-    install_requires = ['matplotlib>=1.4', 'pandas', 'biopython'],
+    install_requires = ['matplotlib>=1.4', 'pandas', 'biopython', 'jinja2'],
 )
 
 
