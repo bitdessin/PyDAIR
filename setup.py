@@ -39,7 +39,9 @@ setup(
     author_email = 'wukong@bi.a.u-tokyo.ac.jp',
     url          = 'https://github.com/jqsunac/PyDAIR',
     license      = 'GNU',
-    packages     = find_packages(exclude=['examples', 'tests']),
+    packages     = find_packages('PyDAIR', exclude=['examples', 'tests']),
+    package_dir  = {'': 'PyDAIR'},
+    package_data = {'': ['PyDAIR/templates/*html']},
     scripts      = ['PyDAIR/bin/pydair-parseseq',
                     'PyDAIR/bin/pydair-analysis'],
     test_suite   = 'test',
@@ -48,4 +50,7 @@ setup(
     long_description = read_md('README.md'),
     install_requires = ['matplotlib>=1.4', 'pandas', 'biopython'],
 )
+
+
+
 
