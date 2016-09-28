@@ -13,6 +13,20 @@ from PyDAIR.stats.PyDAIRStats import *
 
 
 class PyDAIRPlot:
+    """Plot library for PyDAIR package.
+    
+    Args:
+        figure_style (str):
+            A string of figure color theme.
+    
+    Usages:
+        >>> stats = PyDAIRStats(['file_path_1', 'file_path_2'], 'pydair',
+        >>>                     ['sample 1', 'sample 2'])
+        >>> plots = PyDAIRPlot(stats, figure_style = 'ggplot')
+    
+    Visualize analysis results.
+    """
+    
     def __init__(self, stats, figure_style = 'fivethirtyeight'):
         self.__stats = stats
         self.__style = figure_style
@@ -59,6 +73,39 @@ class PyDAIRPlot:
                      main = '', xlab = None, ylab = None,
                      fig_name = None, fig_format = None,
                      fig_width = None, fig_height = None, fig_dpi = None):
+        """Plot bar chart of gene usage.
+        
+        Args:
+            gene (str):
+                A character of gene name. One of 'v', 'd', or 'j' should be specified.
+            gene_names (list):
+                A list of string that are germline gene names. \
+                If `gene_names` is not `None`, the order of genes in figure \
+                is sorted based on `gene_names`.
+            prob (bool):
+                Plot probability instead of counts.
+            sort (bool):
+                Sort data as decreasing order.
+            main (str):
+                Figure title.
+            xlab (str):
+                A string of X axis name.
+            ylab (str):
+                A string of Y axis name.
+            fig_name (str):
+                A string of file name.
+            fig_format (str):
+                A string of figure format. `png`, `pdf`, `tiff` can be specified.
+            fig_width (int):
+                An integer of figure width.
+            fig_heigh (int):
+                An integer of figure height.
+            fig_dpi (int):
+                An integer of DPI of figure.
+        
+        Plot bar chart of the frequency of germline (V, D, or J) gene usage.
+        """
+        
         if gene.lower() not in ['v', 'd', 'j']:
             raise ValueError('The \'gene\' should be one of \'v\', \'d\', and \'j\'.')
         

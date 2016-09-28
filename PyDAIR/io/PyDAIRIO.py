@@ -9,24 +9,15 @@ from PyDAIR.seq.IgSeq import *
 
 
 class PyDAIRIO: 
+    """PyDAIR format Input/Output interface.
+    
+    The input/output interface to handle PYDAIR format flat file.
+    PYDAIR format file is a text file.
+    An entry (one `IgSeq` object) in PYDAIR format file begins with `#BEGIN`
+    and end with `#END` letters.
+    """
+    
     '''
-    PyDAIR format Input/Output interface.
-    
-    The input/output interface of PyDAIR format. The methods in this class provide the
-    interfaces to read data from the file and to write data to the file. The data in
-    the file will be converted to IgSeq class object per a sequence. And the IgSeq
-    class object will be converted to text for writting to files. This class
-    provides three formats, 'PyDAIR', 'tsv' and 'simple', to write data to files. Note
-    that only 'PyDAIR' and 'tsv' format files can be read. 
-    
-        - PyDAIR  : [flat file format] full information of analysed data.
-        - tsv    : [tsv text format]  full information of anlaysed data, but TSV format.
-        - simple : [tsv text format]  only important information.
-    
-    The 'PyDAIR' format file is a text flat file format. An entry in 'PyDAIR' format file
-    begins with '#BEGIN' and end with '#END' letters. The template of 'PyDAIR' format is
-    shown in the following. 
-    
     ## PyDAIR flat file format
     -----------------------------------------------------------------------------
     |#BEGIN                                                                     |
@@ -74,6 +65,20 @@ class PyDAIRIO:
     
     
     def __init__(self, pydair_file_path, open_mode = None, pydair_file_format = 'pydair'):
+        """Set up file path and open mode.
+        
+        Args:
+            pydair_file_path (str):
+                A file path to open or write.
+            open_mode (str):
+                A character (`r`, `w` or `a`) to specify open mode.
+            pydair_file_format (str):
+                A file format to open or write. One of `pydair` or `simple` should be specified.
+        
+        Set up file path, open mode, and file format.
+        After setting, the method opens the file hanld.
+        """
+        
         if open_mode is None:
             raise ValueError('Open mode is required. Please set open mode as \'r\' for reading mode, or \'w\' or \'a\' for writting mode.')
         self.__path   = pydair_file_path
@@ -84,20 +89,26 @@ class PyDAIRIO:
         
     
     def close(self):
+        """Close file handle.
+        
+        Close file handle that is opened by `__init__`.
+        """
+        
         self.__fh.close()
     
     
     
     def write(self, igseq):
-        '''
-        PyDAIR format output interface.
+        """Write `IgSeq` objects to a file.
         
-        This class receieved IgSeq class object or the list of IgSeq class object, and
-        write the IgSeq data into the file which is specified in the initialization of
-        this class. 'PyDAIR', 'simple', and 'tsv' format will be used.
-        This method is the wrapper method for calling the sub-methods to write
-        data to the file.
-        '''
+        Args:
+            igseq (IgSeq):
+                A list of `IgSeq` objects.
+        
+        Write a list of `IgSeq` object to a file.
+        It is expected to use `close` method to close the file handle after writting.
+        """
+        
         if (not isinstance(igseq, list)) and (not isinstance(igseq, tuple)):
             igseq_list = [igseq]
         else:
@@ -176,30 +187,36 @@ ALIGNPOS QC %s\t%s\t%s\t%s\t%s\t%s
     
     
     def __iter__(self):
-        '''
-        The iterator for reading data from PyDAIR format file.
-        '''
         return self
     
         
     def __next__(self):
-        '''
-        Read data from PyDAIR format file and return the data as IgSeq class object.
-        '''
         self.parse()
     
     
     def next(self):
+        """Return the next `IgSeq` object from the iterator.
+        
+        Return the next `IgSeq` object during parsing PYDAIR format file with `parse` method.
+        """
+        
         return self.__next__()
     
         
     def parse(self):
-        '''
-        Parse the PyDAIR format file.
+        """Parse PYDAIR format file into an iterator returning `IgSeq` object.
         
-        The method is for parsing the PyDAIR format file, and save the data into
-        IgSeq class object. An entry will be read when execute this method once.
-        '''
+        Usage:
+            >>> pydairio = PyDAIRIO('path_to_file', 'r', 'pydair')
+            >>> for igseq in pydairio.parse():
+            >>> print(igseq)
+            >>> pydairio.close()
+        
+        Parse PYDAIR format file into an iterator returning `IgSeq` object.
+        Typical usage is to loop over the records with `for` statement.
+        It is expected to use `close` method to close the file handle after parsing.
+        """
+        
         igseq = None
         if self.__format == 'pydair':
             igseq = self.__parse_pydair()

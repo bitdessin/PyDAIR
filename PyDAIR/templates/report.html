@@ -18,37 +18,64 @@ article {
     font-family: -apple-system, Helvetica, Arial, sans-serif;
     font-weight: 100;
 }
+
+/* bootstrap style sheet */
+.panel {
+    margin-bottom: 20px;
+    background-color: #fff;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    box-shadow: 0 1px 1px rgba(0,0,0,.05);
+}
+.panel-heading {
+    padding: 10px 15px;
+    border-bottom: 1px solid transparent;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+.panel-default {
+    border-color: #ddd;
+}
+.panel-danger {
+    border-color: #ebccd1;
+}
+.panel-default > .panel-heading {
+    color: #333;
+    background-color: #f5f5f5;
+    border-color: #ddd;
+}
+.panel-danger > .panel-heading {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+.panel-body {
+    padding: 15px;
+}
 </style>
 
 
 </head>
 <body>
 
-
-
-<nav class="navbar navbar-default  navbar-fixed-top">
-  <div class="container-fluid">
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li><a href="#h_top">Top</a></li>
-        <li><a href="#h_basic">Basic</a></li>
-        <li><a href="#h_V">V</a></li>
-        <li><a href="#h_D">D</a></li>
-        <li><a href="#h_J">J</a></li>
-        <li><a href="#h_VDJ">VDJ</a></li>
-        <li><a href="#h_CDR3">CDR3</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
-
-
-
 <div class="container">
 <article id="h_top">
+    
+    <section id="load_status" class="panel panel-danger" style="display:none;">
+        <div class="panel-heading">Warnings</div>
+        <div class="panel-body">
+        <p>This page loads Google Charts API for drawing graphs and Bootstrap for rendering page desing via internect. Make sure you have internet connections.</p>
+        </div>
+    </section>
+
+
+   
+    
     <div class="page-header">
         <h1>PyDAIR Analysis Report</h1>
     </div>
+    
     
     
     <section id="h_basic" class="panel panel-default">
@@ -93,8 +120,8 @@ article {
         <div class="panel-heading"><h2>{{ item.gene }} gene usage</h2></div>
         <div class="row panel-body">
            <div class="col-md-4">
-                <p>Data for bar charts in tab-delimited text.</p>
-                <textarea class="form-control" rows="{{ item.count }}">{{ item.freq_csv }}</textarea>
+                <button type="button" class="btn btn-default" onClick="drawChart{{ item.gene }}(false)">Frequency</button>
+                <button type="button" class="btn btn-default" onClick="drawChart{{ item.gene }}(true)">Percentage</button>
             </div>
             <div class="col-md-8">
                 <div id="{{ item.gene }}_freq_plot"></div>
@@ -109,15 +136,33 @@ article {
         <div class="panel-heading"><h2>CDR3 length</h2></div>
         <div class="row panel-body">
            <div class="col-md-4">
-                <p>Basic statistics.</p>
-                <textarea class="form-control" rows="10">{{ cdr3_stats.freq_csv }}</textarea>
+                <button type="button" class="btn btn-default" onClick="drawChartCDR3Length(false)">Frequency</button>
+                <button type="button" class="btn btn-default" onClick="drawChartCDR3Length(true)">Percentage</button>
             </div>
             <div class="col-md-8">
                 <div id="cdr3len_freq_plot"></div>
             </div>
         </div>
     </section>
-
+    
+    
+    <section id="h_rarefaction" class="panel panel-default">
+        <div class="panel-heading"><h2>Rarefaction study for VDJ combinations</h2></div>
+        <div class="row panel-body">
+           <div class="col-md-4">
+                <p>Basic statistics.</p>
+                <textarea class="form-control" rows="10">{{ rarefaction_stats.tries_csv }}</textarea>
+            </div>
+            <div class="col-md-8">
+                <div id="rarefaction_VDJ_plot"></div>
+            </div>
+        </div>
+    </section>
+    
+    
+    
+    
+    
 
 </article>       
 </div>
@@ -138,45 +183,77 @@ article {
 
 <script type="text/javascript">
 <!--
-google.charts.load('current', {packages:['bar']});
+if (! navigator.onLine) {
+    document.getElementById("load_status").style.display = "block";
+    document.getElementById("load_status").style.visibility = "visible";
+}
 
 
-
-{% for item in freq_stats %}
-
-google.charts.setOnLoadCallback(drawChart{{ item.gene }});
-
-function drawChart{{ item.gene }}() {
-    var dataJson    = {{ item.freq_json }};
-    var sampleNames = Object.keys(dataJson);
-    var geneNames   = Object.keys(dataJson[sampleNames[0]]);
-    
-    // define columns of data object.
+function jsonToDataTable(dataJson, idName = '', transToValue = false, prob = false) {
+    var colNames = Object.keys(dataJson);
+    var rowNames = Object.keys(dataJson[colNames[0]]);
     var dataTable = [];
-    var dataTableHeader = ['Gene'];
-    for (var i = 0; i < sampleNames.length; i++) {
-        dataTableHeader.push(sampleNames[i]);
+    var dataTableHeader = [idName];
+    for (var i = 0; i < colNames.length; i++) {
+        dataTableHeader.push(colNames[i]);
     }
     dataTable.push(dataTableHeader);
-    
-    // add data into data object.
-    for (var j = 0; j < geneNames.length; j++) {
-        var dataRow = [geneNames[j]];
-        for (var i = 0; i < sampleNames.length; i++) {
-            dataRow.push(dataJson[sampleNames[i]][geneNames[j]]);
+    for (var j = 0; j < rowNames.length; j++) {
+        var dataRow = [rowNames[j]];
+        for (var i = 0; i < colNames.length; i++) {
+            dataRow.push(dataJson[colNames[i]][rowNames[j]]);
         }
         dataTable.push(dataRow);
     }
     
-    // create google visualization object.
-    var dataTable = new google.visualization.arrayToDataTable(dataTable);
+   if (prob) {
+        for (var j = 1; j < colNames.length + 1; j++) {
+            var sum = 0;
+            for (var i = 1; i < rowNames.length + 1; i++) {
+                sum += dataTable[i][j];
+            }
+            for (var i = 1; i < rowNames.length + 1; i++) {
+                dataTable[i][j] = dataTable[i][j] / sum;
+            }
+        }
+    }
+    if (transToValue) {
+        for (var i = 1; i < rowNames.length + 1; i++) {
+            dataTable[i][0] = Number(dataTable[i][0]);
+        }
+    }
+    console.log(dataTable);
+    return {'dataTable': dataTable,
+            'colNames' : colNames,
+            'rowNames' : rowNames};
+}
+
+
+google.charts.load('current', {packages:['bar', 'line']});
+
+
+
+
+{% for item in freq_stats %}
+google.charts.setOnLoadCallback(drawChart{{ item.gene }});
+function drawChart{{ item.gene }}(prob = false) {
     
+    var xlab = "Frequency of {{ item.gene }} gene usage";
+    var ylab = "{{ item.gene }} gene family";
+    var axisFormat = "scientific"
+    if (prob) {
+        xlab = "Percentage of {{ item.gene }} gene usage";
+        axisFormat = "percent"
+    }
+    
+    var data = jsonToDataTable({{ item.freq_json }}, 'Gene', false, prob);
+    var dataTable = new google.visualization.arrayToDataTable(data.dataTable);
     var options = {
         title: '{{ item.gene }} gene usage',
-        subtitle: 'Frequency of {{ item.gene }} gene usage',
-        height: 14 * (sampleNames.length) * (geneNames.length * 1.05) + 40,
+        height: 14 * (data.colNames.length) * (data.rowNames.length * 1.05) + 40,
         bars: 'horizontal',
-        hAxis: {format: 'scientific'},
+        hAxis: {title: xlab, format: axisFormat},
+        vAxis: {title: ylab},
     };
     var chart = new google.charts.Bar(document.getElementById('{{ item.gene }}_freq_plot'));
     chart.draw(dataTable, google.charts.Bar.convertOptions(options));
@@ -184,47 +261,57 @@ function drawChart{{ item.gene }}() {
 {% endfor %}
 
 
-
-
 google.charts.setOnLoadCallback(drawChartCDR3Length);
-
-function drawChartCDR3Length() {
-    var dataJson     = {{ cdr3_stats.freq_json }};
-    var sampleNames  = Object.keys(dataJson);
-    var lengthValues = Object.keys(dataJson[sampleNames[0]]);
+function drawChartCDR3Length(prob = false) {
     
-    // define columns of data object.
-    var dataTable = [];
-    var dataTableHeader = ['Gene'];
-    for (var i = 0; i < sampleNames.length; i++) {
-        dataTableHeader.push(sampleNames[i]);
+    var xlab = "CDR3 amino acid sequence length";
+    var ylab = "Frequency of sequences";
+    var axisFormat = "scientific"
+    if (prob) {
+        ylab = "Percentage of sequences";
+        axisFormat = "percent"
     }
-    dataTable.push(dataTableHeader);
     
-    // add data into data object.
-    for (var j = 0; j < lengthValues.length; j++) {
-        if (7 < lengthValues[j] && lengthValues[j] < 25) {
-            var dataRow = [lengthValues[j]];
-            for (var i = 0; i < sampleNames.length; i++) {
-                dataRow.push(dataJson[sampleNames[i]][lengthValues[j]]);
-            }
-            dataTable.push(dataRow);
+    var data = jsonToDataTable({{ cdr3_stats.freq_json }}, 'Length', true, prob);
+    var dataLimited = [data.dataTable[0]]
+    for (var i = 1; i < data.rowNames.length; i++) {
+        if (7 < data.rowNames[i] && data.rowNames[i] < 25) {
+            dataLimited.push(data.dataTable[i]);
         }
     }
     
-    // create google visualization object.
-    var dataTable = new google.visualization.arrayToDataTable(dataTable);
-    
+    var dataTable = new google.visualization.arrayToDataTable(dataLimited);
     var options = {
         title: 'CDR3 length distribution',
         subtitle: 'Length distribution of complementarity determining region 3 (CDR3) amino acid sequences',
         height: 400,
         bars: 'vertical',
-        hAxis: {format: 'scientific'},
+        vAxis: {title: ylab, format: axisFormat},
+        hAxis: {title: xlab},
     };
     var chart = new google.charts.Bar(document.getElementById('cdr3len_freq_plot'));
     chart.draw(dataTable, google.charts.Bar.convertOptions(options));
 }
+
+
+
+google.charts.setOnLoadCallback(drawChartRarefactionVDJ);
+function drawChartRarefactionVDJ() {
+    var data = jsonToDataTable({{ rarefaction_stats.tries_json }}, 'numSeq', true, false);
+    var dataTable = new google.visualization.arrayToDataTable(data.dataTable);
+    var options = {
+        title: 'Rarefaction study for VDJ combination diversity',
+        subtitle: 'Rarefaction study for VDJ combination diversity',
+        height: 400,
+        hAxis: {title: 'Number of captured sequences', format: 'scientific'},
+        vAxis: {title: 'Number of unique VDJ combinations'},
+        interpolateNulls: true,
+    };
+    var chart = new google.charts.Line(document.getElementById('rarefaction_VDJ_plot'));
+
+    chart.draw(dataTable, google.charts.Line.convertOptions(options));
+}
+
 
 
 -->

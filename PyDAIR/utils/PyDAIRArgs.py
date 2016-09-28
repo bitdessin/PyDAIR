@@ -6,23 +6,51 @@ import argparse
 
 
 class PyDAIRParseSeqArgs:
-    '''
-    PyDAIRParseSeqArgs class is a class to store the parameters for analyzing data.
-    The initialize method will check that the file path of 'q', 'v', 'd', and 'j'. 
+    """A class to save parameters for parsing Rep-Seq data.
     
-      q:        FASTA file of query sequences.
-      v:        FASTA file of V gene sequences.
-      d:        FASTA file of D gene sequences.
-      j:        FASTA file of J gene sequences.
-      o:        The prefix of output file.
-      f:        PyDAIR format, 'PyDAIR', 'tsv', and 'simple' can be specified.
-      valign:   PyDAIRBlastArgs class object for V gene.
-      dalign:   PyDAIRBlastArgs class object for V gene.
-      jalign:   PyDAIRBlastArgs class object for V gene.
-    
-    '''
+    PyDAIRParseSeqArgs is a class to store the parameters for parsing Rep-Seq data.
+    """
+   
     def __init__(self, species = None, q = None, v = None, d = None, j = None, o = None, f = None,
                  valign = None, dalign = None, jalign = None):
+        """Set up parameters for analysis of Rep-Seq data
+        
+        Args:
+            species (str):
+                Species name.
+            q (str):
+                A path to V gene FASTA file.
+            d (str):
+                A path to D gene FASTA file.
+            j (str):
+                A path to J gene FASTA file.
+            o (str):
+                A prefix to save the result files.
+            f (str):
+                A format. One of 'pydair' or 'simple' can be specified.
+            valign (PyDAIRBlastArgs):
+                BLAST parameters for V gene identification.
+            dalign (PyDAIRBlastArgs):
+                BLAST parameters for D gene identification.
+            jalign (PyDAIRBlastArgs):
+                BLAST parameters for J gene identification.
+        
+        Raises:
+            IOError: An error occurs when the FASTA files are not existed.
+        
+        Usages:
+            >>> valign = PyDAIRBlastArgs('balstdb_v', match = 5, mismatch = 6, gapopen = 4,
+            >>>                          gapextend = 4, wordsize = 21, eval_cutoff = 1e10)
+            >>> dalign = PyDAIRBlastArgs('balstdb_d', match = 5, mismatch = 6, gapopen = 4,
+            >>>                          gapextend = 4, wordsize = 2, eval_cutoff = 1e3)
+            >>> jalign = PyDAIRBlastArgs('balstdb_j', match = 5, mismatch = 6, gapopen = 4,
+            >>>                          gapextend = 4, wordsize = 9, eval_cutoff = 1e10)
+            >>> args = PyDAIRParseSeqArgs('fugu', q = 'q.fa', v = 'v.fa', d = 'd.fa',
+            >>>                           j = 'j.fa', o = 'out_prefix', f = 'pydair',
+            >>>                           valign = valign, dalign = dalign, jalign = jalign)
+        
+        """
+
         if os.path.exists(q) is False:
             raise IOError('File [' + q + '] not found.')
         if os.path.exists(v) is False:
@@ -47,22 +75,49 @@ class PyDAIRParseSeqArgs:
 
 
 class PyDAIRBlastArgs:
-    '''
-    PyDAIRBlastArgs is a class to store the parameters for BLAST research. Usually, the three
-    PyDAIRBlastArgs (for V, D, and J genes) should be used simulatory.
-    The initialization method will check the several parameters
-    as metioned as follwoings.
+    """A class to save BLAST parameters for V, D, J gene identification.
     
-      db:          The path to the BLAST database which made by 'makeblastdb' command in BLAST program.
-      match:       Match score. Positive integer.
-      mismatch:    Mismatch score. Negative integer.
-      gapopen:     Gap-open penalty. Negative integer.
-      gapextend:   Gap-extend penalty. Negative integer.
-      wordsize:    Wordsize for BLAST. Positive integer, and it should be larger than 3.
-      eval_cutoff: The cutoff of e-value for identifying genes.
+    PyDAIRBlastArgs is a class to save BLAST parameters for V, D, J gene \
+    identification. \
+    Usually, the three PyDAIRBlastArgs class objects (for V, D, and J genes) \
+    are used simulatory.
+    """
     
-    '''
     def __init__(self, db, match, mismatch, gapopen, gapextend, wordsize, eval_cutoff):
+        """Set up parameters for statistical analysis.
+        
+        Args:
+            db (str):
+                A path to BLAST database name. \
+                The BLAST database is made by `makeblastdb` command in BLAST program.
+            match (int):
+                A positive integer represents the score for a nucleotide match. \
+                The argument will pass to `-reward` in BLAST.
+            mismatch (int):
+                A negative integer represents the score for a nucleotide match. \
+                The argument will pass to `-penalty` in BLAST.
+            gapopen (int):
+                A positive integer represents the penalty to open a gap. \
+                The argument will pass to `-gapopen` in BLAST.
+            gapextend (int):
+                A positive integer represents the penalty to extend a gap. \
+                The argument will pass to `-gapopen` in BLAST.
+            wordsize (int):
+                A positive integer represents word size. \
+                The argument will pass to `-word_size` in BLAST.
+            eval_cutoff (float):
+                The cutoff of e-value for identifying genes.
+        
+        Usages:
+            >>> valign = PyDAIRBlastArgs('balstdb_v', match = 5, mismatch = 6, gapopen = 4,
+            >>>                          gapextend = 4, wordsize = 21, eval_cutoff = 1e10)
+            >>> dalign = PyDAIRBlastArgs('balstdb_d', match = 5, mismatch = 6, gapopen = 4,
+            >>>                          gapextend = 4, wordsize = 2, eval_cutoff = 1e3)
+            >>> jalign = PyDAIRBlastArgs('balstdb_j', match = 5, mismatch = 6, gapopen = 4,
+            >>>                          gapextend = 4, wordsize = 9, eval_cutoff = 1e10)
+        
+        """
+        
         if match < 0:
             raise argparse.ArgumentTypeError('The match-score argument for V, D, and J should be a positive integer.')
         if mismatch > 0:
@@ -86,14 +141,80 @@ class PyDAIRBlastArgs:
 
 
 class PyDAIRStatsArgs:
-    '''
-    PyDAIRStatsArgs is a class to store parameters for statistical analyzing.
+    """A class is to save parameters for statistical analysis.
     
-      sample_names: Sample 
+    There two arguments `contain_ambiguous_D` and `contain_stopcodon`
+    are important in analysis.
     
-    '''
+    An Ig sequence is composed of V, D, and J genes. In addition,
+    The region between the end of V (known as YYC motif) and
+    the start of J (known as WGxG motif) is defined CDR3.
+    During the VDJ recombination processes,
+    number of additions, deletions, and mutations occurs on CDR3.
+    Therefore, it is difficult to identify D gene usage in Ig seqeunce.
+    
+    After parsing (identification of V, D, J genes and determiniation of
+    CDR3 seqeunce) Rep-Seq data, there plenty of Ig sequence may have
+    unidentificable D genes (i.e., ambiguous D).
+    
+    The `contain_ambiguous_D` argument is an option to specify
+    how to treat these Ig sequences with ambiguous D gene.
+    If `contain_ambiguous_D` is `True`, analysis will be performed
+    against all Ig sequences.
+    If `contain_ambiguous_D` is `False`, before analysis,
+    all Ig sequences with ambiguous D gene are discarded.
+    Then, analysis will be performed agains the remained Ig
+    sequences with identificable D gene.
+
+    The `contain_stopcodon` argument is an option to specify
+    how to treat these Ig seqeunces that contains stop codons.
+    It is known to that Ig seqeunce freaquently contains stop codons.
+    The Ig sequence with stop codons may not give the function in immune system.
+    If `contain_stopcodon` is `True`, analysis will be performed against
+    all Ig sequences.
+    If `contain_stopcodon` is `False`, analysis will be performed against
+    Ig seqeuences that do not contain any stop codon.
+    """
+    
     def __init__(self, sample_names, pydair_files, contain_ambiguous_D, contain_stopcodon,
                  output_prefix, figure_format = 'pdf', figure_style = 'ggplot'):
+        """Set up parameters for statistical analysis.
+
+        Args:
+            sample_names (list):
+                A list of string represents the sample names.
+                The analysis results will use `sample_names` instead of file names.
+            pydair_files (list):
+                A list of string containing path to PYDAIR flat file.
+                The length of `pydair_files` should be equal to `sample_names`.
+            contain_ambiguous_D (bool):
+                If `True`, analysis will contain Ig sequence with ambiguous D gene. \
+                Default is `True`.
+            contain_stopcodon (bool):
+                If `True`, analysis will contain Ig sequence which contains stop codons. \
+                Since Ig sequence with stop codon may not have function in immune system, \
+                therefore, \
+                default is `False`.
+            output_prefix (str):
+                A prefix to save the analysis results.
+        
+        Kwargs:
+            figure_format (str):
+                A string to specify figure format. \
+                One of 'png', 'tiff', 'pdf' can be specified.
+            figure_style (str):
+                A string to specify figure style. \
+                One of 'classic', 'ggplot', 'fivethirtyeight' can be specified.
+        
+        Usages:
+            >>> args = PyDAIRStatsArgs(sample_names = ['fugu 1', 'fugu 2', 'fugu 3'],
+            >>>                        pydair_files = ['fugu1.pydair', 'fugu2.pydair', 'fugu3.pydair'],
+            >>>                        containe_ambiguous_D = True, contain_stopcodon = False,
+            >>>                        output_prefix = './fugustat_result',
+            >>>                        figure_format = 'pdf', foigure_style = 'ggplot')
+        
+        """
+        
         self.sample_names        = sample_names
         self.pydair_files         = pydair_files
         self.contain_ambiguous_D = contain_ambiguous_D
@@ -102,13 +223,4 @@ class PyDAIRStatsArgs:
         self.figure_format       = figure_format
         self.figure_style        = figure_style
         
-
-
-
-
-
-
-
-
-
 
