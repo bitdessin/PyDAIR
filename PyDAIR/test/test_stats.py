@@ -28,6 +28,7 @@ class Test_pydair_stats(unittest.TestCase):
     
     
     def test_stats_samplingresampling(self):
+        print('test_stats_samplingresampling')
         pydair_files = self.pydair_input_files
         pydair_id    = self.pydair_id
         bstats = PyDAIRStats(pydair_files, 'pydair', pydair_id)
@@ -36,9 +37,10 @@ class Test_pydair_stats(unittest.TestCase):
             bsample.samplingresampling_study('cdr3', 3)
             print(bsample.div.samplingresampling['vdj'])
             print(bsample.div.samplingresampling['cdr3'])
-    
+        
     
     def test_stats_rarefaction(self):
+        print('test_stats_rarefaction')
         pydair_files = self.pydair_input_files
         pydair_id    = self.pydair_id
         bstats = PyDAIRStats(pydair_files, 'pydair', pydair_id)
@@ -47,9 +49,13 @@ class Test_pydair_stats(unittest.TestCase):
             bsample.rarefaction_study('cdr3', 2)
             print(bsample.div.rarefaction['vdj'])
             print(bsample.div.rarefaction['cdr3'])
-            
+        df = bstats.get_rarefaction_result()
+        print(df)
+    
+    
     
     def test_stats_freq(self):
+        print('test_stats_freq')
         pydair_files = self.pydair_input_files
         pydair_id    = self.pydair_id
         bstats = PyDAIRStats(pydair_files, 'pydair', pydair_id)
@@ -64,6 +70,7 @@ class Test_pydair_stats(unittest.TestCase):
     
     
     def test_cdr3_stats(self):
+        print('test_cdr3_stats')
         pydair_files = self.pydair_input_files
         pydair_id    = self.pydair_id
         bstats = PyDAIRStats(pydair_files, 'pydair', pydair_id)
@@ -74,6 +81,7 @@ class Test_pydair_stats(unittest.TestCase):
     
     
     def test_stats_methods(self):
+        print('test_stats_methods')
         pydair_files = self.pydair_input_files
         pydair_id    = self.pydair_id
         bstats = PyDAIRStats(pydair_files, 'pydair', pydair_id)
@@ -81,7 +89,7 @@ class Test_pydair_stats(unittest.TestCase):
         df_freq_v = bstats.get_freq('v')
         df_freq_d = bstats.get_freq('d')
         df_freq_j = bstats.get_freq('j', prob = True)
-        df_freq_cdr3len_1 = bstats.get_cdr3len_freq(prob = True)
+        df_freq_cdr3len_1 = bstats.get_cdr3len_freq(prob = False)
         df_freq_cdr3len_2 = bstats.get_cdr3len_freq(prob = True)
         
         print(df_freq_v)

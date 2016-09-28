@@ -10,7 +10,6 @@ from PyDAIR.seq.IgSeq import *
 from PyDAIR.io.PyDAIRIO import *
 
 
-logging.basicConfig(level = logging.INFO, format = '%(levelname)-8s %(message)s')
 
 
 class PyDAIRDiversity:
@@ -22,8 +21,7 @@ class PyDAIRDiversity:
 
 
 class PyDAIRStatsRecord:
-    '''
-    The class for storing the summarised PyDAIR data.
+    """The class for storing the summarised PyDAIR data.
     
     One PyDAIR file should has one BLGIHStatsRecord class object. If there
     are more than one PyDAIR files, use a number of PyDAIRStatsRecord class
@@ -31,7 +29,8 @@ class PyDAIRStatsRecord:
     into PyDAIRStatsRecords class.
     This class requires the list of V gene names, D gene names, J gene names,
     CDR3 nucleotide and protein seuqence, and the stop codon tags.
-    '''
+    """
+    
     def __init__(self, name = None, v = None, d = None, j = None,
                  cdr3_nucl_seq = None, cdr3_prot_seq = None, stop_codon_tag = None,
                  contain_ambiguous_D = False, contain_stopcodon = False):
@@ -76,6 +75,20 @@ class PyDAIRStatsRecord:
     
     
     def get_freq(self, gene):
+        """Returns frequency.
+        
+        Args:
+            gene (str): A string of gene name.
+        
+        Returns:
+            A Pandas DataFrame.
+        
+        Raises:
+            ValueError
+        
+        Returns frequency.
+        """
+        
         freq = None
         if gene.lower() == 'cdr3_prot_len':
             freq = self.cdr3.prot_len.value_counts(dropna = False)
@@ -118,6 +131,14 @@ class PyDAIRStatsRecord:
     
     
     def samplingresampling_study(self, data = None, n = 1000):
+        """Sampling-resampling study.
+        
+        Args:
+            data (str): 'vdj' or 'cdr3'. 
+        
+        Sampling-resamplig study.
+        """
+        
         if data is None or data == 'all':
             data = ['vdj', 'cdr3']
         if not isinstance(data, list):
@@ -393,6 +414,16 @@ class PyDAIRStats:
        
     
     def get_cdr3len_freq(self, prob = False):
+        """Return CDR3 length.
+        
+        Args:
+            prob (bool): Calculate probability.
+        
+        Returns:
+            A Pandas DataFrame.
+        
+        Return CDR3 length.
+        """
         
         sample_dists = []
         sample_names = []
@@ -409,13 +440,37 @@ class PyDAIRStats:
         dist_dataframe = dist_dataframe.set_index([[int(dx) for dx in dist_dataframe.index.values]])
         
         return dist_dataframe
-
+    
+    
+    
+    
+    def get_rarefaction_result(self, fun = 'mean'):
+        """Return rarefaction results.
+        
+        Args:
+            fun (str): 'mean' or 'sd' should be specified.
+        
+        Returns:
+            A Pandas DataFrame that contains results of rarefaction study.
         
         
-    
-    
-    
-    
+        """
+        
+        rdata = []
+        sample_names = []
+        for bsample in self.samples:
+            sample_names.append(bsample.name)
+            if fun == 'mean':
+                rdata.append(bsample.div.rarefaction['vdj'].mean(axis = 1))
+            elif fun == 'sd':
+                rdata.append(bsample.div.rarefaction['vdj'].sd(axis = 1))
+            else:
+                raise ValueError('Should be \'mean\' or \'sd\'.')
+        
+        rdata = pd.concat(rdata, axis = 1)
+        rdata.columns = sample_names
+        return rdata
+        
     
     
     

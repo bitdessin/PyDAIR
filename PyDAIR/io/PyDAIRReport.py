@@ -6,21 +6,26 @@ from PyDAIR.utils.PyDAIRUtils import *
 from PyDAIR.seq.IgSeq import *
 from jinja2 import Environment, FileSystemLoader
 
-TMPL_PATH = str(os.path.dirname(__file__)) + '/../templates'
 
 
 class PyDAIRReport: 
+    """Render analysis results into HTML template.
     
-    def __init__(self, statsobj):
-        '''Initialize a PyDAIRReport class object.
-        
-        Args:
-            statsobj (PyDAIRStats): A PyDAIRStats class object.
-        '''
-        print TMPL_PATH
-        self.__env   = Environment(loader = FileSystemLoader(TMPL_PATH))
+    Args:
+        stats (PyDAIRStats):
+            A PyDAIRStats class object.
+    
+    `PyDAIRReport` class renders the anaysis results
+    that obtained from `PyDAIRStats` into HTML template.
+    It is expected to use `PyDAIRReport` class methods
+    after analyzing data in PYDAIR format file.
+    """
+    
+    def __init__(self, stats):
+        self.__tmpl_path = str(os.path.dirname(__file__)) + '/../templates'
+        self.__env   = Environment(loader = FileSystemLoader(self.__tmpl_path))
         self.__tmpl  = self.__env.get_template('report.html')
-        self.__stats = statsobj
+        self.__stats = stats
         self.__data_path = None
         
     
@@ -37,6 +42,15 @@ class PyDAIRReport:
     
         
     def render(self, file_path):
+        """Render data into template.
+        
+        Args:
+            file_path (str):
+                A file name as string to write to.
+        
+        Render all analysis results into HTML template using Jinja2.
+        The template (report.html) is saved in the 'templates' directory of this package.
+        """
         
         report_data = {}
         
@@ -70,6 +84,13 @@ class PyDAIRReport:
         report_data['cdr3_stats'] = cdr3_stats
         
         
+        # set up VDJ rarefaction data
+        rfdata = self.__stats.get_rarefaction_result(fun = 'mean')
+        rare_stats = {'tries_csv': rfdata.to_csv(index_label = "CapturedSeq", dtype = int, sep = '\t'),
+                      'tries_json': rfdata.to_json()}
+        report_data['rarefaction_stats'] = rare_stats
+        
+        
         html = self.__tmpl.render(report_data)
         
         report_html = open(file_path, 'w')
@@ -79,9 +100,3 @@ class PyDAIRReport:
         
     
     
-    
-
-
-
-
-

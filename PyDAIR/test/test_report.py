@@ -24,6 +24,10 @@ class Test_bin(unittest.TestCase):
         pydair_id    = ['Sample 1', 'Sample 2', 'Sample 3']
         self.stats   = PyDAIRStats(pydair_files, 'pydair', pydair_id)
         
+        for bsample in self.stats.samples:
+            bsample.rarefaction_study('vdj', 2)
+            bsample.rarefaction_study('cdr3', 2)
+        
         # set up template
         self.__report = _result_path + '/test_report.html'
         
