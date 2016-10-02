@@ -27,28 +27,15 @@ class Test_pydair_stats(unittest.TestCase):
                              _result_path + '/test_output_stat_s.3.txt']
     
     
-    def test_stats_samplingresampling(self):
-        print('test_stats_samplingresampling')
-        pydair_files = self.pydair_input_files
-        pydair_id    = self.pydair_id
-        bstats = PyDAIRStats(pydair_files, 'pydair', pydair_id)
-        for bsample in bstats.samples:
-            bsample.samplingresampling_study('vdj', 3)
-            bsample.samplingresampling_study('cdr3', 3)
-            print(bsample.div.samplingresampling['vdj'])
-            print(bsample.div.samplingresampling['cdr3'])
-        
     
     def test_stats_rarefaction(self):
         print('test_stats_rarefaction')
         pydair_files = self.pydair_input_files
         pydair_id    = self.pydair_id
         bstats = PyDAIRStats(pydair_files, 'pydair', pydair_id)
-        for bsample in bstats.samples:
-            bsample.rarefaction_study('vdj', 2)
-            bsample.rarefaction_study('cdr3', 2)
-            print(bsample.div.rarefaction['vdj'])
-            print(bsample.div.rarefaction['cdr3'])
+        df = bstats.get_rarefaction_result()
+        print(df)
+        bstats.rarefaction_study('vdj', 2)
         df = bstats.get_rarefaction_result()
         print(df)
     

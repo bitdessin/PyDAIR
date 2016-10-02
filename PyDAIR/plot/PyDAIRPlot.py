@@ -27,9 +27,10 @@ class PyDAIRPlot:
     Visualize analysis results.
     """
     
-    def __init__(self, stats, figure_style = 'fivethirtyeight'):
+    def __init__(self, stats, figure_style = 'fivethirtyeight', figure_format = 'pdf'):
         self.__stats = stats
         self.__style = figure_style
+        self.__format = figure_format
         plt.style.use(figure_style)
     
        
@@ -41,6 +42,9 @@ class PyDAIRPlot:
     
     def __get_dev_params(self, fig_name = None, fig_format = None, fig_width = None, fig_height = None, fig_dpi = None,
                          def_fig_width = None, def_fig_height = None):
+        if fig_format is None:
+            fig_format = self.__format
+        
         if fig_name is None:
             fig_format = None
             fig_dpi = 96

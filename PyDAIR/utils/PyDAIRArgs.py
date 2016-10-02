@@ -177,7 +177,9 @@ class PyDAIRStatsArgs:
     """
     
     def __init__(self, sample_names, pydair_files, contain_ambiguous_D, contain_stopcodon,
-                 output_prefix, figure_format = 'pdf', figure_style = 'ggplot'):
+                 estimate_vdj_combination, n_tries = 1000,
+                 output_prefix = './pydairstats_',
+                 figure_format = 'pdf', figure_style = 'ggplot'):
         """Set up parameters for statistical analysis.
 
         Args:
@@ -195,10 +197,14 @@ class PyDAIRStatsArgs:
                 Since Ig sequence with stop codon may not have function in immune system, \
                 therefore, \
                 default is `False`.
+            estimate_vdj_combination (bool):
+                If `True`, perform rarefaction study to estimate diversity of VDJ combination.
             output_prefix (str):
                 A prefix to save the analysis results.
         
         Kwargs:
+            n_tries (int):
+                Number of simulation tries.
             figure_format (str):
                 A string to specify figure format. \
                 One of 'png', 'tiff', 'pdf' can be specified.
@@ -210,17 +216,19 @@ class PyDAIRStatsArgs:
             >>> args = PyDAIRStatsArgs(sample_names = ['fugu 1', 'fugu 2', 'fugu 3'],
             >>>                        pydair_files = ['fugu1.pydair', 'fugu2.pydair', 'fugu3.pydair'],
             >>>                        containe_ambiguous_D = True, contain_stopcodon = False,
+            >>>                        estimate_vdj_combination = True, n_tries = 1000,
             >>>                        output_prefix = './fugustat_result',
             >>>                        figure_format = 'pdf', foigure_style = 'ggplot')
         
         """
         
         self.sample_names        = sample_names
-        self.pydair_files         = pydair_files
+        self.pydair_files        = pydair_files
         self.contain_ambiguous_D = contain_ambiguous_D
         self.contain_stopcodon   = contain_stopcodon
         self.output_prefix       = output_prefix
         self.figure_format       = figure_format
         self.figure_style        = figure_style
-        
+        self.estimate_vdj_combination = estimate_vdj_combination
+        self.n_tries             = n_tries
 

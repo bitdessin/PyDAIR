@@ -7,6 +7,7 @@ import logging
 import unittest
 from PyDAIR.seq.IgSeq import IgSeq
 from PyDAIR.io.PyDAIRIO import *
+from PyDAIR.io.PyDAIRReport import *
 from PyDAIR.utils.PyDAIRUtils import *
 from PyDAIR.utils.PyDAIRArgs import *
 from PyDAIR.app.PyDAIRAPP import *
@@ -25,6 +26,7 @@ def main(args):
     pydair_args = PyDAIRStatsArgs(sample_names, pydair_files,
                                 contain_ambiguous_D = args.contain_ambiguous_D,
                                 contain_stopcodon = args.contain_stopcodon,
+                                estimate_vdj_combination = args.estimate_vdj_combination,
                                 output_prefix = args.output,
                                 figure_format = args.figure_format,
                                 figure_style = args.figure_style)
@@ -36,15 +38,10 @@ def main(args):
     
     
     logging.info('[3/4] Plotting.')
-    fig_freq_v = pydair_args.output_prefix + '_freq_v.' + pydair_args.figure_format
-    fig_freq_d = pydair_args.output_prefix + '_freq_d.' + pydair_args.figure_format
-    fig_freq_j = pydair_args.output_prefix + '_freq_j.' + pydair_args.figure_format
-    fig_cdr3_len = pydair_args.output_prefix + '_cdr3_len_dist.' + pydair_args.figure_format
-    pydairapp.plots.barplot_freq(gene = 'v', fig_name = fig_freq_v, fig_format = pydair_args.figure_format)
-    pydairapp.plots.barplot_freq(gene = 'd', fig_name = fig_freq_d, fig_format = pydair_args.figure_format)
-    pydairapp.plots.barplot_freq(gene = 'j', fig_name = fig_freq_j, fig_format = pydair_args.figure_format)
-    pydairapp.plots.hist_cdr3_len(fig_name = fig_cdr3_len, xlim = [5, 40], prob = True)
-
+    pydairapp.plot_figures()
+    pydairapp.create_report()
+    
+    
     logging.info('[4/4] Finishing...')
 
 
@@ -66,12 +63,12 @@ PyDAIR: Python library for Diversity Analysis of Immune Repertoire.
     parser.add_argument('--figure-format',   help = 'Format of figures.', default = 'png')
     parser.add_argument('--figure-dpi',      help = 'DPI of figures',     default = 300)
     parser.add_argument('--figure-style',    help = 'Stylesheet of figures', choices = ['classic', 'ggplot', 'fivethirtyeight'], default = 'ggplot')
-    parser.add_argument('--estimate-cdr3-population', help = 'Estimation of CDR-H3 population sizes by sampling-resampling study.', action = 'store_true')
+    #parser.add_argument('--estimate-cdr3-population', help = 'Estimation of CDR-H3 population sizes by sampling-resampling study.', action = 'store_true')
     parser.add_argument('--estimate-vdj-combination', help = 'Estimation of the numbers of VDJ combinations by rarefaction study.', action = 'store_true')
     
-    parser.set_defaults(contain_ambiguous_D      = False)
+    parser.set_defaults(contain_ambiguous_D      = True)
     parser.set_defaults(contain_stopcodon        = False)
-    parser.set_defaults(estimate_cdr3_population = False)
+    #parser.set_defaults(estimate_cdr3_population = False)
     parser.set_defaults(estimate_vdj_combination = False)
 
     # start main function

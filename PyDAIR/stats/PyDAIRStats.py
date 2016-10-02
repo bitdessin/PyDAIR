@@ -362,6 +362,9 @@ class PyDAIRStats:
                 j.append(igseq.j.sbjct.name)
                 
                 cdr3_data = igseq.get_cdr3_data()
+                if cdr3_data.nucl_seq is None:
+                    cdr3_data.nucl_seq = ''
+                    cdr3_data.prot_seq = ''
                 cdr3_prot_seq.append(cdr3_data.prot_seq)
                 cdr3_nucl_seq.append(cdr3_data.nucl_seq)
                 if igseq.query.orf is not None:
@@ -443,6 +446,19 @@ class PyDAIRStats:
     
     
     
+    def rarefaction_study(self, data = None, n = 1000):
+        """Rarefaction study for estimating the number of VDJ combination.
+        
+        Args:
+            data (str): 'vdj' or 'cdr3'.
+        
+        Rarefaction study for estimating the number of VDJ combination for each sample.
+        """
+        
+        for bsample in self.samples:
+            bsample.rarefaction_study(data, n)
+        
+    
     
     def get_rarefaction_result(self, fun = 'mean'):
         """Return rarefaction results.
@@ -459,6 +475,9 @@ class PyDAIRStats:
         rdata = []
         sample_names = []
         for bsample in self.samples:
+            if bsample.div.rarefaction['vdj'] is None:
+                rdata = None
+                break
             sample_names.append(bsample.name)
             if fun == 'mean':
                 rdata.append(bsample.div.rarefaction['vdj'].mean(axis = 1))
@@ -467,8 +486,10 @@ class PyDAIRStats:
             else:
                 raise ValueError('Should be \'mean\' or \'sd\'.')
         
-        rdata = pd.concat(rdata, axis = 1)
-        rdata.columns = sample_names
+        if rdata is not None:
+            rdata = pd.concat(rdata, axis = 1)
+            rdata.columns = sample_names
+        
         return rdata
         
     

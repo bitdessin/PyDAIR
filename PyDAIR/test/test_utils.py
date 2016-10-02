@@ -26,7 +26,8 @@ class Test_pydair_utils_pydairArgs(unittest.TestCase):
     def test_pydair_args_stats(slef):
         sample_names = ['id 1', 'id 2', 'id 3']
         pydair_files = [_data_path + '/sample.1.pydair', _data_path + '/sample.2.pydair', _data_path + '/sample.3.pydair']
-        pydair_args = PyDAIRStatsArgs(sample_names, pydair_files, False, False, _result_path + '/test_args_stats')
+        pydair_args = PyDAIRStatsArgs(sample_names, pydair_files, False, False, False,
+                                      _result_path + '/test_args_stats')
     
 
 class Test_pydair_utils_pydairUtils(unittest.TestCase):

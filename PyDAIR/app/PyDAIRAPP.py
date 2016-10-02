@@ -483,9 +483,12 @@ class PyDAIRAPPStats:
         """Initialize of PyDAIRAPPStats class object.
         
         Args:
-            args (str):
-                PyDAIRArgs class object that contains path of analyzed results, \
+            args (PyDAIRStatsArgs):
+                PyDAIRStatsArgs class object that contains path of analyzed results, \
                 and the path for saving the statistical study results.
+        
+        Initialize all file path to save the results,
+        and performe some diversity studies.
         """
         
         self.__args = args
@@ -496,10 +499,9 @@ class PyDAIRAPPStats:
         self.__output_prefix       = args.output_prefix
         self.__figure_format       = args.figure_format
         self.__figure_style        = args.figure_style
-        self.__out_file_rarefaction  = self.__output_prefix + '.rarefaction.tsv'
-        self.__out_file_samplingresamplig  = self.__output_prefix + '.samplingresamplig.tsv'
+        self.__estimate_vdj_combination = args.estimate_vdj_combination
         
-        # Data files
+        # data files
         self.__o_file_v_freq = []
         self.__o_file_d_freq = []
         self.__o_file_j_freq = []
@@ -518,8 +520,10 @@ class PyDAIRAPPStats:
             self.__o_file_samplingresampling.append(self.__output_prefix + '.sample.' + sample_name_f + '.samplingresampling.tsv')
             self.__o_file_cdr3_prot_len_freq.append(self.__output_prefix + '.sample.' + sample_name_f + '.cdr3_prot_length.freq.tsv')
             self.__o_file_cdr3_nucl_len_freq.append(self.__output_prefix + '.sample.' + sample_name_f + '.cdr3_nucl_length.freq.tsv')
+        self.__out_file_rarefaction  = self.__output_prefix + '.rarefaction.tsv'
+        self.__out_file_samplingresamplig  = self.__output_prefix + '.samplingresamplig.tsv'
         
-        # Plot files
+        # plot files
         self.__o_figure_v_freq   = self.__output_prefix + '.v.freq.' + self.__figure_format
         self.__o_figure_d_freq   = self.__output_prefix + '.d.freq.' + self.__figure_format
         self.__o_figure_j_freq   = self.__output_prefix + '.j.freq.' + self.__figure_format
@@ -532,9 +536,21 @@ class PyDAIRAPPStats:
         self.__o_figure_samplingresampling = self.__output_prefix + '.cdr3.samplingresampling.' + self.__figure_format
         self.__o_figure_cdr3_len_dist      = self.__output_prefix + '.cdr3.length.dist.' + self.__figure_format
         
-        self.stats = PyDAIRStats(self.__pydair_files, 'pydair', self.__sample_names,
+        
+        # Report
+        self.__o_report = self.__output_prefix + '.report.html'
+        
+        
+        # create objects
+        stats = PyDAIRStats(self.__pydair_files, 'pydair', self.__sample_names,
                                  self.__contain_ambiguous_D, self.__contain_stopcodon)
-        self.plots = PyDAIRPlot(self.stats, self.__figure_style)
+        
+        if self.__args.estimate_vdj_combination:
+            stats.rarefaction_study('vdj', self.__args.n_tries)
+        
+        self.stats  = stats
+        self.plots  = PyDAIRPlot(stats, self.__figure_style, self.__figure_format)
+        self.report = PyDAIRReport(stats)
     
     
     
@@ -658,18 +674,25 @@ class PyDAIRAPPStats:
     
     
     
-    def plot(self):
+    def plot_figures(self):
         """Plot figures.
         
         Plot figures into figure file.
         """
+        self.plots.barplot_freq(gene = 'v', fig_name = self.__o_figure_v_freq, prob = True)
+        self.plots.barplot_freq(gene = 'd', fig_name = self.__o_figure_d_freq, prob = True)
+        self.plots.barplot_freq(gene = 'j', fig_name = self.__o_figure_j_freq, prob = True)
+        self.plots.hist_cdr3_len(fig_name = self.__o_figure_cdr3_len_dist, xlim = [5, 40], prob = True)
         
-        self.plots.plot_freq(gene = 'v', fig_name = self.__o_figure_v_freq)
-        self.plots.plot_freq(gene = 'd', fig_name = self.__o_figure_d_freq)
-        self.plots.plot_freq(gene = 'j', fig_name = self.__o_figure_j_freq)
-        self.plots.plot_freq(gene = 'vdj', fig_name = self.__o_figure_vdj_freq)
-        self.plots.plot_rarefaction(fig_name = self.__o_figure_rarefaction)
-        self.plots.plot_samplingresampling(fig_name = self.__o_figure_samplingresampling)
-        self.plots.plot_cdr3_len_dist(fig_name = self.__o_figure_cdr3_len_dist)
+    
+    def create_report(self):
+        """Create report.
+        
+        Create HTML report.
+        """
+        self.report.render(self.__o_report)
     
     
+    
+    
+

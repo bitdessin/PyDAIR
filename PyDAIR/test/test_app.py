@@ -54,16 +54,21 @@ class Test_app(unittest.TestCase):
         pydair_files  = [_data_path + '/sample.1.pydair',
                          _data_path + '/sample.2.pydair',
                          _data_path + '/sample.3.pydair']
-        pydair_args = PyDAIRStatsArgs(sample_names, pydair_files, True, False, _result_path + '/test_output_app_analysis_hasambigoD', 'pdf')
+        pydair_args = PyDAIRStatsArgs(sample_names, pydair_files, True, False, False, 2,
+                                      _result_path + '/test_output_app_analysis_hasambigoD', 'pdf')
         pydairapp = PyDAIRAPPStats(pydair_args)
         pydairapp.write_freq()
         pydairapp.write_cdr3_len_freq()
-        pydair_args = PyDAIRStatsArgs(sample_names, pydair_files, False, False, _result_path + '/test_output_app_analysis', 'pdf')
+        pydair_args = PyDAIRStatsArgs(sample_names, pydair_files, False, False, True, 2,
+                                      _result_path + '/test_output_app_analysis', 'pdf')
         pydairapp = PyDAIRAPPStats(pydair_args)
         pydairapp.write_freq()
         pydairapp.write_cdr3_len_freq()
-    
-    
+        
+        pydairapp.stats.get_rarefaction_result()
+        pydairapp.plot_figures()
+        pydairapp.create_report()
+        
     
 if __name__ == '__main__':
     unittest.main()
