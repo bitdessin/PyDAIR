@@ -9,7 +9,8 @@ from PyDAIR.utils.PyDAIRUtils import *
 from PyDAIR.utils.PyDAIRArgs import *
 from PyDAIR.app.PyDAIRAPP import *
 
-_data_path = os.path.join(os.path.dirname(__file__), 'data')
+_data_path = os.path.join(os.path.dirname(__file__), 'data/samples')
+_db_path = os.path.join(os.path.dirname(__file__), 'data/db')
 _result_path = os.path.join(os.path.dirname(__file__), 'data/results')
 
 class Test_app(unittest.TestCase):
@@ -20,13 +21,13 @@ class Test_app(unittest.TestCase):
     
     def test_app_parseseq(self):
         # variables settings
-        v_gene_align_args = PyDAIRBlastArgs(_data_path + '/db/v', 3, -3, 6, 6, 21, 1e-60)
-        d_gene_align_args = PyDAIRBlastArgs(_data_path + '/db/d', 1, -1, 0, 2,  4, 1)
-        j_gene_align_args = PyDAIRBlastArgs(_data_path + '/db/j', 3, -3, 6, 6,  7, 1e-5)
-        q_fasta      = _data_path + '/sample.fa'
-        v_gene_fasta = _data_path + '/db/v.fa'
-        d_gene_fasta = _data_path + '/db/d.fa'
-        j_gene_fasta = _data_path + '/db/j.fa'
+        v_gene_align_args = PyDAIRBlastArgs(_db_path + '/v', 3, -3, 6, 6, 21, 1e-60)
+        d_gene_align_args = PyDAIRBlastArgs(_db_path + '/d', 1, -1, 0, 2,  4, 1)
+        j_gene_align_args = PyDAIRBlastArgs(_db_path + '/j', 3, -3, 6, 6,  7, 1e-5)
+        q_fasta      = _data_path + '/sample.1.fa'
+        v_gene_fasta = _db_path + '/v.fa'
+        d_gene_fasta = _db_path + '/d.fa'
+        j_gene_fasta = _db_path + '/j.fa'
         output_prefix = _result_path + '/test_output_app_parseseq'
         
         # PyDAIR arguemnts settings

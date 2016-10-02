@@ -7,7 +7,7 @@ from PyDAIR.seq.IgSeq import IgSeq
 from PyDAIR.io.PyDAIRIO import *
 from PyDAIR.stats.PyDAIRStats import *
 
-_data_path = os.path.join(os.path.dirname(__file__), 'data')
+_data_path = os.path.join(os.path.dirname(__file__), 'data/samples')
 _result_path = os.path.join(os.path.dirname(__file__), 'data/results')
 
 class Test_pydair_stats(unittest.TestCase):

@@ -7,7 +7,7 @@ from PyDAIR.io.PyDAIRIO import *
 from PyDAIR.stats.PyDAIRStats import *
 from PyDAIR.plot.PyDAIRPlot import *
 
-_data_path = os.path.join(os.path.dirname(__file__), 'data')
+_data_path = os.path.join(os.path.dirname(__file__), 'data/samples')
 _result_path = os.path.join(os.path.dirname(__file__), 'data/results')
 
 

@@ -6,7 +6,7 @@ from Bio.Alphabet import generic_dna
 from PyDAIR.seq.IgSeq import IgSeq
 from PyDAIR.io.PyDAIRIO import *
 
-_data_path = os.path.join(os.path.dirname(__file__), 'data')
+_data_path = os.path.join(os.path.dirname(__file__), 'data/samples')
 _result_path = os.path.join(os.path.dirname(__file__), 'data/results')
 
 
@@ -15,7 +15,7 @@ class Test_pydair_io(unittest.TestCase):
     
     def setUp(self):
         # Inputs
-        self.pydair_input_path       = _data_path + '/sample.pydair'
+        self.pydair_input_path       = _data_path + '/sample.1.pydair'
         # Outputs
         self.pydair_output_path       = _result_path + '/test_output_io.pydair'
         self.pydairsimple_output_path = _result_path + '/test_output_io.pydair.simple'
@@ -28,17 +28,9 @@ class Test_pydair_io(unittest.TestCase):
         for igseq in pydair_i_fh.parse():
             # print contents
             print('-----------------------------------------------')
-            if igseq.query.orf is not None:
-                seq_nucl  = igseq.query.seq[igseq.query.orf:int(math.floor((len(igseq.query.seq) - igseq.query.orf) / 3) * 3 + igseq.query.orf)]
-                cdr3_nucl = igseq.query.seq[igseq.variable_region.cdr3[0]:igseq.variable_region.cdr3[1]]
-                print(len(seq_nucl))
-                seq_prot  = str(Seq(seq_nucl, generic_dna).translate())
-                cdr3_prot = str(Seq(cdr3_nucl, generic_dna).translate())
-                print('nucl:  ' + seq_prot)
-                print('prot:  ' + cdr3_prot)
-            else:
-                print('nucl:  .')
-                print('prot:  .')
+            cdr3_seq = igseq.get_cdr3_data()
+            print(cdr3_seq.nucl_seq)
+            print(cdr3_seq.prot_seq)
             # write object into new file
             pydair_o_fh.write(igseq)
         print('-----------------------------------------------')

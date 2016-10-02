@@ -9,7 +9,8 @@ from PyDAIR.utils.PyDAIRUtils import *
 from PyDAIR.utils.PyDAIRArgs import *
 from PyDAIR.app.PyDAIRAPP import *
 
-_data_path = os.path.join(os.path.dirname(__file__), 'data')
+_data_path = os.path.join(os.path.dirname(__file__), 'data/samples')
+_result_path = os.path.join(os.path.dirname(__file__), 'data/results')
 
 
 class Test_bin(unittest.TestCase):

@@ -9,7 +9,8 @@ from PyDAIR.utils.PyDAIRUtils import *
 from PyDAIR.utils.PyDAIRArgs import *
 from PyDAIR.app.PyDAIRAPP import *
 
-_data_path = os.path.join(os.path.dirname(__file__), 'data')
+_data_path = os.path.join(os.path.dirname(__file__), 'data/samples')
+_db_path = os.path.join(os.path.dirname(__file__), 'data/db')
 _result_path = os.path.join(os.path.dirname(__file__), 'data/results')
 
 
@@ -20,17 +21,17 @@ class Test_bin(unittest.TestCase):
     
     
     def test_bin_parseseq(self):
-        cmd = 'pydair-parseseq -s fugu -q ' + _data_path + '/sample.fa -o ' + _result_path + '/test_output_bin_parseseq_ -f pydair '
-        cmd += '-v ' + _data_path + '/db/v.fa -d ' + _data_path + '/db/d.fa -j ' + _data_path + '/db/j.fa '
-        cmd += '--v-blastdb ' + _data_path + '/db/v '
+        cmd = 'pydair-parseseq -s fugu -q ' + _data_path + '/sample.1.fa -o ' + _result_path + '/test_output_bin_parseseq_ -f pydair '
+        cmd += '-v ' + _db_path + '/v.fa -d ' + _db_path + '/d.fa -j ' + _db_path + '/j.fa '
+        cmd += '--v-blastdb ' + _db_path + '/v '
         cmd += '--v-match-score 3 --v-mismatch-score -3 '
         cmd += '--v-gap-open-penalty 6 --v-gap-extend-penalty 6 '
         cmd += '--v-wordsize 21 --v-evalue-cutoff 1e-60 '
-        cmd += '--d-blastdb ' + _data_path + '/db/d '
+        cmd += '--d-blastdb ' + _db_path + '/d '
         cmd += '--d-match-score 1 --d-mismatch-score -1 '
         cmd += '--d-gap-open-penalty 0 --d-gap-extend-penalty 2 '
         cmd += '--d-wordsize 4 --d-evalue-cutoff 1 '
-        cmd += '--j-blastdb ' + _data_path + '/db/j '
+        cmd += '--j-blastdb ' + _db_path + '/j '
         cmd += '--j-match-score 3 --j-mismatch-score -3 '
         cmd += '--j-gap-open-penalty 6 --j-gap-extend-penalty 6 '
         cmd += '--j-wordsize 7 --j-evalue-cutoff 1e-5 '

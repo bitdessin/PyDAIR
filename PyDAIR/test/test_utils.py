@@ -3,7 +3,8 @@ import unittest
 from PyDAIR.utils.PyDAIRUtils import *
 from PyDAIR.utils.PyDAIRArgs import *
 
-_data_path = os.path.join(os.path.dirname(__file__), 'data')
+_data_path = os.path.join(os.path.dirname(__file__), 'data/samples')
+_db_path = os.path.join(os.path.dirname(__file__), 'data/db')
 _result_path = os.path.join(os.path.dirname(__file__), 'data/results')
 
 
@@ -15,8 +16,8 @@ class Test_pydair_utils_pydairArgs(unittest.TestCase):
         dalign = PyDAIRBlastArgs('path_to_blast_db_d', 4, -2, 3, 3, 6, 1e12)
         jalign = PyDAIRBlastArgs('path_to_blast_db_j', 4, -2, 3, 3, 6, 1e12)
         pydair_args = PyDAIRParseSeqArgs('fugu',
-                                         _data_path + '/sample.fa', _data_path + '/db/v.fa',
-                                         _data_path + '/db/d.fa', _data_path + '/db/j.fa',
+                                         _data_path + '/sample.1.fa', _db_path + '/v.fa',
+                                         _db_path + '/d.fa', _db_path + '/j.fa',
                                          _data_path + '/path_to_o', 'pydair_format', valign, dalign, jalign)
         print(pydair_args.q_file_path)
         print(pydair_args.pydair_format)
