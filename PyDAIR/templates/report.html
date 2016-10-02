@@ -70,7 +70,6 @@ article {
     </section>
 
 
-   
     
     <div class="page-header">
         <h1>PyDAIR Analysis Report</h1>
@@ -120,8 +119,8 @@ article {
         <div class="panel-heading"><h2>{{ item.gene }} gene usage</h2></div>
         <div class="row panel-body">
            <div class="col-md-4">
-                <button type="button" class="btn btn-default" onClick="drawChart{{ item.gene }}(false)">Frequency</button>
                 <button type="button" class="btn btn-default" onClick="drawChart{{ item.gene }}(true)">Percentage</button>
+                <button type="button" class="btn btn-default" onClick="drawChart{{ item.gene }}(false)">Frequency</button>
             </div>
             <div class="col-md-8">
                 <div id="{{ item.gene }}_freq_plot"></div>
@@ -136,8 +135,8 @@ article {
         <div class="panel-heading"><h2>CDR3 length</h2></div>
         <div class="row panel-body">
            <div class="col-md-4">
-                <button type="button" class="btn btn-default" onClick="drawChartCDR3Length(false)">Frequency</button>
                 <button type="button" class="btn btn-default" onClick="drawChartCDR3Length(true)">Percentage</button>
+                <button type="button" class="btn btn-default" onClick="drawChartCDR3Length(false)">Frequency</button>
             </div>
             <div class="col-md-8">
                 <div id="cdr3len_freq_plot"></div>
@@ -146,6 +145,8 @@ article {
     </section>
     
     
+    
+    {% if rarefaction_stats is not none %}
     <section id="h_rarefaction" class="panel panel-default">
         <div class="panel-heading"><h2>Rarefaction study for VDJ combinations</h2></div>
         <div class="row panel-body">
@@ -158,7 +159,7 @@ article {
             </div>
         </div>
     </section>
-    
+    {% endif %}
     
     
     
@@ -236,7 +237,7 @@ google.charts.load('current', {packages:['bar', 'line']});
 
 {% for item in freq_stats %}
 google.charts.setOnLoadCallback(drawChart{{ item.gene }});
-function drawChart{{ item.gene }}(prob = false) {
+function drawChart{{ item.gene }}(prob = true) {
     
     var xlab = "Frequency of {{ item.gene }} gene usage";
     var ylab = "{{ item.gene }} gene family";
@@ -262,7 +263,7 @@ function drawChart{{ item.gene }}(prob = false) {
 
 
 google.charts.setOnLoadCallback(drawChartCDR3Length);
-function drawChartCDR3Length(prob = false) {
+function drawChartCDR3Length(prob = true) {
     
     var xlab = "CDR3 amino acid sequence length";
     var ylab = "Frequency of sequences";
@@ -295,6 +296,10 @@ function drawChartCDR3Length(prob = false) {
 
 
 
+
+
+{% if rarefaction_stats is not none %}
+
 google.charts.setOnLoadCallback(drawChartRarefactionVDJ);
 function drawChartRarefactionVDJ() {
     var data = jsonToDataTable({{ rarefaction_stats.tries_json }}, 'numSeq', true, false);
@@ -312,6 +317,7 @@ function drawChartRarefactionVDJ() {
     chart.draw(dataTable, google.charts.Line.convertOptions(options));
 }
 
+{% endif %}
 
 
 -->

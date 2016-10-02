@@ -10,7 +10,6 @@ from PyDAIR.utils.PyDAIRArgs import *
 from PyDAIR.app.PyDAIRAPP import *
 
 _data_path = os.path.join(os.path.dirname(__file__), 'data')
-_result_path = os.path.join(os.path.dirname(__file__), 'data/results')
 
 
 class Test_bin(unittest.TestCase):
@@ -24,17 +23,22 @@ class Test_bin(unittest.TestCase):
         pydair_id    = ['Sample 1', 'Sample 2', 'Sample 3']
         self.stats   = PyDAIRStats(pydair_files, 'pydair', pydair_id)
         
-        for bsample in self.stats.samples:
-            bsample.rarefaction_study('vdj', 2)
-            bsample.rarefaction_study('cdr3', 2)
-        
         # set up template
-        self.__report = _result_path + '/test_report.html'
+        self.__report_1 = _result_path + '/test_report_1.html'
+        self.__report_2 = _result_path + '/test_report_2.html'
         
         
-    def test_report(self):
-        report = PyDAIRReport(self.stats)
-        report.render(self.__report)
+    def test_report_1(self):
+        stats = self.stats
+        stats.rarefaction_study('vdj', n = 10)
+        report = PyDAIRReport(stats)
+        report.render(self.__report_1)
+    
+    def test_report_2(self):
+        stats = self.stats
+        report = PyDAIRReport(stats)
+        report.render(self.__report_2)
+    
         
 
 if __name__ == '__main__':

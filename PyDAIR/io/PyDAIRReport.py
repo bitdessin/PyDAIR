@@ -65,7 +65,7 @@ class PyDAIRReport:
                                  'libsize': sample.len()})
         report_data['sample_stats'] = sample_stats
         
-            
+        
         # set up V, D, and J statistics
         freq_stats = []
         for gene in ['v', 'd', 'j']:
@@ -86,9 +86,12 @@ class PyDAIRReport:
         
         # set up VDJ rarefaction data
         rfdata = self.__stats.get_rarefaction_result(fun = 'mean')
-        rare_stats = {'tries_csv': rfdata.to_csv(index_label = "CapturedSeq", dtype = int, sep = '\t'),
-                      'tries_json': rfdata.to_json()}
-        report_data['rarefaction_stats'] = rare_stats
+        if rfdata is not None:
+            report_data['rarefaction_stats'] = {'tries_csv': rfdata.to_csv(index_label = "CapturedSeq", dtype = int, sep = '\t'),
+                                                'tries_json': rfdata.to_json()}
+        else:
+            report_data['rarefaction_stats'] = None
+        
         
         
         html = self.__tmpl.render(report_data)
