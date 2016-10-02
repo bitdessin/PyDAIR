@@ -325,7 +325,6 @@ class IgSeq:
         for i in range(len(r)):
             if r[i] == '.':
                 r[i] = None
-        
         self.query = IgSeqQuery(r[0], r[1], r[2], r[3], r[4])
         self.v = IgSeqAlign(
             IgSeqAlignQuery(r[0], r[1], r[14], r[15], r[16], r[2]),
@@ -772,11 +771,62 @@ class IgSeq:
         
 
 
-     
+    
+    
+    def seek_orf(self):
+        """Seek start position of ORF and ORFCODE.
+        
+        Seek start position of ORF and ORFCODE.
+        """
+        
+        if self.v is not None:
+            v_end = self.v.query.end
+        else:
+            v_end = len(self.query.seq) + 1
+        if self.j is not None:
+            j_start = self.j.query.start
+        else:
+            j_start = len(self.query.seq) + 1
+        
+        orfcode = [None] * 3
+        re_orfcode = re.compile('[M|\*]')
+        
+        orfs = [0, 1, 2]
+        for i in orfs:
+            orfcode_i = {'v': '__', 'd': '__', 'j': '__'}
+            
+            slice_start = i
+            slice_end = int(math.floor((len(self.query.seq) - i) / 3)) * 3 + i
+            aa = str(Seq(self.query.seq[slice_start:slice_end], generic_dna).translate())
+            
+            for orf_re_obj in re_orfcode.finditer(aa):
+                orf_str_pos = orf_re_obj.start() * 3 + i
+                orf_str     = aa[orf_re_obj.start():orf_re_obj.end()]
+                
+                if orf_str_pos < v_end:
+                    orfcode_i['v'] += orf_str
+                elif orf_str_pos < j_start:
+                    orfcode_i['d'] += orf_str
+                else:
+                    orfcode_i['j'] += orf_str
+            
+            for k in orfcode_i.keys():
+                if len(orfcode_i[k]) == 3:
+                    orfcode_i[k] = orfcode_i[k][1:3]
+                elif len(orfcode_i[k]) > 3:
+                    orfcode_i[k] = orfcode_i[k][2:3] + orfcode_i[k][-1]
+            orfcode[i] = orfcode_i['v'] + orfcode_i['d'] + orfcode_i['j']
+        
+        orf = None
+        for i in range(len(orfcode)):
+            if '*' not in orfcode[i][1:]:
+                orf = i + 1
+        self.query.orf = orf
+        self.query.orfcode = ';'.join(orfcode)
+    
+    
+    """
     def __seek_orf(self, orf_upper = None, exact_orf = None):
-        """
-        Seek the first M in V region.
-        """
         orf = None
         if exact_orf is None:
             exact_orf = [0, 1, 2]
@@ -805,7 +855,7 @@ class IgSeq:
                 orf = None
         
         return orf
-
+    """
 
     def seek_cdr3(self):
         """Search cdr3 region.
@@ -834,10 +884,10 @@ class IgSeq:
             # setup data to object
             self.variable_region = IgSeqVariableRegion(self.query.name, self.query.seq, untmpl_start, untmpl_end, cdr3_start, cdr3_end)
             # ORF of IgH
-            orf_upper = self.j.query.start
-            if cdr3_start is not None:
-                orf_upper = cdr3_start
-            self.query.orf = self.__seek_orf(orf_upper = orf_upper)
+            #orf_upper = self.j.query.start
+            #if cdr3_start is not None:
+            #    orf_upper = cdr3_start
+            #self.query.orf = self.__seek_orf(orf_upper = orf_upper)
         #else:
         #    logging.warning('The alignments of ' + self.query.name + ' is not correct. Discarded this sequence.')
     
@@ -874,3 +924,9 @@ class CDR3Data:
     def __init__(self, nucl_seq, prot_seq):
         self.nucl_seq = nucl_seq
         self.prot_seq = prot_seq
+
+
+
+
+
+

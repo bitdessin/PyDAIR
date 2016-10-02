@@ -249,6 +249,7 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
             igseq = IgSeq(self.__species, igseqv, igseqd, igseqj)
             # find CDR3 region
             igseq.seek_cdr3()
+            igseq.seek_orf()
             # if alignemnt of V and J are correct, then print out the results into file
             if igseq.valid_alignment:
                 self.__pydair_records.append(igseq)

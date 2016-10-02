@@ -208,22 +208,21 @@ function jsonToDataTable(dataJson, idName = '', transToValue = false, prob = fal
     }
     
    if (prob) {
-        for (var j = 1; j < colNames.length + 1; j++) {
+        for (var j = 0; j < colNames.length; j++) {
             var sum = 0;
-            for (var i = 1; i < rowNames.length + 1; i++) {
-                sum += dataTable[i][j];
+            for (var i = 0; i < rowNames.length; i++) {
+                sum += dataTable[i + 1][j + 1];
             }
-            for (var i = 1; i < rowNames.length + 1; i++) {
-                dataTable[i][j] = dataTable[i][j] / sum;
+            for (var i = 0; i < rowNames.length; i++) {
+                dataTable[i + 1][j + 1] = dataTable[i + 1][j + 1] / sum;
             }
         }
     }
     if (transToValue) {
-        for (var i = 1; i < rowNames.length + 1; i++) {
-            dataTable[i][0] = Number(dataTable[i][0]);
+        for (var i = 0; i < rowNames.length; i++) {
+            dataTable[i + 1][0] = Number(dataTable[i + 1][0]);
         }
     }
-    console.log(dataTable);
     return {'dataTable': dataTable,
             'colNames' : colNames,
             'rowNames' : rowNames};
@@ -275,12 +274,11 @@ function drawChartCDR3Length(prob = true) {
     
     var data = jsonToDataTable({{ cdr3_stats.freq_json }}, 'Length', true, prob);
     var dataLimited = [data.dataTable[0]]
-    for (var i = 1; i < data.rowNames.length; i++) {
-        if (7 < data.rowNames[i] && data.rowNames[i] < 25) {
-            dataLimited.push(data.dataTable[i]);
+    for (var i = 0; i < data.rowNames.length; i++) {
+        if (7 < Number(data.rowNames[i]) && Number(data.rowNames[i]) < 25) {
+            dataLimited.push(data.dataTable[i + 1]);
         }
     }
-    
     var dataTable = new google.visualization.arrayToDataTable(dataLimited);
     var options = {
         title: 'CDR3 length distribution',

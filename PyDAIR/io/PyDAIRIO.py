@@ -283,7 +283,8 @@ ALIGNPOS QC %s\t%s\t%s\t%s\t%s\t%s
                 untmpl_end      = '.'
                 cdr3_start      = '.'
                 cdr3_end        = '.'
-                q_orf = '.'
+                q_orf           = '.'
+                q_orfcode       = '.'
             if buf[0:7] == 'QUERYID':
                 q_name = buf_record[0]
             if buf[0:7] == 'VGENEID':
@@ -292,7 +293,7 @@ ALIGNPOS QC %s\t%s\t%s\t%s\t%s\t%s
                 d_name = buf_record[0]
             if buf[0:7] == 'JGENEID':
                 j_name = buf_record[0]
-            if buf[0:4] == 'QORF':
+            if buf[0:8] == 'QORF    ':
                 q_orf = buf_record[0]
             if buf[0:8] == 'QORFCODE':
                 q_orfcode = buf_record[0]
@@ -351,10 +352,9 @@ ALIGNPOS QC %s\t%s\t%s\t%s\t%s\t%s
                 r[11] = j_name if j_name != '.' else None
                 r[12] = j_seq if j_seq  != '.' else None
                 r[13] = '+'
-                    
                 r[3] = q_orf if q_orf != '.' else None
-                r[4] = q_orf if q_orf != '.' else None
-                   
+                r[4] = q_orfcode if q_orfcode != '.' else None
+                
                 # alignment
                 #r[13] = aligned_q_seq      if aligned_q_seq != '.' else None
                 r[15] = int(alignv_qstart) if alignv_qstart != '.' else None
