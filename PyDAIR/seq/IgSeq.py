@@ -101,6 +101,7 @@ class IgSeqAlignSbjct:
         else:
             raise ValueError('The strand should be + or -.')
 
+
 class IgSeqAlign:
     """Alignment data.
     
@@ -210,7 +211,7 @@ class IgSeqQuery:
     IgSeqQuery class object is for saving the a query sequence data. Usually, the query
     sequence is came from FASTQ or FASTA file.
     """
-    def __init__(self, name, seq, strand = None, orf = None):
+    def __init__(self, name, seq, strand = None, orf = None, orfcode = None):
         self.name = name
         self.seq  = seq.upper() if seq is not None else None
         if strand is None or strand == '+' or strand == '-':
@@ -221,9 +222,10 @@ class IgSeqQuery:
             self.orf = int(orf)
         else:
             self.orf = orf
-    
+        self.orfcode = orfcode
+            
     def get_record(self):
-        return [self.name, self.seq, self.strand, self.orf]
+        return [self.name, self.seq, self.strand, self.orf, self.orfcode]
 
 
 class IgSeq:
@@ -324,23 +326,23 @@ class IgSeq:
             if r[i] == '.':
                 r[i] = None
         
-        self.query = IgSeqQuery(r[0], r[1], r[2], r[3])
+        self.query = IgSeqQuery(r[0], r[1], r[2], r[3], r[4])
         self.v = IgSeqAlign(
-            IgSeqAlignQuery(r[0], r[1], r[13], r[14], r[15], r[2]),
-            IgSeqAlignSbjct(r[4], r[5], r[16], r[17], r[18], r[6]),
-            r[19], r[20]
+            IgSeqAlignQuery(r[0], r[1], r[14], r[15], r[16], r[2]),
+            IgSeqAlignSbjct(r[5], r[6], r[17], r[18], r[19], r[7]),
+            r[20], r[21]
         )
         self.d = IgSeqAlign(
-            IgSeqAlignQuery(r[0], r[1], r[21], r[22], r[23], r[2]),
-            IgSeqAlignSbjct(r[7], r[8], r[24], r[25], r[26], r[9]),
-            r[27], r[28]
+            IgSeqAlignQuery(r[0], r[1], r[22], r[23], r[24], r[2]),
+            IgSeqAlignSbjct(r[8], r[9], r[25], r[26], r[27], r[10]),
+            r[28], r[29]
         )
         self.j = IgSeqAlign(
-            IgSeqAlignQuery(r[0], r[1], r[29], r[30], r[31], r[2]),
-            IgSeqAlignSbjct(r[10], r[11], r[32], r[33], r[34], r[12]),
-            r[35], r[36]
+            IgSeqAlignQuery(r[0], r[1], r[30], r[31], r[32], r[2]),
+            IgSeqAlignSbjct(r[11], r[12], r[33], r[34], r[35], r[13]),
+            r[36], r[37]
         )
-        self.variable_region = IgSeqVariableRegion(r[0], r[1], r[37], r[38], r[39], r[40])
+        self.variable_region = IgSeqVariableRegion(r[0], r[1], r[38], r[39], r[40], r[41])
     
     def get_record(self):
         record = []
@@ -348,7 +350,7 @@ class IgSeq:
         if self.query is not None:
             record.extend(self.query.get_record())
         else:
-            record.extend([None, None, None, None])
+            record.extend([None, None, None, None, None])
         # V
         if self.v is not None:
             record.extend([self.v.sbjct.name, self.v.sbjct.seq, self.v.sbjct.strand])

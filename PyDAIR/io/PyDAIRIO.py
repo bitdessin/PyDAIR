@@ -140,6 +140,7 @@ class PyDAIRIO:
         alignment = igseq.print_alignment()
         r = igseq.get_record()
         r = self.__utils.none_to_dot(r, True)
+        ValueError()
         for a in range(len(r)):
             r[a] = str(r[a])
         
@@ -149,11 +150,13 @@ VGENEID     %s
 DGENEID     %s
 JGENEID     %s
 QORF        %s
+QORFCODE    %s
 QALIGN      %s
 VALIGN      %s
 JALIGN      %s
 UALIGN      %s
 CALGIN      %s
+#CDR3AA     %s
 #ALIGNPOSHD QSTART\tQEND\tSSTART\tSEND\tIDENTITY\tSCORE
 ALIGNPOS QV %s\t%s\t%s\t%s\t%s\t%s
 ALIGNPOS QD %s\t%s\t%s\t%s\t%s\t%s
@@ -162,14 +165,14 @@ ALIGNPOS QU %s\t%s\t%s\t%s\t%s\t%s
 ALIGNPOS QC %s\t%s\t%s\t%s\t%s\t%s
 #END
 '''
-        metadata_list = [r[0], r[4], r[7], r[10], r[3]]
+        metadata_list = [r[0], r[5], r[8], r[11], r[3], r[4]]
         metadata_list.extend(alignment)
-        #metadata_list.append(str(Seq(alignment[4].replace('-', '').replace(' ', ''), generic_dna).translate()))
-        metadata_list.extend([r[14], r[15], r[17], r[18], r[19], r[20]])  # V
-        metadata_list.extend([  '.',   '.',   '.',   '.', r[27], r[28]])  # D
-        metadata_list.extend([r[30], r[31], r[33], r[34], r[35], r[36]])  # J
-        metadata_list.extend([r[37], r[38],   '.',   '.', '.',   '.'])  # UNALIGNED
-        metadata_list.extend([r[39], r[40],   '.',   '.', '.',   '.'])  # CDR3
+        metadata_list.append(str(Seq(alignment[4].replace('-', '').replace(' ', ''), generic_dna).translate()))
+        metadata_list.extend([r[15], r[16], r[18], r[19], r[20], r[21]])  # V
+        metadata_list.extend([  '.',   '.',   '.',   '.', r[28], r[29]])  # D
+        metadata_list.extend([r[31], r[32], r[34], r[35], r[36], r[37]])  # J
+        metadata_list.extend([r[38], r[39],   '.',   '.', '.',   '.'])  # UNALIGNED
+        metadata_list.extend([r[40], r[41],   '.',   '.', '.',   '.'])  # CDR3
         record = tmpl % tuple(metadata_list)
         return record
     
@@ -179,9 +182,9 @@ ALIGNPOS QC %s\t%s\t%s\t%s\t%s\t%s
         r = igseq.get_record()
         cdr3_data = igseq.get_cdr3_data()
         
-        # qname, vname, dname, jname, cdr3_nucl, CDR3_prot, stop_codon
-        record = [r[0], r[4], r[7], r[10], cdr3_data.nucl_seq, cdr3_data.prot_seq]
-        record = self.__utils.none_to_dot(record)
+        #         qname orf   orfcode vname dname jname cdr3_nucl          CDR3_prot
+        record = [r[0], r[3], r[4], r[5], r[8], r[11], cdr3_data.nucl_seq, cdr3_data.prot_seq]
+        record = self.__utils.none_to_dot(record, convert_to_str = True)
         return '\t'.join(record) + '\n'
     
     
@@ -291,6 +294,8 @@ ALIGNPOS QC %s\t%s\t%s\t%s\t%s\t%s
                 j_name = buf_record[0]
             if buf[0:4] == 'QORF':
                 q_orf = buf_record[0]
+            if buf[0:8] == 'QORFCODE':
+                q_orfcode = buf_record[0]
             if buf[0:6] == 'QALIGN':
                 aligned_q_seq = buf[12:]
                 q_seq = buf[12:].replace(' ', '').replace('-', '')
@@ -332,67 +337,68 @@ ALIGNPOS QC %s\t%s\t%s\t%s\t%s\t%s
                 cdr3_start      = buf_record[0]
                 cdr3_end        = buf_record[1]
             if buf[1:4] == 'END':
-                r = [None] * 41
+                r = [None] * 42
                 # query, v, d, j
                 r[0] = q_name if q_name != '.' else None
                 r[1] = q_seq  if q_seq  != '.' else None
                 r[2] = '+'
-                r[4] = v_name if v_name != '.' else None
-                r[5] = v_seq  if v_seq  != '.' else None
-                r[6] = '+'
-                r[7] = d_name if d_name != '.' else None
-                r[8] = None
-                r[9] = '+'
-                r[10] = j_name if j_name != '.' else None
-                r[11] = j_seq if j_seq  != '.' else None
-                r[12] = '+'
+                r[5] = v_name if v_name != '.' else None
+                r[6] = v_seq  if v_seq  != '.' else None
+                r[7] = '+'
+                r[8] = d_name if d_name != '.' else None
+                r[9] = None
+                r[10] = '+'
+                r[11] = j_name if j_name != '.' else None
+                r[12] = j_seq if j_seq  != '.' else None
+                r[13] = '+'
                     
                 r[3] = q_orf if q_orf != '.' else None
+                r[4] = q_orf if q_orf != '.' else None
                    
                 # alignment
                 #r[13] = aligned_q_seq      if aligned_q_seq != '.' else None
-                r[14] = int(alignv_qstart) if alignv_qstart != '.' else None
-                r[15] = int(alignv_qend)   if alignv_qend   != '.' else None
+                r[15] = int(alignv_qstart) if alignv_qstart != '.' else None
+                r[16] = int(alignv_qend)   if alignv_qend   != '.' else None
                 #r[16] = aligned_v_seq      if aligned_v_seq != '.' else None
-                r[17] = int(alignv_sstart) if alignv_sstart != '.' else None
-                r[18] = int(alignv_send)   if alignv_send   != '.' else None
-                r[19] = float(alignv_identity)  if alignv_identity  != '.' else None
-                r[20] = float(alignv_socre)     if alignv_socre     != '.' else None
+                r[18] = int(alignv_sstart) if alignv_sstart != '.' else None
+                r[19] = int(alignv_send)   if alignv_send   != '.' else None
+                r[20] = float(alignv_identity)  if alignv_identity  != '.' else None
+                r[21] = float(alignv_socre)     if alignv_socre     != '.' else None
                 
                 #r[21] = aligned_q_seq      if aligned_q_seq != '.' else None
-                r[22] = int(alignd_qstart) if alignd_qstart != '.' else None
-                r[23] = int(alignd_qend)   if alignd_qend   != '.' else None
+                r[23] = int(alignd_qstart) if alignd_qstart != '.' else None
+                r[24] = int(alignd_qend)   if alignd_qend   != '.' else None
                 #r[24] = aligned_d_seq      if aligned_d_seq != '.' else None
-                r[25] = int(alignd_sstart) if alignd_sstart != '.' else None
-                r[26] = int(alignd_send)   if alignd_send   != '.' else None
-                r[27] = float(alignd_identity)  if alignd_identity  != '.' else None
-                r[28] = float(alignd_socre)     if alignd_socre     != '.' else None
+                r[26] = int(alignd_sstart) if alignd_sstart != '.' else None
+                r[27] = int(alignd_send)   if alignd_send   != '.' else None
+                r[28] = float(alignd_identity)  if alignd_identity  != '.' else None
+                r[29] = float(alignd_socre)     if alignd_socre     != '.' else None
     
                 #r[29] = aligned_q_seq      if aligned_q_seq != '.' else None
-                r[30] = int(alignj_qstart) if alignj_qstart != '.' else None
-                r[31] = int(alignj_qend)   if alignj_qend    != '.' else None
+                r[31] = int(alignj_qstart) if alignj_qstart != '.' else None
+                r[32] = int(alignj_qend)   if alignj_qend    != '.' else None
                 #r[32] = aligned_j_seq      if aligned_j_seq != '.' else None
-                r[33] = int(alignj_sstart) if alignj_sstart != '.' else None
-                r[34] = int(alignj_send)   if alignj_send   != '.' else None
-                r[35] = float(alignj_identity)  if alignj_identity  != '.' else None
-                r[36] = float(alignj_socre)     if alignj_socre  != '.' else None
+                r[34] = int(alignj_sstart) if alignj_sstart != '.' else None
+                r[35] = int(alignj_send)   if alignj_send   != '.' else None
+                r[36] = float(alignj_identity)  if alignj_identity  != '.' else None
+                r[37] = float(alignj_socre)     if alignj_socre  != '.' else None
                 
-                r[37] = int(untmpl_start) if untmpl_start != '.' else None
-                r[38] = int(untmpl_end)   if untmpl_end   != '.' else None
-                r[39] = int(cdr3_start)   if cdr3_start   != '.' else None
-                r[40] = int(cdr3_end)     if cdr3_end     != '.' else None
+                r[38] = int(untmpl_start) if untmpl_start != '.' else None
+                r[39] = int(untmpl_end)   if untmpl_end   != '.' else None
+                r[40] = int(cdr3_start)   if cdr3_start   != '.' else None
+                r[41] = int(cdr3_end)     if cdr3_end     != '.' else None
     
                 # clip alignment into segments
-                r[13], r[16] = self.__clip_alignment(
-                             aligned_q_seq, r[14], r[15],
-                             aligned_v_seq, r[17], r[18])
-                r[29], r[32] = self.__clip_alignment(
-                             aligned_q_seq, r[30], r[31],
-                             aligned_j_seq, r[33], r[34])
-                if r[13] is not None:
-                    r[21] = r[13]
-                elif r[29] is not None:
-                    r[21] = r[29]
+                r[14], r[17] = self.__clip_alignment(
+                             aligned_q_seq, r[15], r[16],
+                             aligned_v_seq, r[18], r[19])
+                r[30], r[33] = self.__clip_alignment(
+                             aligned_q_seq, r[31], r[32],
+                             aligned_j_seq, r[34], r[35])
+                if r[14] is not None:
+                    r[22] = r[14]
+                elif r[30] is not None:
+                    r[22] = r[30]
                 
                 igseq = IgSeq()
                 igseq.set_record(r)
