@@ -21,7 +21,7 @@ class Test_bin(unittest.TestCase):
     
     
     def test_bin_parseseq(self):
-        cmd = 'pydair-parseseq -s fugu -q ' + _data_path + '/sample.1.fa -o ' + _result_path + '/test_output_bin_parseseq_ -f pydair '
+        cmd = 'pydair parse -s fugu -q ' + _data_path + '/sample.1.fa -o ' + _result_path + '/test_output_bin_parseseq_ -f pydair '
         cmd += '-v ' + _db_path + '/v.fa -d ' + _db_path + '/d.fa -j ' + _db_path + '/j.fa '
         cmd += '--v-blastdb ' + _db_path + '/v '
         cmd += '--v-match-score 3 --v-mismatch-score -3 '
@@ -41,7 +41,7 @@ class Test_bin(unittest.TestCase):
     
     
     def test_bin_stats(self):
-        cmd = 'pydair-analysis -i ' + _data_path + '/sample.1.pydair ' + _data_path + '/sample.2.pydair ' + _data_path + '/sample.3.pydair '
+        cmd = 'pydair stats -i ' + _data_path + '/sample.1.pydair ' + _data_path + '/sample.2.pydair ' + _data_path + '/sample.3.pydair '
         cmd += '-n sample_1 smaple_2 sample_3 '
         cmd += '-o ' + _result_path + '/test_output_bin_analysis '
         print(cmd)
@@ -50,7 +50,7 @@ class Test_bin(unittest.TestCase):
     
     
     def test_bin_stats_2(self):
-        cmd = 'pydair-analysis -i ' + _data_path + '/sample.1.pydair ' + _data_path + '/sample.2.pydair ' + _data_path + '/sample.3.pydair '
+        cmd = 'pydair stats -i ' + _data_path + '/sample.1.pydair ' + _data_path + '/sample.2.pydair ' + _data_path + '/sample.3.pydair '
         cmd += '-n sample_1 smaple_2 sample_3 '
         cmd += '-o ' + _result_path + '/test_output_bin_analysis_hasambigoD '
         cmd += '--contain_ambiguous_D '

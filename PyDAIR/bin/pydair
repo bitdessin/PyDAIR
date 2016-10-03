@@ -1,0 +1,174 @@
+#!/usr/bin/env python
+from __future__ import division
+import os
+import sys
+import argparse
+import logging
+import unittest
+from PyDAIR.seq.IgSeq import IgSeq
+from PyDAIR.io.PyDAIRIO import *
+from PyDAIR.io.PyDAIRReport import *
+from PyDAIR.utils.PyDAIRUtils import *
+from PyDAIR.utils.PyDAIRArgs import *
+from PyDAIR.app.PyDAIRAPP import *
+from PyDAIR.stats.PyDAIRStats import *
+from PyDAIR.plot.PyDAIRPlot import *
+
+
+
+
+
+def main_parse(args):
+    v_gene_align_args = PyDAIRBlastArgs(args.v_blastdb, args.v_match_score,
+                                       args.v_mismatch_score, args.v_gap_open_penalty,
+                                       args.v_gap_extend_penalty, args.v_wordsize, args.v_evalue_cutoff)
+    d_gene_align_args = PyDAIRBlastArgs(args.d_blastdb, args.d_match_score,
+                                       args.d_mismatch_score, args.d_gap_open_penalty,
+                                       args.d_gap_extend_penalty, args.d_wordsize, args.d_evalue_cutoff)
+    j_gene_align_args = PyDAIRBlastArgs(args.j_blastdb, args.j_match_score,
+                                       args.j_mismatch_score, args.j_gap_open_penalty,
+                                       args.j_gap_extend_penalty, args.j_wordsize, args.j_evalue_cutoff)
+    pydair_args = PyDAIRParseSeqArgs(args.species, args.q_fasta, args.v_fasta, args.d_fasta, args.j_fasta, args.output, args.output_format,
+                                     v_gene_align_args, d_gene_align_args, j_gene_align_args)
+    logging.info('[ 1/10] Setting up parameters.')
+    pydair = PyDAIRAPPParseSeq(pydair_args)
+    logging.info('[ 2/10] BLAST for V genes.')
+    pydair.blast('v')
+    logging.info('[ 3/10] BLAST for J genes.')
+    pydair.blast('j')
+    logging.info('[ 4/10] Parsing VJ BLAST results.')
+    pydair.parse_VJ()
+    logging.info('[ 5/10] Writing temporary files.')
+    pydair.write_pydair()
+    logging.info('[ 6/10] Writing unaligned sequences.')
+    pydair.write_fasta('unaligned_seq')
+    logging.info('[ 7/10] BLAST for D genes.')
+    pydair.blast('d')
+    logging.info('[ 8/10] Parsing D BLAST result.')
+    pydair.parse_VDJ()
+    logging.info('[ 9/10] Writing result file.')
+    pydair.write_pydair()
+    pydair.write_pydair(file_format = 'simple')
+    logging.info('[10/10] Finishing.')
+
+
+
+
+def main_stats(args):
+    pydair_files  = args.input[0]
+    sample_names = args.name[0]
+    logging.info('[1/4] Read data files.')
+    pydair_args = PyDAIRStatsArgs(sample_names, pydair_files,
+                                contain_ambiguous_D = args.contain_ambiguous_D,
+                                contain_stopcodon = args.contain_stopcodon,
+                                estimate_vdj_combination = args.estimate_vdj_combination,
+                                output_prefix = args.output,
+                                figure_format = args.figure_format,
+                                figure_style = args.figure_style)
+    pydairapp = PyDAIRAPPStats(pydair_args)
+    logging.info('[2/4] Write statistical data.')
+    pydairapp.write_freq()
+    pydairapp.write_cdr3_len_freq()
+    logging.info('[3/4] Plotting.')
+    pydairapp.plot_figures()
+    pydairapp.create_report()
+    logging.info('[4/4] Finishing...')
+
+
+
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(help = 'actions')
+
+    """
+    Parse Sequence.
+    """
+    parse_parser = subparsers.add_parser('parse', help = 'Identifying of VDJ and estimation of CDR3.')
+    ## general parameters
+    parse_parser.add_argument('-q', '--q-fasta',  help = 'Path to FASTA file that contains immunoglobulin heavy chain sequences.', required = True)
+    parse_parser.add_argument('-o', '--output',   help = 'Path to file for writing anaysis results.', required = True)
+    parse_parser.add_argument('-f', '--output-format', help = 'File format of analysis results.', choices = ['pydair', 'tsv', 'simple'], default = 'pydair')
+    parse_parser.add_argument('-s', '--species', help = 'Species.', choices = ['human', 'fugu'], default = 'fugu')
+    parse_parser.add_argument('-v', '--v-fasta', help = 'Path to FASTA file of V sequences.', required = True)
+    parse_parser.add_argument('-d', '--d-fasta', help = 'Path to FASTA file of D sequences.', required = True)
+    parse_parser.add_argument('-j', '--j-fasta', help = 'Path to FASTA file of J sequences.', required = True)
+    ## alignment parameters V
+    parse_parser.add_argument('--v-blastdb',            help = 'Path to V gene BLAST database index.', required = True)
+    parse_parser.add_argument('--v-match-score',        help = 'Score (> 0) for a nucleotide match for V gene.',    type = int, default =  3)
+    parse_parser.add_argument('--v-mismatch-score',     help = 'Score (< 0) for a nucleotide mismatch for V gene.', type = int, default = -3)
+    parse_parser.add_argument('--v-gap-open-penalty',   help = 'Penalty (> 0) to open a gap for V gene.',           type = int, default =  6)
+    parse_parser.add_argument('--v-gap-extend-penalty', help = 'Penaly (> 0 )to extend a gap for V gene.',          type = int, default =  6)
+    parse_parser.add_argument('--v-wordsize',           help = 'Word size to find hotspots by BLAST for V gene.',   type = int, default = 10)
+    parse_parser.add_argument('--v-evalue-cutoff',      help = 'Expectation value (e-value) threshold for assiging V gene to immunoglobulin sequence.', type = float, default = 1e-10)
+    ## alignment parameters D
+    parse_parser.add_argument('--d-blastdb',            help = 'Path to D gene BLAST database index.', required = True)
+    parse_parser.add_argument('--d-match-score',        help = 'Score (> 0) for a nucleotide match for D gene.',    type = int, default  =  1)
+    parse_parser.add_argument('--d-mismatch-score',     help = 'Score (< 0) for a nucleotide mismatch for D gene.', type = int, default  = -1)
+    parse_parser.add_argument('--d-gap-open-penalty',   help = 'Penalty (> 0) to open a gap for D gene.',           type = int, default  =  0)
+    parse_parser.add_argument('--d-gap-extend-penalty', help = 'Penaly (> 0 )to extend a gap for D gene.',          type = int, default  =  2)
+    parse_parser.add_argument('--d-wordsize',           help = 'Word size to find hotspots by BLAST for D gene.',   type = int, default  =  4)
+    parse_parser.add_argument('--d-evalue-cutoff',      help = 'Expectation value (e-value) threshold for assiging D gene to immunoglobulin sequence.', type = float, default = 1e2)
+    ## alignment parameters J
+    parse_parser.add_argument('--j-blastdb',            help = 'Path to J gene BLAST database index.', required = True)
+    parse_parser.add_argument('--j-match-score',        help = 'Score (> 0) for a nucleotide match for J gene.',    type = int, default  =  3)
+    parse_parser.add_argument('--j-mismatch-score',     help = 'Score (< 0) for a nucleotide mismatch for J gene.', type = int, default  = -3)
+    parse_parser.add_argument('--j-gap-open-penalty',   help = 'Penalty (> 0) to open a gap for J gene.',           type = int, default  =  6)
+    parse_parser.add_argument('--j-gap-extend-penalty', help = 'Penaly (> 0 )to extend a gap for J gene.',          type = int, default  =  6)
+    parse_parser.add_argument('--j-wordsize',           help = 'Word size to find hotspots by BLAST for J gene.',   type = int, default  =  7)
+    parse_parser.add_argument('--j-evalue-cutoff',      help = 'Expectation value (e-value) threshold for assiging J gene to immunoglobulin sequence.', type = float, default = 1e-5)
+    parse_parser.set_defaults(action = 'parse')
+    
+    """
+    Statistlca Analysis
+    """
+    stat_parser = subparsers.add_parser('stats', help = 'Statistical analysis.')
+    ## general parameters
+    stat_parser.add_argument('-i', '--input', help = 'Input PyDAIR files. Multiple files should be separated by a blank.', nargs = '*', action = 'append', required = True)
+    stat_parser.add_argument('-n', '--name',  help = 'Sample names for each PyDAIR file. Multiple names should be separated by a blank.', nargs= '*', action = 'append', required = True)
+    stat_parser.add_argument('-o', '--output', help = 'Path to file for writing anaysis results.', required = True)
+    stat_parser.add_argument('--contain_ambiguous_D', help = 'Contain immunoglobulin heavy chain sequences that has unidentifiable D genes when calculating the frequencies.', action = 'store_true')
+    stat_parser.add_argument('--contain_stopcodon',   help = 'Contain immunoglobulin heavy chain sequences that has stop codons when calculating the frequencies.',            action = 'store_true')
+    stat_parser.add_argument('--figure-format',   help = 'Format of figures.', default = 'png')
+    stat_parser.add_argument('--figure-dpi',      help = 'DPI of figures',     default = 300)
+    stat_parser.add_argument('--figure-style',    help = 'Stylesheet of figures', choices = ['classic', 'ggplot', 'fivethirtyeight'], default = 'ggplot')
+    #stat_parser.add_argument('--estimate-cdr3-population', help = 'Estimation of CDR-H3 population sizes by sampling-resampling study.', action = 'store_true')
+    stat_parser.add_argument('--estimate-vdj-combination', help = 'Estimation of the numbers of VDJ combinations by rarefaction study.', action = 'store_true')
+    stat_parser.set_defaults(contain_ambiguous_D      = True)
+    stat_parser.set_defaults(contain_stopcodon        = False)
+    #stat_parser.set_defaults(estimate_cdr3_population = False)
+    stat_parser.set_defaults(estimate_vdj_combination = False)
+    stat_parser.set_defaults(action = 'stats')
+    
+    
+    args = parser.parse_args()
+    return args
+
+
+
+if __name__ == '__main__':
+    desc = '''
+                                         ______
+                             <><        /      \  /
+                O        <><           / O      \/
+              O            <><         \        /\\
+        _    o  ___                     \______/  \\
+       /o\/    /o  \/         O O     __
+       \_/\    \___/\           O   \/ o\\
+             _            __   O    /\__/      __
+            /o\/        \/ o\ o               /o \/
+            \_/\        /\__/     ><>         \__/\\
+
+'''
+    print(desc)
+    args = parse_args()
+    if args.action == 'parse':
+        main_parse(args)
+    elif args.action == 'stats':
+        main_stats(args)
+
+
+
+
+
