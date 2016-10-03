@@ -19,7 +19,6 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-from PyDAIR import __version__
 
 # -- General configuration ------------------------------------------------
 
@@ -64,7 +63,7 @@ author = u'Bioinformatics Team'
 # built documents.
 #
 # The short X.Y version.
-version = __version__
+version = u''
 # The full version, including alpha/beta/rc tags.
 release = u''
 
