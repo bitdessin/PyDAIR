@@ -3,10 +3,10 @@
 
 ## Installation comamnds
 pip3 uninstall pydair -y
-pip3 install --no-deps .
+pip3 install --no-deps -e .
 
 pip uninstall pydair -y
-pip install --no-deps .
+pip install --no-deps -e .
 
 
 ## Create API documents
@@ -46,7 +46,6 @@ rm ./PyDAIR/stats/*.pyc
 rm ./PyDAIR/templates/*.pyc
 rm ./PyDAIR/test/*.pyc
 rm ./PyDAIR/utils/*.pyc
-rm -rf ./PyDAIR/PyDAIR.egg-info
 
 
 
