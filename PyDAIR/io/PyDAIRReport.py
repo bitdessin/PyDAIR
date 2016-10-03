@@ -38,7 +38,7 @@ class PyDAIRReport:
         self.__data_path_vdj_freq = None
         self.__data_path_vdj_freq = None
         self.__data_path_cdr3len  = None
-        self.__data_path_cdr3
+        self.__data_path_cdr3 = None
         
     
         
@@ -72,14 +72,14 @@ class PyDAIRReport:
             freq_g = self.__stats.get_freq(gene)
             freq_stats.append({'gene': gene.upper(),
                                'count': min([freq_g.shape[0], 10]) + 2,
-                               'freq_csv' : freq_g.to_csv(index_label = 'Gene', dtype = int, sep = '\t'),
-                               'freq_json': freq_g.to_json()})
+                               'freq_csv' :  freq_g.to_csv(index_label = 'Gene', sep = '\t'),
+                               'freq_json':  freq_g.to_json()})
         report_data['freq_stats'] = freq_stats
         
         
         # set up CDR3
         cdr3_len_freq = self.__stats.get_cdr3len_freq()
-        cdr3_stats = {'freq_csv': cdr3_len_freq.to_csv(index_label = "Length", dtype = int, sep = '\t'),
+        cdr3_stats = {'freq_csv': cdr3_len_freq.to_csv(index_label = "Length", sep = '\t'),
                       'freq_json': cdr3_len_freq.to_json()}
         report_data['cdr3_stats'] = cdr3_stats
         
@@ -87,7 +87,7 @@ class PyDAIRReport:
         # set up VDJ rarefaction data
         rfdata = self.__stats.get_rarefaction_result(fun = 'mean')
         if rfdata is not None:
-            report_data['rarefaction_stats'] = {'tries_csv': rfdata.to_csv(index_label = "CapturedSeq", dtype = int, sep = '\t'),
+            report_data['rarefaction_stats'] = {'tries_csv': rfdata.to_csv(index_label = "CapturedSeq", sep = '\t'),
                                                 'tries_json': rfdata.to_json()}
         else:
             report_data['rarefaction_stats'] = None

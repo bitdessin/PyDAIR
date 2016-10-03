@@ -9,27 +9,6 @@ pip uninstall pydair -y
 pip install --no-deps -e .
 
 
-## Create API documents
-<< '#__C__'
-rm -rf docs/api
-sphinx-apidoc -f -F -o docs/api/ PyDAIR
-cd docs/api/
-cat << EOF >> conf.py
-
-def skip(app, what, name, obj, skip, options):
-    if name == "__init__":
-        return False
-    return skip
-
-def setup(app):
-    app.connect("autodoc-skip-member", skip)
-
-EOF
-
-make html
-cd -
-# Change 'html_theme' in docs/api/conf.py to 'sphinx_rtd_theme'.
-#__C__
 
 ## Clean up
 #rm -rf PyDAIR.egg-info
