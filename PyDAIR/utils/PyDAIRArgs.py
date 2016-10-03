@@ -16,38 +16,28 @@ class PyDAIRParseSeqArgs:
         """Set up parameters for analysis of Rep-Seq data
         
         Args:
-            species (str):
-                Species name.
-            q (str):
-                A path to V gene FASTA file.
-            d (str):
-                A path to D gene FASTA file.
-            j (str):
-                A path to J gene FASTA file.
-            o (str):
-                A prefix to save the result files.
-            f (str):
-                A format. One of 'pydair' or 'simple' can be specified.
-            valign (PyDAIRBlastArgs):
-                BLAST parameters for V gene identification.
-            dalign (PyDAIRBlastArgs):
-                BLAST parameters for D gene identification.
-            jalign (PyDAIRBlastArgs):
-                BLAST parameters for J gene identification.
+            species (str): Species name.
+            q (str): A path to V gene FASTA file.
+            d (str): A path to D gene FASTA file.
+            j (str): A path to J gene FASTA file.
+            o (str): A prefix to save the result files.
+            f (str): A format. One of ``pydair`` or ``simple`` can be specified.
+            valign (PyDAIRBlastArgs): BLAST parameters for V gene identification.
+            dalign (PyDAIRBlastArgs): BLAST parameters for D gene identification.
+            jalign (PyDAIRBlastArgs): BLAST parameters for J gene identification.
         
         Raises:
             IOError: An error occurs when the FASTA files are not existed.
         
-        Usages:
-            >>> valign = PyDAIRBlastArgs('balstdb_v', match = 5, mismatch = 6, gapopen = 4,
-            >>>                          gapextend = 4, wordsize = 21, eval_cutoff = 1e10)
-            >>> dalign = PyDAIRBlastArgs('balstdb_d', match = 5, mismatch = 6, gapopen = 4,
-            >>>                          gapextend = 4, wordsize = 2, eval_cutoff = 1e3)
-            >>> jalign = PyDAIRBlastArgs('balstdb_j', match = 5, mismatch = 6, gapopen = 4,
-            >>>                          gapextend = 4, wordsize = 9, eval_cutoff = 1e10)
-            >>> args = PyDAIRParseSeqArgs('fugu', q = 'q.fa', v = 'v.fa', d = 'd.fa',
-            >>>                           j = 'j.fa', o = 'out_prefix', f = 'pydair',
-            >>>                           valign = valign, dalign = dalign, jalign = jalign)
+        >>> valign = PyDAIRBlastArgs('balstdb_v', match = 5, mismatch = 6, gapopen = 4,
+        >>>                          gapextend = 4, wordsize = 21, eval_cutoff = 1e10)
+        >>> dalign = PyDAIRBlastArgs('balstdb_d', match = 5, mismatch = 6, gapopen = 4,
+        >>>                          gapextend = 4, wordsize = 2, eval_cutoff = 1e3)
+        >>> jalign = PyDAIRBlastArgs('balstdb_j', match = 5, mismatch = 6, gapopen = 4,
+        >>>                          gapextend = 4, wordsize = 9, eval_cutoff = 1e10)
+        >>> args = PyDAIRParseSeqArgs('fugu', q = 'q.fa', v = 'v.fa', d = 'd.fa',
+        >>>                           j = 'j.fa', o = 'out_prefix', f = 'pydair',
+        >>>                           valign = valign, dalign = dalign, jalign = jalign)
         
         """
 
@@ -77,9 +67,9 @@ class PyDAIRParseSeqArgs:
 class PyDAIRBlastArgs:
     """A class to save BLAST parameters for V, D, J gene identification.
     
-    PyDAIRBlastArgs is a class to save BLAST parameters for V, D, J gene \
-    identification. \
-    Usually, the three PyDAIRBlastArgs class objects (for V, D, and J genes) \
+    PyDAIRBlastArgs is a class to save BLAST parameters for V, D, J gene 
+    identification.
+    Usually, the three PyDAIRBlastArgs class objects (for V, D, and J genes)
     are used simulatory.
     """
     
@@ -87,34 +77,26 @@ class PyDAIRBlastArgs:
         """Set up parameters for statistical analysis.
         
         Args:
-            db (str):
-                A path to BLAST database name. \
-                The BLAST database is made by `makeblastdb` command in BLAST program.
-            match (int):
-                A positive integer represents the score for a nucleotide match. \
-                The argument will pass to `-reward` in BLAST.
-            mismatch (int):
-                A negative integer represents the score for a nucleotide match. \
-                The argument will pass to `-penalty` in BLAST.
-            gapopen (int):
-                A positive integer represents the penalty to open a gap. \
-                The argument will pass to `-gapopen` in BLAST.
-            gapextend (int):
-                A positive integer represents the penalty to extend a gap. \
-                The argument will pass to `-gapopen` in BLAST.
-            wordsize (int):
-                A positive integer represents word size. \
-                The argument will pass to `-word_size` in BLAST.
-            eval_cutoff (float):
-                The cutoff of e-value for identifying genes.
+            db (str): A path to BLAST database name. 
+                      The BLAST database is made by ``makeblastdb`` command in BLAST program.
+            match (int): A positive integer represents the score for a nucleotide match.
+                         The argument will pass to ``-reward`` in BLAST.
+            mismatch (int): A negative integer represents the score for a nucleotide match.
+                            The argument will pass to ``-penalty`` in BLAST.
+            gapopen (int): A positive integer represents the penalty to open a gap.
+                           The argument will pass to ``-gapopen`` in BLAST.
+            gapextend (int): A positive integer represents the penalty to extend a gap.
+                             The argument will pass to ``-gapopen`` in BLAST.
+            wordsize (int): A positive integer represents word size.
+                            The argument will pass to ``-word_size`` in BLAST.
+            eval_cutoff (float): The cutoff of e-value for identifying genes.
         
-        Usages:
-            >>> valign = PyDAIRBlastArgs('balstdb_v', match = 5, mismatch = 6, gapopen = 4,
-            >>>                          gapextend = 4, wordsize = 21, eval_cutoff = 1e10)
-            >>> dalign = PyDAIRBlastArgs('balstdb_d', match = 5, mismatch = 6, gapopen = 4,
-            >>>                          gapextend = 4, wordsize = 2, eval_cutoff = 1e3)
-            >>> jalign = PyDAIRBlastArgs('balstdb_j', match = 5, mismatch = 6, gapopen = 4,
-            >>>                          gapextend = 4, wordsize = 9, eval_cutoff = 1e10)
+        >>> valign = PyDAIRBlastArgs('balstdb_v', match = 5, mismatch = 6, gapopen = 4,
+        >>>                          gapextend = 4, wordsize = 21, eval_cutoff = 1e10)
+        >>> dalign = PyDAIRBlastArgs('balstdb_d', match = 5, mismatch = 6, gapopen = 4,
+        >>>                          gapextend = 4, wordsize = 2, eval_cutoff = 1e3)
+        >>> jalign = PyDAIRBlastArgs('balstdb_j', match = 5, mismatch = 6, gapopen = 4,
+        >>>                          gapextend = 4, wordsize = 9, eval_cutoff = 1e10)
         
         """
         
@@ -183,42 +165,29 @@ class PyDAIRStatsArgs:
         """Set up parameters for statistical analysis.
 
         Args:
-            sample_names (list):
-                A list of string represents the sample names.
-                The analysis results will use `sample_names` instead of file names.
-            pydair_files (list):
-                A list of string containing path to PYDAIR flat file.
-                The length of `pydair_files` should be equal to `sample_names`.
-            contain_ambiguous_D (bool):
-                If `True`, analysis will contain Ig sequence with ambiguous D gene. \
-                Default is `True`.
-            contain_stopcodon (bool):
-                If `True`, analysis will contain Ig sequence which contains stop codons. \
-                Since Ig sequence with stop codon may not have function in immune system, \
-                therefore, \
-                default is `False`.
-            estimate_vdj_combination (bool):
-                If `True`, perform rarefaction study to estimate diversity of VDJ combination.
-            output_prefix (str):
-                A prefix to save the analysis results.
+            sample_names (list): A list of string represents the sample names.
+                                 The analysis results will use ``sample_names`` instead of file names.
+            pydair_files (list): A list of string containing path to PYDAIR flat file.
+                                 The length of ``pydair_files`` should be equal to ``sample_names``.
+            contain_ambiguous_D (bool):  If ``True``, analysis will contain Ig sequence with ambiguous D gene.
+                                         Default is ``True``.
+            contain_stopcodon (bool): If ``True``, analysis will contain Ig sequence which contains stop codons.
+                                      Since Ig sequence with stop codon may not have function in immune system,
+                                      therefore, default is ``False``.
+            estimate_vdj_combination (bool): If ``True``, perform rarefaction study to estimate diversity of VDJ combination.
+            output_prefix (str): A prefix to save the analysis results.
+            n_tries (int): Number of simulation tries.
+            figure_format (str): A string to specify figure format.
+                                 One of ``png``, ``tiff``, ``pdf`` can be specified.
+            figure_style (str): A string to specify figure style.
+                                One of ``classic``, ``ggplot``, ``fivethirtyeight`` can be specified.
         
-        Kwargs:
-            n_tries (int):
-                Number of simulation tries.
-            figure_format (str):
-                A string to specify figure format. \
-                One of 'png', 'tiff', 'pdf' can be specified.
-            figure_style (str):
-                A string to specify figure style. \
-                One of 'classic', 'ggplot', 'fivethirtyeight' can be specified.
-        
-        Usages:
-            >>> args = PyDAIRStatsArgs(sample_names = ['fugu 1', 'fugu 2', 'fugu 3'],
-            >>>                        pydair_files = ['fugu1.pydair', 'fugu2.pydair', 'fugu3.pydair'],
-            >>>                        containe_ambiguous_D = True, contain_stopcodon = False,
-            >>>                        estimate_vdj_combination = True, n_tries = 1000,
-            >>>                        output_prefix = './fugustat_result',
-            >>>                        figure_format = 'pdf', foigure_style = 'ggplot')
+        >>> args = PyDAIRStatsArgs(sample_names = ['fugu 1', 'fugu 2', 'fugu 3'],
+        >>>                        pydair_files = ['fugu1.pydair', 'fugu2.pydair', 'fugu3.pydair'],
+        >>>                        containe_ambiguous_D = True, contain_stopcodon = False,
+        >>>                        estimate_vdj_combination = True, n_tries = 1000,
+        >>>                        output_prefix = './fugustat_result',
+        >>>                        figure_format = 'pdf', foigure_style = 'ggplot')
         
         """
         

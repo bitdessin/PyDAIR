@@ -13,7 +13,16 @@ from PyDAIR.io.PyDAIRIO import *
 
 
 class PyDAIRDiversity:
+    """Class for saving diversity study results.
+    
+    """
+    
     def __init__(self):
+        """PyDAIRDiversity class initialize method.
+        
+        Set up ``None`` object in default.
+        """
+        
         self.rarefaction        = {'vdj': None, 'cdr3': None}
         self.samplingresampling = {'vdj': None, 'cdr3': None}
 
@@ -34,6 +43,20 @@ class PyDAIRStatsRecord:
     def __init__(self, name = None, v = None, d = None, j = None,
                  cdr3_nucl_seq = None, cdr3_prot_seq = None, stop_codon_tag = None,
                  contain_ambiguous_D = False, contain_stopcodon = False):
+        """PyDAIRStatsRecord class initialize method.
+        
+        Args:
+            name (str): Sample name.
+            v (list): Assigned V gene names.
+            d (list): Assigned D gene names.
+            j (list): Assigned J gene names.
+            cdr3_nucl_seq (list): A list of CDR3 nucleotide sequences.
+            cdr3_prot_seq (list): A list of CDR3 amino acid sequences.
+            stop_codon_tag (list): A list of stop codon tags.
+            contain_ambiguous_D (bool): If ``True``, analysis sequence with ambiguous D gene.
+            contain_stopcodon (bool): If ``True``, analysis sequence with stop codons.
+        """
+        
         # calculate the number of entries
         
         # set default data
@@ -71,6 +94,10 @@ class PyDAIRStatsRecord:
     
     
     def len(self):
+        """Retrive the number of sequences analyzed.
+        
+        """
+        
         return self.__len__()
     
     
@@ -134,7 +161,7 @@ class PyDAIRStatsRecord:
         """Sampling-resampling study.
         
         Args:
-            data (str): 'vdj' or 'cdr3'. 
+            data (str): ``vdj`` or ``cdr3``. 
         
         Sampling-resamplig study.
         """
@@ -206,6 +233,13 @@ class PyDAIRStatsRecord:
     
     
     def rarefaction_study(self, data = None, n = 1000):
+        """Perform rarefaction study for VDJ combination or CDR3 sequenece.
+        
+        Args:
+            data (str): One of ``vdj`` or ``cdr3`` can be specified for diversity study.
+            n (int): The number of performing of capture-recapture procedures.
+        """
+        
         if data is None or data == 'all':
             data = ['vdj', 'cdr3']
         if not isinstance(data, list):
@@ -277,7 +311,12 @@ class PyDAIRStatsRecords:
     
     This class provides the list of PyDAIRStatsRecord and some function of list.
     '''
+    
     def __init__(self):
+        """PyDAIRStatsRecords class initialize method.
+        
+        """
+        
         self.__records = []
         self.__index = 0
     
@@ -285,6 +324,11 @@ class PyDAIRStatsRecords:
         return len(self.__records)
     
     def len(self):
+        """Retrive the number of PyDAIRStatsRecord class object.
+        
+        Retrive the number of PyDAIRStatsRecord objects, thus the number of samples.
+        """
+        
         return self.__len__()
 
     def __iter__(self):
@@ -300,19 +344,46 @@ class PyDAIRStatsRecords:
         return stats_record
     
     def next(self):
+        """Return the next IgSeq object from the iterator of PyDAIRStatsRecords class objects.
+        
+        """
+        
         return self.__next__()
     
+    
     def append(self, stats_record):
+        """Append PyDAIRStatsRecord into PyDAIRStatsRecords class object.
+        
+        """
+        
         self.__records.append(stats_record)
     
+    
     def get_record(self, i):
+        """Retrive A PyDAIRStatsRecord.
+        
+        Args:
+            i (int): The index of PyDAIRStatsRecord should be returned.
+        
+        Returns:
+            PyDAIRStatsRecord: Return a PyDAIRStatsRecord object.
+        """
+        
         try:
            stats_record = self.__records[i]
         except IndexError:
             raise IndexError
         return stats_record
     
+    
     def set_record(self, i, stats_record):
+        """Update PyDAIRStatsRecord into PyDAIRStatsRecords class object.
+        
+        Args: 
+            i (int): The index of PyDAIRStatsRecord should be updated.
+            stats_record: A PyDAIRStatsRecord that will used for updating.
+        """
+        
         self.__records[i] = stats_record
 
 
@@ -325,8 +396,19 @@ class PyDAIRStats:
     one should run create PyDAIR format files by other PyDAIR functions. This class
     stored many data of analyzed data.
     '''
+    
     def __init__(self, pydair_file, pydair_format = None, pydair_id = None,
                  contain_ambiguous_D = False, contain_stopcodon = False):
+        """PyDAIRStats class initialize method.
+        
+        Args:
+            pydair_file (list): A list the contains multiple PYDAIR file path. 
+            pydair_format (str): ``pydair`` should be specified in this version.
+            pydair_id (list): A list of sample names.
+            contain_ambiguous_D (bool): If true, anlayze sequences with ambiguous D genes.
+            contain_stopcodon (bool): If true, analyze sequences with stop codons.
+        """
+        
         if pydair_format is None:
             pydair_format = 'PyDAIR'
         if pydair_id is None:

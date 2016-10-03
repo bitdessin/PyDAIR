@@ -12,13 +12,6 @@ logging.basicConfig(level = logging.INFO, format = '%(levelname)-8s %(message)s'
 class IgConstantTag:
     """Constant region of Ig chain.
     
-    Args:
-        V (str): a list of string of YYC motifs in the end of V gene.
-        J (str): a string of WGxG motifs.
-        species (str): If `V` and `J` are `None`, use the implemented data based on `species`.
-        cdr3_motif_start_adjust (int): Specified integer to adjust the start position of CDR3.
-        cdr3_motif_end_adjust (int): Specified integer to adjust the end position of CDR3.
-    
     IgConstantTag class is used for storing the constant nucleic acid sequences
     of Ig sequences. It is used for (i) identifying the end position of V gene, 
     (ii) identifying the start position of J gene, and (iii) cdr3 region of a
@@ -27,6 +20,17 @@ class IgConstantTag:
     
     def __init__(self, V = None, J = None, species = None,
                  cdr3_motif_start_adjust = None, cdr3_motif_end_adjust = None):
+        """IgConstantTag class initialize method.
+        
+        Args:
+            v (list): a list of string of YYC motifs in the end of V gene.
+            j (list): a string of WGxG motifs.
+            species (str): If ``v`` and ``j`` are ``None``, use the implemented
+                           data based on ``species``.
+            cdr3_motif_start_adjust (int): Specified integer to adjust the start position of CDR3.
+            cdr3_motif_end_adjust (int): Specified integer to adjust the end position of CDR3.
+        """
+        
         if species == 'fugu':
             if V is None:
                 V = ['AVFFC', 'PVFFC', 'AVYYC', 'AAYYC', 'VVYYC', 'AVFYC', 'SVYYC']
@@ -68,7 +72,19 @@ class IgSeqAlignQuery:
     sequence. This class should be used with IgSeqAlignSbjct which
     is used for saving the alignemnt data of subject sequence.
     """
+    
     def __init__(self, name, seq = None, aligned_seq = None, start = None, end = None, strand = None):
+        """IgSeqAlignQuery class initialize method.
+        
+        Args:
+            name (str): A query sequence name.
+            seq (str): A query sequence.
+            aligned_seq (str): A aligned query sequence.
+            start (int): A start position of alignment to the subject sequence.
+            end (int): A end position of alignment to the subject sequence.
+            strand (str): A strand (``+`` or ``-``) of query sequence in alignemnt.
+        """
+        
         self.name        = name
         self.seq         = seq.upper() if seq is not None else None
         self.aligned_seq = aligned_seq.upper() if aligned_seq is not None else None
@@ -89,7 +105,19 @@ class IgSeqAlignSbjct:
     sequence. This class should be used with
     IgSeqAlignQuery which is used for storing the alignemnt data of query sequence.
     """
+     
     def __init__(self, name, seq = None, aligned_seq = None, start = None, end = None, strand = None):
+        """IgSeqAlignSbjct class initialize method.
+        
+        Args:
+            name (str): A subject sequence name.
+            seq (str): A subject sequence.
+            aligned_seq (str): A aligned subject sequence.
+            start (int): A start position of alignment to the query sequence.
+            end (int): A end position of alignment to the query sequence.
+            strand (str): A strand (``+`` or ``-``) of subject sequence in alignemnt.
+        """
+        
         self.name        = name
         self.seq         = seq.upper() if seq is not None else None
         self.aligned_seq = aligned_seq.upper() if aligned_seq is not None else None
@@ -107,11 +135,22 @@ class IgSeqAlign:
     
     IgSeqAlign class object is for storing the aligment data of query and subject sequences.
     Query and subject alignemnt data should be saved in IgSeqAlignQuery and IgSeqAlignSbjct
-    class objects respectively. Usually, three IgSeqAlign class objects will be used for storing one sequences,
+    class objects respectively.
+    Usually, three IgSeqAlign class objects will be used for storing one sequences,
     the three IgSeqAlign class objects are for V, D and J genes respectively.
     """
     
     def __init__(self, query, sbjct, identity = None, score = None):
+        
+        """IgSeqAlign class initialize method.
+        
+        Args:
+            query (IgSeqAlignQuery): A IgSeqAlignQuery class object that corresponds to IgSeqAlignSbjct.
+            sbjct (IgSeqAlignSbjct): A IgSeqAlignSbjct class object that corresponds to IgSeqAlignQuery.
+            identity (str): The alignment identity.
+            score (str): The alignment score.
+        """
+        
         self.query = query
         self.sbjct = sbjct
         self.metadata = {'identity': identity, 'score': score}
@@ -125,6 +164,7 @@ class IgSeqAlign:
         plus sequence(s). After this changing, both
         query and subject sequences will be plus (5' to 3' direction) strands.
         """
+        
         rev = False
         
         if self.query.strand == '-' and self.sbjct.strand == '+':
@@ -190,7 +230,19 @@ class IgSeqVariableRegion:
     V and J genes. I've never waited so long for a person, except you. The cdr3 sequencene
     can be found in this region.
     """
+    
     def __init__(self, name = None, seq = None, untmpl_start = None, untmpl_end = None, cdr3_start = None, cdr3_end = None):
+        """IgSeqVariableRegion class initialize method.
+        
+        Args:
+            name (str): A query sequence name.
+            seq (str): A query sequence.
+            untmpl_start (int): A start position of unaligned region at ``seq``.
+            untmpl_end (int): A end position of unaligned region at ``seq``.
+            cdr3_start (int): A start position of CDR3 at ``seq``.
+            cdr3_end (int): A end position of CDR3 at ``seq``.
+        """
+        
         # query data
         self.name = name
         self.seq  = seq.upper() if seq is not None else None
@@ -211,7 +263,18 @@ class IgSeqQuery:
     IgSeqQuery class object is for saving the a query sequence data. Usually, the query
     sequence is came from FASTQ or FASTA file.
     """
+    
     def __init__(self, name, seq, strand = None, orf = None, orfcode = None):
+        """IgSeqQuery class initialize method.
+        
+        Args:
+            name (str): A query sequence name.
+            seq (str): A query sequence.
+            strane (str): A strand (``+`` or ``-``) of query sequence.
+            orf (int): An ORF position.
+            orfcode (str): An ORFCODE.
+        """
+        
         self.name = name
         self.seq  = seq.upper() if seq is not None else None
         if strand is None or strand == '+' or strand == '-':
@@ -223,14 +286,21 @@ class IgSeqQuery:
         else:
             self.orf = orf
         self.orfcode = orfcode
-            
+    
+        
     def get_record(self):
+        """Retrive IgSeqQuery class data with list.
+        
+        Returns:
+            list: A list contains all information of IgSeqQuery class object.
+        """
+        
         return [self.name, self.seq, self.strand, self.orf, self.orfcode]
+        
 
 
 class IgSeq:
-    """
-    Ig sequence data.
+    """ Ig sequence data.
     
     IgSeq class object is for saving the information of query sequence, alignemnt data, identified
     V, D, and J gene names, and cdr3 region. A qeury sequence (from FASTA or FASTQ) should be
@@ -295,6 +365,16 @@ class IgSeq:
        
     """
     def __init__(self, species = None, ig_seq_align_v = None, ig_seq_align_d = None, ig_seq_align_j = None, ig_seq_variable_region = None):
+        """IgSeq class initialize method.
+        
+        Args:
+            species (str): Species name.
+            ig_seq_align_v (IgSeqQuery): An IgSeqQuery class object contains the alignment reuslt of V gene.
+            ig_seq_align_d (IgSeqQuery): An IgSeqQuery class object contains the alignment reuslt of D gene.
+            ig_seq_align_j (IgSeqQuery): An IgSeqQuery class object contains the alignment reuslt of J gene.
+            ig_seq_variable_region (IgSeqVariableRegion): An IgSeqVariableRegion class object.
+        """
+        
         if species is None:
             species = 'fugu'
         if ig_seq_align_v is not None:
@@ -314,6 +394,13 @@ class IgSeq:
         self.valid_alignment = None
     
     def set_igseqalign(self, igseqalign, gene):
+        """Set IgSeqAlign class object into IgSeq class object.
+        
+        Args:
+            igseqalign (IgSeqAlign): An IgSeqAlign class object of ``gene``.
+            gene (str): One of ``v``, ``d``, and ``j`` can be specified.
+        """
+        
         if gene == 'v':
             self.v = igseqalign
         elif gene == 'd':
@@ -322,6 +409,12 @@ class IgSeq:
             self.j = igseqalign
     
     def set_record(self, r):
+        """Set a list into IgSeq class object.
+        
+        Args:
+            r (list): A list contains all information of IgSeq class object.
+        """
+        
         for i in range(len(r)):
             if r[i] == '.':
                 r[i] = None
@@ -343,7 +436,14 @@ class IgSeq:
         )
         self.variable_region = IgSeqVariableRegion(r[0], r[1], r[38], r[39], r[40], r[41])
     
+    
     def get_record(self):
+        """Retrive IgSeq class data with list.
+        
+        Returns:
+            list: A list contains all information of IgSeq class object.
+        """
+        
         record = []
         # query
         if self.query is not None:
@@ -411,6 +511,7 @@ class IgSeq:
         After this changing, all IgSeqAlign objects of
         V, (D), and J genes will be plus (5' to 3' direction) strands.
         """
+        
         forward_signal = False
         valid_alignment = self.__valid_alignment()
         if valid_alignment == 1:
@@ -425,6 +526,12 @@ class IgSeq:
         return forward_signal
     
     def print_alignment(self):
+        """Print out alignemnt.
+        
+        Returns:
+            list: A list of aligned query, V gene, D gene, J gene, unaligned, and CDR3 sequences.
+        """
+        
         aligned_query  = ''
         aligned_v      = ''
         aligned_j      = ''
@@ -776,7 +883,6 @@ class IgSeq:
     def seek_orf(self):
         """Seek start position of ORF and ORFCODE.
         
-        Seek start position of ORF and ORFCODE.
         """
         
         if self.v is not None:
@@ -864,6 +970,7 @@ class IgSeq:
         region. The cdr3 region should be the region between the end of V gene and the start of J
         gene. Therefore, this method tries to file the cdr3 sequences at that region.
         """
+        
         # only process for corect sequence
         has_valid_alignment = self.forward_ig_seq()
         if has_valid_alignment:
@@ -895,6 +1002,16 @@ class IgSeq:
     
     
     def get_cdr3_data(self, v_adj = 0, j_adj = 0):
+        """Retrieve CDR3 sequence.
+        
+        Args:
+            v_adj (int): Adjust start position when clipping CDR3 sequence.
+            j_adj (int): Adjust end position when clipping CDR3 sequence.
+        
+        Returns:
+            CDR3Data: A CDR3 nucleotide and amino acid sequences.
+        """
+        
         if (v_adj % 3 != 0) or (j_adj % 3 != 0):
             raise ValueError('The v_adj and j_adj arguments in get_cdr3_data should be 0 or divisible by 3.')
         
@@ -921,7 +1038,18 @@ class IgSeq:
 
 
 class CDR3Data:
+    """A class to save CDR3 data.
+    
+    """
+    
     def __init__(self, nucl_seq, prot_seq):
+        """CDR3Data class initialize data.
+        
+        Args:
+            nucl_seq (str): A CDR3 nucleotide sequence.
+            prot_seq (str): A CDR3 amino acid sequence.
+        """
+        
         self.nucl_seq = nucl_seq
         self.prot_seq = prot_seq
 

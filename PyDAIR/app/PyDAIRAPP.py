@@ -21,32 +21,30 @@ logging.basicConfig(level = logging.INFO, format = '%(levelname)-8s %(message)s'
 
 
 class PyDAIRAPPParseSeq:
-    """Class for Rep-Seq data analysis.
+    """Application class for parsing Rep-Seq sequences.
     
-    The class provides functions to analysis Rep-Seq reads in a FASTA or FASTQ file.
-    Methods in this class are to identify V, D, and J genes that are composed of
-    Rep-Seq reads, and to identify CDR3 sequences.
+    This class implements the methods to parse Rep-Seq sequencces.
+    Briefly, it provides functions to identify V, D, and J genes that
+    are composed of Rep-Seq seqeunces, and to determine CDR3 sequences.
     """
     
     def __init__(self, args):
-        """Initialize of PyDAIRAPPParseSeq class object.
+        """PyDAIRAPPParseSeq class initialize method.
         
         Args:
-            args (PyDAIRParseSeqArgs):
-                PyDAIRParseSeqArgs class object that contains \
-                path of Rep-Seq data and BLAST parameters.
+            args (PyDAIRParseSeqArgs): PyDAIRParseSeqArgs class object that contains 
+                                       path of Rep-Seq data and BLAST parameters.
         
-        Usage:
-            >>> valign = PyDAIRBlastArgs('balstdb_v', match = 5, mismatch = 6, gapopen = 4,
-            >>>                          gapextend = 4, wordsize = 21, eval_cutoff = 1e10)
-            >>> dalign = PyDAIRBlastArgs('balstdb_d', match = 5, mismatch = 6, gapopen = 4,
-            >>>                          gapextend = 4, wordsize = 2, eval_cutoff = 1e3)
-            >>> jalign = PyDAIRBlastArgs('balstdb_j', match = 5, mismatch = 6, gapopen = 4,
-            >>>                          gapextend = 4, wordsize = 9, eval_cutoff = 1e10)
-            >>> args = PyDAIRParseSeqArgs('fugu', q = 'q.fa', v = 'v.fa', d = 'd.fa',
-            >>>                           j = 'j.fa', o = 'out_prefix', f = 'pydair',
-            >>>                           valign = valign, dalign = dalign, jalign = jalign)
-            >>> obj = PyDAIRAPPParseSeq(args)
+        >>> valign = PyDAIRBlastArgs('balstdb_v', match = 5, mismatch = 6, gapopen = 4,
+        >>>                          gapextend = 4, wordsize = 21, eval_cutoff = 1e10)
+        >>> dalign = PyDAIRBlastArgs('balstdb_d', match = 5, mismatch = 6, gapopen = 4,
+        >>>                          gapextend = 4, wordsize = 2, eval_cutoff = 1e3)
+        >>> jalign = PyDAIRBlastArgs('balstdb_j', match = 5, mismatch = 6, gapopen = 4,
+        >>>                          gapextend = 4, wordsize = 9, eval_cutoff = 1e10)
+        >>> args = PyDAIRParseSeqArgs('fugu', q = 'q.fa', v = 'v.fa', d = 'd.fa',
+        >>>                           j = 'j.fa', o = 'out_prefix', f = 'pydair',
+        >>>                           valign = valign, dalign = dalign, jalign = jalign)
+        >>> obj = PyDAIRAPPParseSeq(args)
         """
         
         self.__args = args
@@ -77,20 +75,18 @@ class PyDAIRAPPParseSeq:
         
     
     def blast(self, gene = None, program_path = ''):
-        """Run BLAST for V, D, J identification.
+        """Execute BLAST.
+        
+        This method internally calls ``blastn`` program to align Rep-Seq sequencse
+        against the germeline (``gene``) database.
+        The BLAST result is saved in the specified output directory with TSV format.
+        The BLAST parameters are given by PyDAIRBlastArgs class object through
+        ``__get_blast_params`` method.
         
         Args:
-            gene (str):
-                A gene to be BLAST. One of `v`, `d`, or `j` should be specified.
+            gene (str): Specified ``v``, ``d``, or ``j`` for executing BLAST.
+            program_path (str): A path to ``blastn`` programa.
         
-        Kwargs:
-            program_path (str):
-                A path to BLAST program directory which contains **blastn** executable file.
-        
-        Call BLAST (blastn) for aligning Rep-Seq reads against the given germline (V, D, or J) database
-        with the given paramters.
-        The parameters of BLAST (wordsize, reward, penalty, and so on), the path to BLAST database,
-        and the path to save BLAST results should have set in `self` before use this method.
         """
         
         # parameter settings
@@ -211,11 +207,11 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
         
         Identify V and J genes that used in Rep-Seq data according to the BLAST
         outputs of V and J genes.
-        This method is performed as the three processes:
-        (i) perform BLAST against V gene and identify V gene that is used in Rep-Seq sequences;
-        (ii) perform BLAST against J gene and identify J gene that is used in Rep-Seq sequences;
-        and (iii) save the results into `IgSeq` class object.
-        BLAST results of V and J genes are stored in the specified directory.
+        This method is performed as the three steps:
+        (i) execute BLAST against V gene and identify V gene that is used in Rep-Seq sequences;
+        (ii) execute BLAST against J gene and identify J gene that is used in Rep-Seq sequences;
+        and (iii) save the results into IgSeq class object.
+        BLAST results of V and J genes are saved in the specified directory.
         """
         
         # load FASTA file into dictionary
@@ -305,18 +301,16 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
     def write_pydair(self, file_name = None, file_format = 'pydair'):
         """Write results into file with PYDAIR format.
         
+        Write parsed results into file with PYDAIR format.
+        One of 'pydair' and 'simple' can be specified to ``file_format``.
+        The 'pydair' format contains whole parsed results with flat file format.
+        The 'simple' format contains assigned V, D, J genes, CDR3 sequences,
+        and ORF information with TSV format.
+        
         Args:
-            file_name (str):
-                A file path to save the result.
+            file_name (str): A file path to save the result.
+            file_format (str): A file format. 'pydair' or 'simple' can be specified. 
         
-        Kwargs:
-            file_format (str):
-                A file format. 'pydair' or 'simple' can be specified. \
-                'pydair' format is flat file format begining with '#BEGIN' \
-                and end with '#END'. 'simple' format is a tab-delime format file.
-        
-        After identifying V, J, (and D) genes and identfying of CDR3 sequences,
-        run this method to save the all results into text file with the giving format.
         """
         
         if file_name is None:
@@ -346,22 +340,22 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
     def write_fasta(self, seq_type = 'unaligned_seq', mol_type = 'nucl'):
         """Write FASTA file.
         
-        Kwargs:
-            seq_type (str):
-                A seqeuce to save into FASTA file. \
-                'unaligned_seq' or 'cdr3' can be specified.
-            mol_type (str):
-                A molecular type. Only 'nucl' is supported. \
-                'prot' will be supported in futhue.
-            
-        Raises:
-            ValueError: An error occured when specifiy unsupported `seq_type`.
+        Write unaligned sequences or CDR3 sequences into specified file
+        with FASTA format.
+        One of `unaligned_seq` and  `cdr3` can be specified to ``seq_type``.
+        If ``unaligned_seq`` is specified, this method saves the unaligned
+        sequences into file.
+        If ``cdr3`` is specified, this method saves the CDR3 sequences into
+        file.
         
-        The method write sequences into FASTA format.
-        The sequences of `unaligned_sesq` and  `cdr3` can be specified.
-        When specified `unaligned_seq`, sequences that unaligned V and J region
-        are written out into file. When `cdr3` is specified, seqeunces of CDR3
-        are written out into file.
+        Args:
+            seq_type (str): A sequence type to save. One of ``unaligned_seq``
+                            or ``cdr3`` can be specified.
+            mol_type (str): A molecular type. Only 'nucl' is supported.
+        
+        Raises:
+            ValueError: An error occured when specifiy unsupported ``seq_type``.
+        
         """
         
         if seq_type == 'unaligned_seq':
@@ -434,12 +428,12 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
     
     
     def parse_VDJ(self):
-        """Identify D genes.
+        """Identify D genes in Rep-Seq data.
         
-        The methods should run after `parse_VJ`. The `parse_VJ` is to identify V and J, and CDR3 seqeunce.
-        This method performs:
-        1. parse BLAST results of D gene, identify the used D gene.
-        2. reading the results of PyDAIR file (VJ results), and add 
+        This method should run after ``parse_VJ``.
+        This method is performed as two steps;
+        (i) execute BLAST against D gene and identify D gene that is used in Rep-Seq sequences;
+        and (ii) merging the results of D identification into the results of ``parse_VJ``.
         """
         
         # create dictionary from FASTA file (only D gene)
@@ -473,23 +467,19 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
 
 
 class PyDAIRAPPStats:
-    """Class for statsitical study of Rep-Seq data.
+    """Application class for statistical analysis.
     
-    The class provides functions to study frequencies of V, D, and J genes.
-    In addition, it supports the diversity study such as capture-recapture
-    study, rarefaction study.
+    This class implements the methods to summarize parsed results.
     """
     
     def __init__(self, args):
-        """Initialize of PyDAIRAPPStats class object.
+        """PyDAIRAPPStats class initialize method.
         
         Args:
-            args (PyDAIRStatsArgs):
-                PyDAIRStatsArgs class object that contains path of analyzed results, \
-                and the path for saving the statistical study results.
+            args (PyDAIRStatsArgs): PyDAIRStatsArgs class object that contains
+                                    path of analyzed results, and the path to
+                                    save the statistical analysis results.
         
-        Initialize all file path to save the results,
-        and performe some diversity studies.
         """
         
         self.__args = args
@@ -560,9 +550,9 @@ class PyDAIRAPPStats:
         """Write the length distribution of CDR3 sequence.
         
         Write the length distribution of CDR3 nucleotide and protein sequences.
-        The output file is tab-separator text file, and consists of two columns.
+        The output file is TSV format, and consists of two columns.
         The first column is the length of CDR3 sequence,
-        and the second column is frequency related the length.
+        and the second column is frequency of the coressponding length.
         """
         
         _freq_nucl = []
@@ -582,17 +572,17 @@ class PyDAIRAPPStats:
     
     
     def write_diversity(self, methods = ['rarefaction', 'samplingresampling']):
-        """Write the results of diversity studies into text file.
+        """Write results of diversity studies.
         
         Args:
-            methods (str):
-                A string to specify the method of diversity study. \
-                One of `rarefaction` and `samplingresampling` can be specified.
+            methods (str): A string to specify the method of diversity study.
+                           One of `rarefaction` and `samplingresampling` can be specified.
         
-        Write the reuslts of diversity studies into tab-separator files.
-        The file has multiple columns.
+        Write the reuslts of diversity studies with TSV format.
+        The file has multiple (N + 1) columns, if the number of simulation tries is N.
         The first column indicates that the smapling size,
         and from the second columns indicate the results of sampling-resampling study.
+        
         """
         
         if not isinstance(methods, list):
@@ -638,9 +628,8 @@ class PyDAIRAPPStats:
         """Write V, D, J gene usage into TSV file.
         
         Args:
-            genes (list):
-                A list of string to specify which gene usage should be specified. \
-                The combination of `v`, `d`, `j`, and `vdj` can be specified.
+            genes (list): A list of string to specify which gene usage should be specified.
+                          The combination of ``v``, ``d``, ``j``, and ``vdj`` can be specified.
         
         Write frequency of V, D, J genes and VDJ combinations into text file.
         The output file is tab-separator format text file.
@@ -678,8 +667,9 @@ class PyDAIRAPPStats:
     def plot_figures(self):
         """Plot figures.
         
-        Plot figures into figure file.
+        Plot all statistical analysis results with figures.
         """
+        
         self.plots.barplot_freq(gene = 'v', fig_name = self.__o_figure_v_freq, prob = True)
         self.plots.barplot_freq(gene = 'd', fig_name = self.__o_figure_d_freq, prob = True)
         self.plots.barplot_freq(gene = 'j', fig_name = self.__o_figure_j_freq, prob = True)
@@ -689,8 +679,9 @@ class PyDAIRAPPStats:
     def create_report(self):
         """Create report.
         
-        Create HTML report.
+        Create HTML report with several statistical analysis results.
         """
+        
         self.report.render(self.__o_report)
     
     

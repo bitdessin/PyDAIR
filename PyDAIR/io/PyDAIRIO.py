@@ -9,12 +9,9 @@ from PyDAIR.seq.IgSeq import *
 
 
 class PyDAIRIO: 
-    """PyDAIR format Input/Output interface.
+    """PyDAIR Input/Output interface class.
     
-    The input/output interface to handle PYDAIR format flat file.
-    PYDAIR format file is a text file.
-    An entry (one `IgSeq` object) in PYDAIR format file begins with `#BEGIN`
-    and end with `#END` letters.
+    This class implements the input/output methods to handle PYDAIR format file.
     """
     
     '''
@@ -65,15 +62,13 @@ class PyDAIRIO:
     
     
     def __init__(self, pydair_file_path, open_mode = None, pydair_file_format = 'pydair'):
-        """Set up file path and open mode.
+        """PyDAIRIO class initialize method.
         
         Args:
-            pydair_file_path (str):
-                A file path to open or write.
-            open_mode (str):
-                A character (`r`, `w` or `a`) to specify open mode.
-            pydair_file_format (str):
-                A file format to open or write. One of `pydair` or `simple` should be specified.
+            pydair_file_path (str): A file path to open or write.
+            open_mode (str): A character (``r``, ``w`` or ``a``) to specify open mode.
+            pydair_file_format (str): A file format to open or write.
+                                      One of ``pydair`` or ``simple`` should be specified.
         
         Set up file path, open mode, and file format.
         After setting, the method opens the file hanld.
@@ -99,14 +94,13 @@ class PyDAIRIO:
     
     
     def write(self, igseq):
-        """Write `IgSeq` objects to a file.
+        """Write ``IgSeq`` objects to a file.
         
         Args:
-            igseq (IgSeq):
-                A list of `IgSeq` objects.
+            igseq (list): A list of IgSeq objects.
         
-        Write a list of `IgSeq` object to a file.
-        It is expected to use `close` method to close the file handle after writting.
+        Write a list of IgSeq object to a file.
+        It is expected to use ``close`` method to close the file handle after writting.
         """
         
         if (not isinstance(igseq, list)) and (not isinstance(igseq, tuple)):
@@ -198,26 +192,25 @@ ALIGNPOS QC %s\t%s\t%s\t%s\t%s\t%s
     
     
     def next(self):
-        """Return the next `IgSeq` object from the iterator.
+        """Return the next IgSeq object from the iterator.
         
-        Return the next `IgSeq` object during parsing PYDAIR format file with `parse` method.
+        Return the next IgSeq object during parsing PYDAIR format file with ``parse`` method.
         """
         
         return self.__next__()
     
         
     def parse(self):
-        """Parse PYDAIR format file into an iterator returning `IgSeq` object.
+        """Parse PYDAIR format file into an iterator returning IgSeq object.
         
-        Usage:
-            >>> pydairio = PyDAIRIO('path_to_file', 'r', 'pydair')
-            >>> for igseq in pydairio.parse():
-            >>> print(igseq)
-            >>> pydairio.close()
+        >>> pydairio = PyDAIRIO('path_to_file', 'r', 'pydair')
+        >>> for igseq in pydairio.parse():
+        >>> print(igseq)
+        >>> pydairio.close()
         
-        Parse PYDAIR format file into an iterator returning `IgSeq` object.
-        Typical usage is to loop over the records with `for` statement.
-        It is expected to use `close` method to close the file handle after parsing.
+        Parse PYDAIR format file into an iterator returning IgSeq object.
+        Typical usage is to loop over the records with ``for`` statement.
+        It is expected to use ``close`` method to close the file handle after parsing.
         """
         
         igseq = None
@@ -430,18 +423,5 @@ ALIGNPOS QC %s\t%s\t%s\t%s\t%s\t%s
         return [qseg, sseg]
     
     
-    #def write_fasta(self, igseq):
-    #    if (not isinstance(igseq, list)) and (not isinstance(igseq, tuple)):
-    #        igseq_list = [igseq]
-    #    else:
-    #        igseq_list = igseq
-    #        for igseq_single in igseq_list:
-    #            record = self.__convert_to_cdr3_fa(igseq_single)
-    #            if record is not None:
-    #                self.__fh.write(record)
-        
-
-
-
 
 
