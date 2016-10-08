@@ -40,8 +40,8 @@ class PyDAIRStatsRecord:
     CDR3 nucleotide and protein seuqence, and the stop codon tags.
     """
     
-    def __init__(self, name = None, v = None, d = None, j = None,
-                 cdr3_nucl_seq = None, cdr3_prot_seq = None, stop_codon_tag = None,
+    def __init__(self, name = None, v = None, d = None, j = None, orf = None,
+                 cdr3_nucl_seq = None, cdr3_prot_seq = None, #stop_codon_tag = None,
                  contain_ambiguous_D = False, contain_stopcodon = False):
         """PyDAIRStatsRecord class initialize method.
         
@@ -50,12 +50,13 @@ class PyDAIRStatsRecord:
             v (list): Assigned V gene names.
             d (list): Assigned D gene names.
             j (list): Assigned J gene names.
+            orf (list): A list of ORF.
             cdr3_nucl_seq (list): A list of CDR3 nucleotide sequences.
             cdr3_prot_seq (list): A list of CDR3 amino acid sequences.
-            stop_codon_tag (list): A list of stop codon tags.
             contain_ambiguous_D (bool): If ``True``, analysis sequence with ambiguous D gene.
             contain_stopcodon (bool): If ``True``, analysis sequence with stop codons.
         """
+        #stop_codon_tag (list): A list of stop codon tags.
         
         # calculate the number of entries
         
@@ -66,23 +67,27 @@ class PyDAIRStatsRecord:
                                   'nucl_len': pd.Series(cdr3_nucl_seq).str.len(),
                                   'prot_len': pd.Series(cdr3_prot_seq).str.len()},
                                   columns = ['nucl_seq', 'prot_seq', 'nucl_len', 'prot_len']).fillna(value = np.nan)
-        self.stop_codon_tag = pd.Series(stop_codon_tag).fillna(value = np.nan)
+        #self.stop_codon_tag = pd.Series(stop_codon_tag).fillna(value = np.nan)
         
         # set filters
-        filter_ambigoD = self.vdj.d.notnull()
-        filter_stcodon = pd.Series(self.stop_codon_tag == 'N')
-        
+        filter_ambigoD = None
         if contain_ambiguous_D:
             filter_ambigoD = pd.Series([True] * self.vdj.shape[0])
+        else:
+            filter_ambigoD = self.vdj.d.notnull()
+        
+        filter_stopcodon = None
         if contain_stopcodon:
-            filter_stcodon = pd.Series([True] * self.cdr3.shape[0])
-
-        filters = pd.Series(filter_ambigoD & filter_stcodon)
+            filter_stopcodon = pd.Series([True] * self.vdj.shape[0])
+        else:
+            filter_stopcodon = pd.Series(orf).notnull()
+            
+        filters = pd.Series(filter_ambigoD & filter_stopcodon)
         
         # filter data
         self.vdj  = self.vdj[filters]
         self.cdr3 = self.cdr3[filters]
-        self.stop_codon_tag = self.stop_codon_tag[filters]
+        #self.stop_codon_tag = self.stop_codon_tag[filters]
         
         # diversity study
         self.div = PyDAIRDiversity()
@@ -433,15 +438,17 @@ class PyDAIRStats:
             v = []
             d = []
             j = []
+            orf = []
             cdr3_prot_seq = []
             cdr3_nucl_seq = []
-            stop_codon_tag = []
+            #stop_codon_tag = []
             
             pydair_fh = PyDAIRIO(self.__pydair_file[i], 'r', self.__pydair_format)
             for igseq in pydair_fh.parse():
                 v.append(igseq.v.sbjct.name)
                 d.append(igseq.d.sbjct.name)
                 j.append(igseq.j.sbjct.name)
+                orf.append(igseq.query.orf)
                 
                 cdr3_data = igseq.get_cdr3_data()
                 if cdr3_data.nucl_seq is None:
@@ -449,12 +456,12 @@ class PyDAIRStats:
                     cdr3_data.prot_seq = ''
                 cdr3_prot_seq.append(cdr3_data.prot_seq)
                 cdr3_nucl_seq.append(cdr3_data.nucl_seq)
-                if igseq.query.orf is not None:
-                    stop_codon_tag.append('N')
-                else:
-                    stop_codon_tag.append('*')
-            sample_record = PyDAIRStatsRecord(self.__pydair_id[i], v, d, j,
-                                              cdr3_nucl_seq, cdr3_prot_seq, stop_codon_tag,
+                #if igseq.query.orf is not None:
+                    #stop_codon_tag.append('N')
+                #else:
+                    #stop_codon_tag.append('*')
+            sample_record = PyDAIRStatsRecord(self.__pydair_id[i], v, d, j, orf,
+                                              cdr3_nucl_seq, cdr3_prot_seq, #stop_codon_tag,
                                               self.__contain_ambiguous_D, self.__contain_stopcodon)
             self.samples.append(sample_record)
             pydair_fh.close()

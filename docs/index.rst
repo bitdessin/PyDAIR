@@ -12,12 +12,12 @@ that located at the end of V gene and the start of J gene are know.
 PyDAIR is available under the terms of the GNU license.
 
 
-Contents:
-
 .. toctree::
+    :caption: Contents
     :maxdepth: 2
     
-    installation
+    immunology
+    implementation
     usage
     casestudies
     API

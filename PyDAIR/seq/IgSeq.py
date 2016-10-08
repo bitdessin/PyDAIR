@@ -284,7 +284,7 @@ class IgSeqQuery:
         if orf is not None:
             self.orf = int(orf)
         else:
-            self.orf = orf
+            self.orf = None
         self.orfcode = orfcode
     
         

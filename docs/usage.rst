@@ -2,27 +2,48 @@
 Usages
 ======
 
+Installation
+============
+
+
+The simplest way to install the latest PyDAIR is to use :command:`pip` command.
+
+.. code-block:: bash
+
+    pip install --user
+
+PyDAIR requires following software to be installed.
+
+* Python 2.7 or Python 3.4
+* `NumPy <http://www.numpy.org/>`_
+* `Pandas <http://pandas.pydata.org/>`_
+* `matplotlib <http://matplotlib.org/>`_
+* `BioPython <http://biopython.org/>`_
+* `NCBI BLAST+ <https://www.ncbi.nlm.nih.gov/books/NBK279690/>`_
 
 
 
-PyDAIR command (``pydair``) consists of the two actions, ``parse`` and ``stats``.
+Command and options
+===================
+
+PyDAIR command (:command:`pydair`) consists of the two actions, :command:`parse` and :command:`stats`.
 
 
-+------------+--------------------------------------------------------------+
-| actions    | function                                                     |
-+============+==============================================================+
-| ``parse``  | Parse IgH sequences. Namely, identification of V, D, and J   |
-|            | genes, and determination of CDR3 sequences.                  |
-+------------+--------------------------------------------------------------+
-| ``stats``  | Summarize the parsed results and save them into TSV file.    |
-+------------+--------------------------------------------------------------+
++-------------------+--------------------------------------------------------------+
+| actions           | function                                                     |
++===================+==============================================================+
+| :command:`parse`  | Parse IgH sequences. Namely, identification of V, D, and J   |
+|                   | genes, and determination of CDR3 sequences.                  |
++-------------------+--------------------------------------------------------------+
+| :command:`stats`  | Summarize the parsed results and save them into TSV file.    |
++-------------------+--------------------------------------------------------------+
 
 
 
 parse action
-============
+^^^^^^^^^^^^
 
-``parse`` action is to identify V, D, and J genes from each IgH sequence
+:command:`parse` action is to identify V, D, and J genes from each IgH sequence
 by aligning IgH sequence to germline (V, D, and J) database using NCBI BLAST+.
 It requires IgH sequences (in FASTA format),
 germline sequences (in FASTA format),
@@ -31,8 +52,8 @@ and BLAST parameters.
 
 PyDAIR generates several files to save the intermediate results,
 such as BLAST results, region that cannot be aligned to V and J genes.
-The final result is saved into ``output1.pydair`` file.
-If there several samples, ``parse`` action should be run several times for each sample.
+The final result is saved into :file:`output1.pydair` file.
+If there several samples, :command:`parse` action should be run several times for each sample.
 
 
 .. code-block:: bash
@@ -140,9 +161,9 @@ If there several samples, ``parse`` action should be run several times for each 
 
 
 stats action
-============
+^^^^^^^^^^^^
 
-The statistical summaries are calculated by ``stats`` action.
+The statistical summaries are calculated by :command:`stats` action.
 
 
 .. code-block:: bash

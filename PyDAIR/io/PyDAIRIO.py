@@ -14,53 +14,6 @@ class PyDAIRIO:
     This class implements the input/output methods to handle PYDAIR format file.
     """
     
-    '''
-    ## PyDAIR flat file format
-    -----------------------------------------------------------------------------
-    |#BEGIN                                                                     |
-    |QUERYID     %s                                                             |
-    |VGENEID     %s                                                             |
-    |DGENEID     %s                                                             |
-    |JGENEID     %s                                                             |
-    |QORF        %s                                                             |
-    |QALIGN      %s                                                             |
-    |VALIGN      %s                                                             |
-    |JALIGN      %s                                                             |
-    |UALIGN      %s                                                             |
-    |CALGIN      %s                                                             |
-    |#CDR3AASEQ  %s                                                             |
-    |#ALIGNPOSHD QSTART\tQEND\tSSTART\tSEND\tIDENTITY\tSCORE                    |
-    |ALIGNPOS QV %s\t%s\t%s\t%s\t%s\t%s                                         |
-    |ALIGNPOS QJ %s\t%s\t%s\t%s\t%s\t%s                                         |
-    |ALIGNPOS QU %s\t%s\t%s\t%s\t%s\t%s                                         |
-    |ALIGNPOS QC %s\t%s\t%s\t%s\t%s\t%s                                         |
-    |#END                                                                       |
-    -----------------------------------------------------------------------------
-    
-    ## PyDAIR flat file record definitions
-    |-------------|------------------------------------------------------------------------------------------|
-    | Record name | Definition                                                                               |
-    |-------------|------------------------------------------------------------------------------------------|
-    | QUERYID     | query ID                                                                                 |
-    | VGENEID     | assigned V gene ID                                                                       |
-    | DGENEID     | assigned D gene ID                                                                       |
-    | JGENEID     | assigned J gene ID                                                                       |
-    | QORF        | open-reading-frame of query sequence                                                     |
-    | QALIGN      | aligned sequence of query                                                                |
-    | VALIGN      | aligned sequence of V gene                                                               |
-    | JALIGN      | aligned sequence of J gene                                                               |
-    | UALIGN      | aligned sequence of un-aligned region, the region that cannot aligned with V and J genes |
-    | CALGIN      | aligend seqeunce of cdr3 region                                                          |
-    | #CDR3AASEQ  | CDR amino acid sequence                                                                  |
-    | #ALIGNPOSHD | header of the following information                                                      |
-    | ALIGNPOS QV | start, end positions in the alignemnt between query and V gene                           |
-    | ALIGNPOS QJ | start, end positions in the alignemnt between query and J gene                           |
-    | ALIGNPOS QU | start, end positions in the alignemnt between query and un-aligned region                |
-    | ALIGNPOS QC |start, end positions in the alignemnt between query and cdr3 sequence region              |
-    |-------------|------------------------------------------------------------------------------------------|
-    '''
-    
-    
     def __init__(self, pydair_file_path, open_mode = None, pydair_file_format = 'pydair'):
         """PyDAIRIO class initialize method.
         
@@ -139,24 +92,24 @@ class PyDAIRIO:
             r[a] = str(r[a])
         
         tmpl = '''#BEGIN
-QUERYID     %s
-VGENEID     %s
-DGENEID     %s
-JGENEID     %s
-QORF        %s
-QORFCODE    %s
-QALIGN      %s
-VALIGN      %s
-JALIGN      %s
-UALIGN      %s
-CALGIN      %s
-#CDR3AA     %s
-#ALIGNPOSHD QSTART\tQEND\tSSTART\tSEND\tIDENTITY\tSCORE
-ALIGNPOS QV %s\t%s\t%s\t%s\t%s\t%s
-ALIGNPOS QD %s\t%s\t%s\t%s\t%s\t%s
-ALIGNPOS QJ %s\t%s\t%s\t%s\t%s\t%s
-ALIGNPOS QU %s\t%s\t%s\t%s\t%s\t%s
-ALIGNPOS QC %s\t%s\t%s\t%s\t%s\t%s
+QN %s
+VN %s
+DN %s
+JN %s
+OP %s
+OC %s
+QA %s
+VA %s
+JA %s
+UA %s
+CA %s
+#CDR3AA %s
+#AL QSTART\tQEND\tSSTART\tSEND\tIDENTITY\tSCORE
+AL QV %s\t%s\t%s\t%s\t%s\t%s
+AL QD %s\t%s\t%s\t%s\t%s\t%s
+AL QJ %s\t%s\t%s\t%s\t%s\t%s
+AL QU %s\t%s\t%s\t%s\t%s\t%s
+AL QC %s\t%s\t%s\t%s\t%s\t%s
 #END
 '''
         metadata_list = [r[0], r[5], r[8], r[11], r[3], r[4]]
@@ -238,8 +191,8 @@ ALIGNPOS QC %s\t%s\t%s\t%s\t%s\t%s
     def __parse_pydair(self):
         for buf in self.__fh:
             buf = buf.replace('\n', '')
-            buf_record = buf[12:].split('\t')
-            if buf[1:6] == 'BEGIN':
+            buf_record = buf[3:].split('\t')
+            if buf[0:6] == '#BEGIN':
                 q_name = '.'
                 v_name = '.'
                 d_name = '.'
@@ -278,59 +231,61 @@ ALIGNPOS QC %s\t%s\t%s\t%s\t%s\t%s
                 cdr3_end        = '.'
                 q_orf           = '.'
                 q_orfcode       = '.'
-            if buf[0:7] == 'QUERYID':
+            if buf[0:2] == 'QN':
                 q_name = buf_record[0]
-            if buf[0:7] == 'VGENEID':
+            if buf[0:2] == 'VN':
                 v_name = buf_record[0]
-            if buf[0:7] == 'DGENEID':
+            if buf[0:2] == 'DN':
                 d_name = buf_record[0]
-            if buf[0:7] == 'JGENEID':
+            if buf[0:2] == 'JN':
                 j_name = buf_record[0]
-            if buf[0:8] == 'QORF    ':
+            if buf[0:2] == 'OP':
                 q_orf = buf_record[0]
-            if buf[0:8] == 'QORFCODE':
+            if buf[0:2] == 'OC':
                 q_orfcode = buf_record[0]
-            if buf[0:6] == 'QALIGN':
-                aligned_q_seq = buf[12:]
-                q_seq = buf[12:].replace(' ', '').replace('-', '')
-            if buf[0:6] == 'VALIGN':
-                aligned_v_seq = buf[12:]
-                v_seq = buf[12:].replace(' ', '').replace('-', '')
-            if buf[0:6] == 'JALIGN':
-                aligned_j_seq = buf[12:]
-                j_seq = buf[12:].replace(' ', '').replace('-', '')
-            if buf[0:6] == 'UALIGN':
-                u_seq = buf[12:].replace(' ', '').replace('-', '')
-            if buf[0:6] == 'CALIGN':
-                c_seq = buf[12:].replace(' ', '').replace('-', '')
-            if buf[0:11] == 'ALIGNPOS QV':
-                alignv_qstart   = buf_record[0]
-                alignv_qend     = buf_record[1]
-                alignv_sstart   = buf_record[2]
-                alignv_send     = buf_record[3]
-                alignv_identity = buf_record[4]
-                alignv_score    = buf_record[5]
-            if buf[0:11] == 'ALIGNPOS QD':
-                alignd_qstart   = buf_record[0]
-                alignd_qend     = buf_record[1]
-                alignd_sstart   = buf_record[2]
-                alignd_send     = buf_record[3]
-                alignd_identity = buf_record[4]
-                alignd_score    = buf_record[5]
-            if buf[0:11] == 'ALIGNPOS QJ':
-                alignj_qstart   = buf_record[0]
-                alignj_qend     = buf_record[1]
-                alignj_sstart   = buf_record[2]
-                alignj_send     = buf_record[3]
-                alignj_identity = buf_record[4]
-                alignj_score    = buf_record[5]
-            if buf[0:11] == 'ALIGNPOS QU':
-                untmpl_start    = buf_record[0]
-                untmpl_end      = buf_record[1]
-            if buf[0:11] == 'ALIGNPOS QC':
-                cdr3_start      = buf_record[0]
-                cdr3_end        = buf_record[1]
-            if buf[1:4] == 'END':
+            if buf[0:2] == 'QA':
+                aligned_q_seq = buf[3:]
+                q_seq = buf[3:].replace(' ', '').replace('-', '')
+            if buf[0:2] == 'VA':
+                aligned_v_seq = buf[3:]
+                v_seq = buf[3:].replace(' ', '').replace('-', '')
+            if buf[0:2] == 'JA':
+                aligned_j_seq = buf[3:]
+                j_seq = buf[3:].replace(' ', '').replace('-', '')
+            if buf[0:2] == 'UA':
+                u_seq = buf[3:].replace(' ', '').replace('-', '')
+            if buf[0:2] == 'CA':
+                c_seq = buf[3:].replace(' ', '').replace('-', '')
+            if buf[0:2] == 'AL':
+                buf_record = buf[6:].split('\t')
+                if buf[3:5] == 'QV':
+                    alignv_qstart   = buf_record[0]
+                    alignv_qend     = buf_record[1]
+                    alignv_sstart   = buf_record[2]
+                    alignv_send     = buf_record[3]
+                    alignv_identity = buf_record[4]
+                    alignv_score    = buf_record[5]
+                if buf[3:5] == 'QD':
+                    alignd_qstart   = buf_record[0]
+                    alignd_qend     = buf_record[1]
+                    alignd_sstart   = buf_record[2]
+                    alignd_send     = buf_record[3]
+                    alignd_identity = buf_record[4]
+                    alignd_score    = buf_record[5]
+                if buf[3:5] == 'QJ':
+                    alignj_qstart   = buf_record[0]
+                    alignj_qend     = buf_record[1]
+                    alignj_sstart   = buf_record[2]
+                    alignj_send     = buf_record[3]
+                    alignj_identity = buf_record[4]
+                    alignj_score    = buf_record[5]
+                if buf[3:5] == 'QU':
+                    untmpl_start    = buf_record[0]
+                    untmpl_end      = buf_record[1]
+                if buf[3:5] == 'QC':
+                    cdr3_start      = buf_record[0]
+                    cdr3_end        = buf_record[1]
+            if buf[0:4] == '#END':
                 r = [None] * 42
                 # query, v, d, j
                 r[0] = q_name if q_name != '.' else None
@@ -392,7 +347,6 @@ ALIGNPOS QC %s\t%s\t%s\t%s\t%s\t%s
                     r[22] = r[14]
                 elif r[30] is not None:
                     r[22] = r[30]
-                
                 igseq = IgSeq()
                 igseq.set_record(r)
                 yield igseq

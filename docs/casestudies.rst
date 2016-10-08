@@ -13,7 +13,7 @@ Simulation study with Joinsim dataset
 Artificial IgH sequences, human germline gene databases,
 and scripts that used in the simulation study are available on
 `GitHub PyDAIR repository <https://github.com/bioinfoteam/PyDAIR>`_.
-We use ``git clone`` command to download these data from GitHub.
+We use :command:`git clone` command to download these data from GitHub.
 
 
 .. code-block:: bash
@@ -21,13 +21,15 @@ We use ``git clone`` command to download these data from GitHub.
     git clone git@github.com:bioinfoteam/PyDAIR.git
 
 
-The data are saved in `PyDAIR/casestudies/joinsim`.
-We use ``cd`` command to go to `joinsim` directory.
+The data are saved in :file:`PyDAIR/casestudies/joinsim`.
+We use :command:`cd` command to go to :file:`joinsim` directory,
+and decompress the data using :command:`gunzip` command.
 
 
 .. code-block:: bash
     
     cd PyDAIR/casestudies/joinsim
+    gunzip data/joinsim.txt.gzip
 
 
 
@@ -36,7 +38,7 @@ Preparation
 ^^^^^^^^^^^
 
 Before analysis, we create BLAST database with human
-germline gene sequences using ``makeblastdb``.
+germline gene sequences using :command:`makeblastdb`.
 
 
 .. code-block:: bash
@@ -49,10 +51,10 @@ germline gene sequences using ``makeblastdb``.
 
 
 The artificial sequences obtained from JoinSimulation,
-is saved in `data/joinsim.txt` directory with TSV format.
+is saved in :file:`data/joinsim.txt` directory with TSV format.
 We first extract sequences with ORF from whole data set
 to create a subset,
-and save them to `data/joinsim.sub.txt`.
+and save them to :file:`data/joinsim.sub.txt`.
 Then, we convert the whole data set and subset into FASTA format file.
 
 
@@ -70,7 +72,7 @@ Then, we convert the whole data set and subset into FASTA format file.
 Analysis
 ^^^^^^^^
 
-We use ``pydair parse`` command to assign VDJ genes,
+We use :command:`pydair parse` command to assign VDJ genes,
 and determine CDR3 sequences for whole data set and subset, respectively.
 
 
@@ -103,13 +105,13 @@ the number of sequences that are correctly and incorrectly asssigned.
 
 
 The calculation results are saved into 
-`joinsim.stats.txt` for whole data set,
-and `joinsim.sub.stats.txt` for subset.
+:file:`joinsim.stats.txt` for whole data set,
+and :file:`joinsim.sub.stats.txt` for subset.
 
-Finally, we use ``pydair stats`` commands to create
+Finally, we use :command:`pydair stats` commands to create
 the TSV files that contained V, D and J usage frequencies,
 and the distribution of CDR3 length,
-and summarize them into HTML report (`stats_report.html`).
+and summarize them into HTML report (:file:`stats_report.html`).
 
 
 
@@ -133,6 +135,10 @@ and summarize them into HTML report (`stats_report.html`).
 Analysis of human HIV-1-neutralizing antibodies
 ===============================================
 
+.. note:: To perform analysis from FASTQ file, one may need to install 
+          `NCBI SRA Toolkit <https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software>`_
+          and `Trimmomatic <http://www.usadellab.org/cms/?page=trimmomatic>`_.
+
 
 We show the precedures for repertoire diversity study of
 human immunoglobulin heavy (IgH) chains from B cell with PyDAIR.
@@ -142,7 +148,7 @@ IgH sequence in IAVI84 donor is broadly contained neutralizing antibodies,
 and N152 is the brodly neutralizing antibody 10E8 was recently identified in HIV-1-infected donor.
 
 
-First, we use ``git clone`` command to download
+First, we use :command:`git clone` command to download
 the case study set that consists of
 human germline genes in FASTA format from
 `GitHub PyDAIR repository <https://github.com/bioinfoteam/PyDAIR>`_.
@@ -153,8 +159,8 @@ human germline genes in FASTA format from
     git clone git@github.com:bioinfoteam/PyDAIR.git
 
 
-The data are saved in `PyDAIR/casestudies/hiv`.
-We use ``cd`` command to go to `hiv` directory.
+The data are saved in :file:`PyDAIR/casestudies/hiv`.
+We use :command:`cd` command to go to :file:`hiv` directory.
 
 
 .. code-block:: bash
@@ -162,16 +168,12 @@ We use ``cd`` command to go to `hiv` directory.
     cd PyDAIR/casestudies/hiv
 
 
-.. note:: To perform analysis from FASTQ file, one may need to install 
-          `NCBI SRA Toolkit <https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software>`_
-          and `Trimmomatic <http://www.usadellab.org/cms/?page=trimmomatic>`_.
-
 
 Preparation
 ^^^^^^^^^^^
 
 Before analysis, we create BLAST database with human
-germline gene sequences using ``makeblastdb``.
+germline gene sequences using :command:`makeblastdb`.
 
 
 .. code-block:: bash
@@ -217,7 +219,7 @@ to removed the low quality reads.
 
 After trimming of low quality bases and removing low short sequences,
 we convert FASTQ format file to FASTA format file
-with ``awk`` and ``sed`` commands.
+with :command:`awk` and "command:`sed` commands.
 
 
 .. code-block:: bash
@@ -232,7 +234,7 @@ with ``awk`` and ``sed`` commands.
 Analysis
 ^^^^^^^^
 
-We use ``pydair parse`` command to assign VDJ genes and determine CDR3 sequence.
+We use :command:`pydair parse` command to assign VDJ genes and determine CDR3 sequence.
 
 
 .. code-block:: bash
@@ -247,15 +249,15 @@ We use ``pydair parse`` command to assign VDJ genes and determine CDR3 sequence.
                  -o ./results/SRR654169
 
 
-Then, we use ``pydair stats`` command to summarize the analysis results.
-All summarized data are saved into `results` directory with prefix `stats`.
+Then, we use :command:`pydair stats` command to summarize the analysis results.
+All summarized data are saved into :file:`results` directory with prefix `stats`.
 
 
 .. code-block:: bash
     
-    pydair stats -i ./result/SRR654171.vdj.pydair ./result/SRR654169.vdj.pydair \
+    pydair stats -i ./results/SRR654171.vdj.pydair ./results/SRR654169.vdj.pydair \
                  -n N152 TIAVI84 \
-                 -o ./result/stats \
+                 -o ./results/stats \
                  --contain_ambiguous_D \
                  --estimate-vdj-combination
 

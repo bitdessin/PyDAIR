@@ -1,14 +1,15 @@
-from setuptools import setup, find_packages
+from setuptools import setup
+#from setuptools import find_packages
 import os
 
 
 
-try:
-    import pypandoc
-    read_md = lambda f: pypandoc.convert(f, 'rst')
-except ImportError:
-    print('Warning: pypandoc module not found.')
-    read_md = lambda f: open(f, 'r').read()
+#try:
+#    import pypandoc
+#    read_md = lambda f: pypandoc.convert(f, 'rst')
+#except ImportError:
+#    print('Warning: pypandoc module not found.')
+#    read_md = lambda f: open(f, 'r').read()
 
 
 # PyDAIR version
@@ -37,17 +38,22 @@ setup(
     keywords     = 'blast, bioinformatics',
     author       = 'Bioinformatics Team',
     author_email = 'wukong@bi.a.u-tokyo.ac.jp',
-    url          = 'https://github.com/jqsunac/PyDAIR',
+    url          = 'https://github.com/bioinfoteam/PyDAIR',
     license      = 'GNU',
-    packages     = ['PyDAIR', 'PyDAIR.app', 'PyDAIR.io', 'PyDAIR.seq',
-                    'PyDAIR.stats', 'PyDAIR.utils', 'PyDAIR.plot'],
+    packages     = ['PyDAIR',
+                    'PyDAIR.app',
+                    'PyDAIR.io',
+                    'PyDAIR.seq',
+                    'PyDAIR.stats', 
+                    'PyDAIR.utils',
+                    'PyDAIR.plot'],
     package_dir  = {'PyDAIR': 'PyDAIR'},
     package_data = {'PyDAIR': ['templates/*html']},
     scripts      = ['PyDAIR/bin/pydair'],
     test_suite   = 'test',
     include_package_data = True,
     zip_safe = True,
-    long_description = read_md('README.md'),
+    long_description = open('README.rst', 'r').read(),
     install_requires = ['matplotlib>=1.4', 'pandas', 'biopython', 'jinja2'],
 )
 

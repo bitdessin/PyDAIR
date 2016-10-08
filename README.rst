@@ -1,7 +1,11 @@
-[![Build Status](https://travis-ci.org/jqsunac/PyDAIR.svg?branch=master)](https://travis-ci.org/jqsunac/PyDAIR)
+.. image:: https://travis-ci.org/bioinfoteam/PyDAIR.svg?branch=master
+    :target: https://travis-ci.org/bioinfoteam/PyDAIR
 
 
-# PyDAIR
+
+======
+PyDAIR
+======
 
 PyDAIR is a Python package that aims to study immunoglobulin heavy (IgH) chain diversity
 based on repertoire-sequencing (Rep-Seq) data.
@@ -12,5 +16,6 @@ PyDAIR supports all features as long as the two motifs, YYC and WGxG,
 that located at the end of V gene and the start of J gene are know.
 PyDAIR is available under the terms of the GNU license.
 
-
+- Package: `PyPI <https://pypi.python.org/pypi/PyDAIR/>`_
+- Documents: `PyDAIR <http://pydair.readthedocs.io/en/latest/index.html>`_
 
