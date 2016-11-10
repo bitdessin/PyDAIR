@@ -31,7 +31,7 @@ class Test_app(unittest.TestCase):
         output_prefix = _result_path + '/test_output_app_parseseq'
         
         # PyDAIR arguemnts settings
-        pydair_args = PyDAIRParseSeqArgs('fugu', q_fasta, v_gene_fasta, d_gene_fasta, j_gene_fasta,
+        pydair_args = PyDAIRParseSeqArgs(q_fasta, v_gene_fasta, d_gene_fasta, j_gene_fasta,
                                        output_prefix, 'pydair',
                                        v_gene_align_args, d_gene_align_args, j_gene_align_args)
         

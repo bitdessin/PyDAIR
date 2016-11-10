@@ -18,29 +18,22 @@ class IgConstantTag:
     Ig sequence.
     """
     
-    def __init__(self, V = None, J = None, species = None,
+    def __init__(self, V = None, J = None,
                  cdr3_motif_start_adjust = None, cdr3_motif_end_adjust = None):
         """IgConstantTag class initialize method.
         
         Args:
             v (list): a list of string of YYC motifs in the end of V gene.
             j (list): a string of WGxG motifs.
-            species (str): If ``v`` and ``j`` are ``None``, use the implemented
-                           data based on ``species``.
             cdr3_motif_start_adjust (int): Specified integer to adjust the start position of CDR3.
             cdr3_motif_end_adjust (int): Specified integer to adjust the end position of CDR3.
         """
         
-        if species == 'fugu':
-            if V is None:
-                V = ['AVFFC', 'PVFFC', 'AVYYC', 'AAYYC', 'VVYYC', 'AVFYC', 'SVYYC']
-            if J is None:
-                J = 'WG.G'
-        if species == 'human':
-            if V is None:
-                V = ['AVYYC', 'AMYYC', 'AEYYC', 'VVYYC', 'DVYGC', 'AVYGC', 'GTYYC', 'AFYYC']
-            if J is None:
-                J = 'WG.G'
+        if V is None:
+            V = ['AVFFC', 'PVFFC', 'AVYYC', 'AAYYC', 'VVYYC', 'AVFYC', 'SVYYC']
+            #V = 'YYC'
+        if J is None:
+            J = 'WG.G'
         self.V = V
         self.J = J
         
@@ -364,19 +357,16 @@ class IgSeq:
         --------------------------------------------------------------
        
     """
-    def __init__(self, species = None, ig_seq_align_v = None, ig_seq_align_d = None, ig_seq_align_j = None, ig_seq_variable_region = None):
+    def __init__(self, ig_seq_align_v = None, ig_seq_align_d = None, ig_seq_align_j = None, ig_seq_variable_region = None):
         """IgSeq class initialize method.
         
         Args:
-            species (str): Species name.
             ig_seq_align_v (IgSeqQuery): An IgSeqQuery class object contains the alignment reuslt of V gene.
             ig_seq_align_d (IgSeqQuery): An IgSeqQuery class object contains the alignment reuslt of D gene.
             ig_seq_align_j (IgSeqQuery): An IgSeqQuery class object contains the alignment reuslt of J gene.
             ig_seq_variable_region (IgSeqVariableRegion): An IgSeqVariableRegion class object.
         """
         
-        if species is None:
-            species = 'fugu'
         if ig_seq_align_v is not None:
             self.query = IgSeqQuery(ig_seq_align_v.query.name, ig_seq_align_v.query.seq, ig_seq_align_v.query.strand)
         elif ig_seq_align_j is not None:
@@ -386,7 +376,6 @@ class IgSeq:
         else:
             self.query = None
         
-        self.species = species
         self.v = ig_seq_align_v
         self.d = ig_seq_align_d
         self.j = ig_seq_align_j
@@ -859,7 +848,7 @@ class IgSeq:
             has_j_tag = const_tag.J_re.search(aa_right)
             if has_j_tag:
                 cdr3_aa_end = has_j_tag.end() + v_aa_end - const_tag.cdr3_motif_end_len
-                cdr3_end = cdr3_aa_end * 3 + i
+                cdr3_end = (cdr3_aa_end - 1)* 3 + i
                 break
         return cdr3_end
     
@@ -977,7 +966,7 @@ class IgSeq:
             # seek unaligned region
             untmpl_start, untmpl_end = self.__seek_untemplated_region()
             # seek CDR3
-            const_tag = IgConstantTag(species = self.species)
+            const_tag = IgConstantTag()
             cdr3_start = self.__seek_cdr3_YYC( self.query.seq, untmpl_start - 1, untmpl_end, const_tag)
             cdr3_end   = self.__seek_cdr3_WGxG(self.query.seq, untmpl_start - 1, untmpl_end, const_tag)
             

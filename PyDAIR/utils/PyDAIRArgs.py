@@ -11,12 +11,11 @@ class PyDAIRParseSeqArgs:
     PyDAIRParseSeqArgs is a class to store the parameters for parsing Rep-Seq data.
     """
    
-    def __init__(self, species = None, q = None, v = None, d = None, j = None, o = None, f = None,
+    def __init__(self, q = None, v = None, d = None, j = None, o = None, f = None,
                  valign = None, dalign = None, jalign = None):
         """Set up parameters for analysis of Rep-Seq data
         
         Args:
-            species (str): Species name.
             q (str): A path to V gene FASTA file.
             d (str): A path to D gene FASTA file.
             j (str): A path to J gene FASTA file.
@@ -59,7 +58,6 @@ class PyDAIRParseSeqArgs:
         self.v_align_args = valign
         self.d_align_args = dalign
         self.j_align_args = jalign
-        self.species = species
 
 
 

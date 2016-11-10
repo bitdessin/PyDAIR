@@ -28,7 +28,7 @@ def main_parse(args):
     j_gene_align_args = PyDAIRBlastArgs(args.j_blastdb, args.j_match_score,
                                        args.j_mismatch_score, args.j_gap_open_penalty,
                                        args.j_gap_extend_penalty, args.j_wordsize, args.j_evalue_cutoff)
-    pydair_args = PyDAIRParseSeqArgs(args.species, args.q_fasta, args.v_fasta, args.d_fasta, args.j_fasta, args.output, args.output_format,
+    pydair_args = PyDAIRParseSeqArgs(args.q_fasta, args.v_fasta, args.d_fasta, args.j_fasta, args.output, args.output_format,
                                      v_gene_align_args, d_gene_align_args, j_gene_align_args)
     logging.info('[ 1/10] Setting up parameters.')
     pydair = PyDAIRAPPParseSeq(pydair_args)
@@ -90,7 +90,6 @@ def parse_args():
     parse_parser.add_argument('-q', '--q-fasta',  help = 'Path to FASTA file that contains immunoglobulin heavy chain sequences.', required = True)
     parse_parser.add_argument('-o', '--output',   help = 'Path to file for writing anaysis results.', required = True)
     parse_parser.add_argument('-f', '--output-format', help = 'File format of analysis results.', choices = ['pydair', 'tsv', 'simple'], default = 'pydair')
-    parse_parser.add_argument('-s', '--species', help = 'Species.', choices = ['human', 'fugu'], default = 'fugu')
     parse_parser.add_argument('-v', '--v-fasta', help = 'Path to FASTA file of V sequences.', required = True)
     parse_parser.add_argument('-d', '--d-fasta', help = 'Path to FASTA file of D sequences.', required = True)
     parse_parser.add_argument('-j', '--j-fasta', help = 'Path to FASTA file of J sequences.', required = True)
@@ -109,7 +108,7 @@ def parse_args():
     parse_parser.add_argument('--d-gap-open-penalty',   help = 'Penalty (> 0) to open a gap for D gene.',           type = int, default  =  0)
     parse_parser.add_argument('--d-gap-extend-penalty', help = 'Penaly (> 0 )to extend a gap for D gene.',          type = int, default  =  2)
     parse_parser.add_argument('--d-wordsize',           help = 'Word size to find hotspots by BLAST for D gene.',   type = int, default  =  4)
-    parse_parser.add_argument('--d-evalue-cutoff',      help = 'Expectation value (e-value) threshold for assiging D gene to immunoglobulin sequence.', type = float, default = 1e2)
+    parse_parser.add_argument('--d-evalue-cutoff',      help = 'Expectation value (e-value) threshold for assiging D gene to immunoglobulin sequence.', type = float, default = 1e-2)
     ## alignment parameters J
     parse_parser.add_argument('--j-blastdb',            help = 'Path to J gene BLAST database index.', required = True)
     parse_parser.add_argument('--j-match-score',        help = 'Score (> 0) for a nucleotide match for J gene.',    type = int, default  =  3)

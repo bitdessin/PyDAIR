@@ -62,7 +62,6 @@ class PyDAIRAPPParseSeq:
         # data
         self.__pydair_records = []
         
-        self.__species = self.__args.species
         
         # protocol log
         self.__log_parsed_v = False
@@ -242,7 +241,7 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
                     igseqj_s = IgSeqAlignSbjct(    j[4], fa_j_dict[j[4]], j[7], j[5], j[6], j[10])
                     igseqj = IgSeqAlign(igseqj_q, igseqj_s, j[9], j[11])
             # create IgSeq class object
-            igseq = IgSeq(self.__species, igseqv, igseqd, igseqj)
+            igseq = IgSeq(igseqv, igseqd, igseqj)
             # find CDR3 region
             igseq.seek_cdr3()
             igseq.seek_orf()
