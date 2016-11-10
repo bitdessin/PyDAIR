@@ -5,9 +5,9 @@ Implementation
 
 PyDAIR offers two commands, :command:`pydair parse` and :command:`pydair stats`,
 to perform repertoire diversity study.
-The :command:`pydair parse` command is used for determining of V, D, and J genes
-and identifying of CDR3 sequences from each of Rep-Seq sequence,
-and outputting results into flat file.
+The :command:`pydair parse` command is used for identification of V, D, and J genes
+and determination of CDR3 sequences from each of Ig-Seq sequence,
+and outputting results into a flat file.
 The :command:`pydair stats` command is used for summarizing results and
 outputting into tab-delimited text files.
 
@@ -22,16 +22,16 @@ It can be explained in fifth steps.
 
 #. To identify V gene that used in Rep-Seq IgH sequence,
    an IgH sequences is aligned to V gene database using BLAST.
-   The best-hit of V gene in database is assigned to V gene that
+   The best hit of V gene in database is assigned to V gene that
    used in IgH sequence.
    Parameters of BLAST can be changed by users.
-#. Same to as-signment of V gene, the J gene is identified by
+#. Same to assignment of V gene, the J gene is identified by
    aligning IgH sequence to J gene database using BLAST.
-#. To identify CDR3 sequence, regu-lar expression matching is
+#. To identify CDR3 sequence, regular expression matching is
    used to seek the YYC motif from the end of V-aligned region
    and seek the WGxG motif from the start of J-aligned region.
    This is because CDR3 sequence is defined between these two
-   highly conserved motifs (North et al., 2011; Kabat, 1991).
+   highly conserved motifs.
 #. To identify D gene, the identified CDR3 sequence is aligned
    to D gene database using BLAST.
    However, if CDR3 sequence is unidentifiable,
@@ -41,10 +41,7 @@ It can be explained in fifth steps.
    regular expression matching is used to seek the region
    beginning with a methionine in V region and without any
    stop codon in downstream, since the ORF is defined by the
-   start codon in V region of IgH (Armitage, 2009).
-
-All Rep-Seq IgH sequences are pro-cessed with the five steps we described.
-The results are saved into a flat file with plain text. 
+   start codon in V region of IgH.
 
 
 .. image:: images/pydair-parse.png
@@ -61,13 +58,8 @@ Repertoire diversity study
 The :command:`pydair stats` command is to calculate the frequencies of
 V, D, and J gene usages, and the distribution of CDR3 sequence
 length with tab-delimited text file.
-As output, PyDAIR reports the selected genes and Gene Sets into
-simple tab delimited .txt files and plots the temporal patterns
-on sepa-rate .pdf files.
-The package allows the user to easily display the results into HTML
-tables with sortable and filterable columns, plots and hyper-links to
-other data sources such as NCBI and GO database.
-(:download:`Example of HTML report <./example_report.html>`.)
+
+
 
 
 PYDAIR format

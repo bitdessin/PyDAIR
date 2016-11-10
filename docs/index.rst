@@ -2,14 +2,17 @@
 PyDAIR
 ======
 
-PyDAIR is a Python package that aims to study immunoglobulin heavy (IgH)
-chain diversity based on repertoire-sequencing (Rep-Seq) data.
-PyDAIR identifies the germline variable (V), diversity (D), and joining (J) genes
-that used by each IgH sequence.
-BLAST is used for aligning sequences to a database of known germline VDJ genes to assign VDJ.
-PyDAIR supports all features as long as the two motifs, YYC and WGxG,
-that located at the end of V gene and the start of J gene are know.
-PyDAIR is available under the terms of the GNU license.
+*Python library for diversity analysis for immune repertoire*
+
+
+Sequencing immunoglobulin using high-throughput sequencing platform (Ig-Seq)
+enables to snapshot the adaptive immune repertoires,
+giving us the insights to better understanding immune responses in health and disease.
+Large amounts of raw data produced by Ig-Seq require effective ways for anlaysis.
+PyDAIR is a tool for diversity analysis of Ig-Seq data.
+The main functions of PyDAIR are the  identification of VDJ genes and determination of CDR3 regions.
+
+
 
 
 .. toctree::
@@ -29,5 +32,4 @@ Indices and tables
 
 * :ref:`genindex`
 * :ref:`modindex`
-* :ref:`search`
-
+* :ref:`search

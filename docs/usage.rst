@@ -6,13 +6,15 @@ Installation
 ============
 
 
-The simplest way to install the latest PyDAIR is to use :command:`pip` command.
+PyDAIR can be installed via :command:`pip` command.
 
 .. code-block:: bash
 
     pip install --user
 
-PyDAIR requires following software to be installed.
+
+
+Requirements:
 
 * Python 2.7 or Python 3.4
 * `NumPy <http://www.numpy.org/>`_
@@ -26,34 +28,36 @@ PyDAIR requires following software to be installed.
 Command and options
 ===================
 
-PyDAIR command (:command:`pydair`) consists of the two actions, :command:`parse` and :command:`stats`.
+PyDAIR offers the two actions that are :command:`parse` and :command:`stats`.
 
 
-+-------------------+--------------------------------------------------------------+
-| actions           | function                                                     |
-+===================+==============================================================+
-| :command:`parse`  | Parse IgH sequences. Namely, identification of V, D, and J   |
-|                   | genes, and determination of CDR3 sequences.                  |
-+-------------------+--------------------------------------------------------------+
-| :command:`stats`  | Summarize the parsed results and save them into TSV file.    |
-+-------------------+--------------------------------------------------------------+
++-------------------+-----------------------------------------------------------+
+| actions           | function                                                  |
++===================+===========================================================+
+| :command:`parse`  | Parse IgH sequences. Namely, dentifying V, D, and J       |
+|                   | genes, and determing CDR3 sequences.                      |
++-------------------+-----------------------------------------------------------+
+| :command:`stats`  | Summarize the parsed results and save the results into    |
+|                   | TSV files.                                                |
++-------------------+-----------------------------------------------------------+
 
 
 
 parse action
 ^^^^^^^^^^^^
 
-:command:`parse` action is to identify V, D, and J genes from each IgH sequence
-by aligning IgH sequence to germline (V, D, and J) database using NCBI BLAST+.
-It requires IgH sequences (in FASTA format),
-germline sequences (in FASTA format),
-BLAST databases of germiline sequences,
-and BLAST parameters.
+:command:`parse` action is used to identify V, D, and J genes by aligning IgH sequences
+to each germline VDJ database using NCBI BLAST+.
+PyDAIR requires several files, which contain information of germline VDJ gene sequences
+and IgH sequences in FASTA format,
+and BLAST databases consisting of germline VDJ sequences and BLAST parameters
+that are set by users.
+PyDAIR generates several files to save intermediate results including BLAST results
+and regions that cannot be aligned to V and J genes.
+Final results are summarized in an :file:`output1.vdj.pydair` file.
+Parse should be run sequentially to the output of individual samples.
 
-PyDAIR generates several files to save the intermediate results,
-such as BLAST results, region that cannot be aligned to V and J genes.
-The final result is saved into :file:`output1.pydair` file.
-If there several samples, :command:`parse` action should be run several times for each sample.
+
 
 
 .. code-block:: bash
@@ -78,8 +82,6 @@ If there several samples, :command:`parse` action should be run several times fo
 +----------------------------+------------------------------------+----------------+
 | ``-f``                     | File format of results. ``pydair`` | ``pydair``     |
 |                            | or ``simple`` can be specified.    |                |
-+----------------------------+------------------------------------+----------------+
-| ``-s``                     | Species.                           | ``fugu``       |
 +----------------------------+------------------------------------+----------------+
 | ``-v``                     | Path to FASTA file of V gene       |                |
 |                            | sequence.                          |                |
@@ -163,7 +165,7 @@ If there several samples, :command:`parse` action should be run several times fo
 stats action
 ^^^^^^^^^^^^
 
-The statistical summaries are calculated by :command:`stats` action.
+The :command:`stats` action is used to summarise the parsed results.
 
 
 .. code-block:: bash
@@ -178,11 +180,11 @@ The statistical summaries are calculated by :command:`stats` action.
 +--------------------------------+------------------------------------+----------------+
 | options                        |                                    | defult         |
 +================================+====================================+================+
-| ``-i``                         | Path to ``pydair`` format files.   |                |
+| ``-i``                         | Path to ``PYDAIR`` format files.   |                |
 |                                | Multiple files should be separated |                |
 |                                | by a blank.                        |                |
 +--------------------------------+------------------------------------+----------------+
-| ``-n``                         | Sample names of each ``pydair``    |                |
+| ``-n``                         | Sample names of each ``PYDAIR``    |                |
 |                                | files. Multiple names should be    |                |
 |                                | separated by a blank.              |                |
 +--------------------------------+------------------------------------+----------------+
