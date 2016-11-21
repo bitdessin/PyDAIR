@@ -123,7 +123,7 @@ class PyDAIRBlastArgs:
 class PyDAIRStatsArgs:
     """A class is to save parameters for statistical analysis.
     
-    There two arguments `contain_ambiguous_D` and `contain_stopcodon`
+    There two arguments `contain_ambiguous_D` and `all_seq`
     are important in analysis.
     
     An Ig sequence is composed of V, D, and J genes. In addition,
@@ -146,17 +146,17 @@ class PyDAIRStatsArgs:
     Then, analysis will be performed agains the remained Ig
     sequences with identificable D gene.
 
-    The `contain_stopcodon` argument is an option to specify
+    The `all_seq` argument is an option to specify
     how to treat these Ig seqeunces that contains stop codons.
     It is known to that Ig seqeunce freaquently contains stop codons.
     The Ig sequence with stop codons may not give the function in immune system.
-    If `contain_stopcodon` is `True`, analysis will be performed against
+    If `all_seq` is `True`, analysis will be performed against
     all Ig sequences.
-    If `contain_stopcodon` is `False`, analysis will be performed against
+    If `all_seq` is `False`, analysis will be performed against
     Ig seqeuences that do not contain any stop codon.
     """
     
-    def __init__(self, sample_names, pydair_files, contain_ambiguous_D, contain_stopcodon,
+    def __init__(self, sample_names, pydair_files, contain_ambiguous_D, all_seq,
                  estimate_vdj_combination, n_tries = 1000,
                  output_prefix = './pydairstats_',
                  figure_format = 'pdf', figure_style = 'ggplot'):
@@ -169,7 +169,7 @@ class PyDAIRStatsArgs:
                                  The length of ``pydair_files`` should be equal to ``sample_names``.
             contain_ambiguous_D (bool):  If ``True``, analysis will contain Ig sequence with ambiguous D gene.
                                          Default is ``True``.
-            contain_stopcodon (bool): If ``True``, analysis will contain Ig sequence which contains stop codons.
+            all_seq (bool): If ``True``, analysis will contain Ig sequence which contains stop codons.
                                       Since Ig sequence with stop codon may not have function in immune system,
                                       therefore, default is ``False``.
             estimate_vdj_combination (bool): If ``True``, perform rarefaction study to estimate diversity of VDJ combination.
@@ -182,7 +182,7 @@ class PyDAIRStatsArgs:
         
         >>> args = PyDAIRStatsArgs(sample_names = ['fugu 1', 'fugu 2', 'fugu 3'],
         >>>                        pydair_files = ['fugu1.pydair', 'fugu2.pydair', 'fugu3.pydair'],
-        >>>                        containe_ambiguous_D = True, contain_stopcodon = False,
+        >>>                        containe_ambiguous_D = True, all_seq = False,
         >>>                        estimate_vdj_combination = True, n_tries = 1000,
         >>>                        output_prefix = './fugustat_result',
         >>>                        figure_format = 'pdf', foigure_style = 'ggplot')
@@ -192,7 +192,7 @@ class PyDAIRStatsArgs:
         self.sample_names        = sample_names
         self.pydair_files        = pydair_files
         self.contain_ambiguous_D = contain_ambiguous_D
-        self.contain_stopcodon   = contain_stopcodon
+        self.all_seq   = all_seq
         self.output_prefix       = output_prefix
         self.figure_format       = figure_format
         self.figure_style        = figure_style

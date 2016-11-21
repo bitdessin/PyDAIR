@@ -60,7 +60,7 @@ def main_stats(args):
     logging.info('[1/4] Read data files.')
     pydair_args = PyDAIRStatsArgs(sample_names, pydair_files,
                                 contain_ambiguous_D = args.contain_ambiguous_D,
-                                contain_stopcodon = args.contain_stopcodon,
+                                all_seq = args.all_seq,
                                 estimate_vdj_combination = args.estimate_vdj_combination,
                                 output_prefix = args.output,
                                 figure_format = args.figure_format,
@@ -128,14 +128,14 @@ def parse_args():
     stat_parser.add_argument('-n', '--name',  help = 'Sample names for each PyDAIR file. Multiple names should be separated by a blank.', nargs= '*', action = 'append', required = True)
     stat_parser.add_argument('-o', '--output', help = 'Path to file for writing anaysis results.', required = True)
     stat_parser.add_argument('--contain_ambiguous_D', help = 'Contain immunoglobulin heavy chain sequences that has unidentifiable D genes when calculating the frequencies.', action = 'store_true')
-    stat_parser.add_argument('--contain_stopcodon',   help = 'Contain immunoglobulin heavy chain sequences that has stop codons when calculating the frequencies.',            action = 'store_true')
+    stat_parser.add_argument('--all_seq',   help = 'Contain immunoglobulin heavy chain sequences that has stop codons when calculating the frequencies.',            action = 'store_true')
     stat_parser.add_argument('--figure-format',   help = 'Format of figures.', default = 'png')
     stat_parser.add_argument('--figure-dpi',      help = 'DPI of figures',     default = 300)
     stat_parser.add_argument('--figure-style',    help = 'Stylesheet of figures', choices = ['classic', 'ggplot', 'fivethirtyeight'], default = 'ggplot')
     #stat_parser.add_argument('--estimate-cdr3-population', help = 'Estimation of CDR-H3 population sizes by sampling-resampling study.', action = 'store_true')
     stat_parser.add_argument('--estimate-vdj-combination', help = 'Estimation of the numbers of VDJ combinations by rarefaction study.', action = 'store_true')
     stat_parser.set_defaults(contain_ambiguous_D      = True)
-    stat_parser.set_defaults(contain_stopcodon        = False)
+    stat_parser.set_defaults(all_seq        = False)
     #stat_parser.set_defaults(estimate_cdr3_population = False)
     stat_parser.set_defaults(estimate_vdj_combination = False)
     stat_parser.set_defaults(action = 'stats')

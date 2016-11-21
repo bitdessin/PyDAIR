@@ -485,7 +485,7 @@ class PyDAIRAPPStats:
         self.__sample_names        = args.sample_names
         self.__pydair_files        = args.pydair_files
         self.__contain_ambiguous_D = args.contain_ambiguous_D
-        self.__contain_stopcodon   = args.contain_stopcodon
+        self.__all_seq   = args.all_seq
         self.__output_prefix       = args.output_prefix
         self.__figure_format       = args.figure_format
         self.__figure_style        = args.figure_style
@@ -533,7 +533,7 @@ class PyDAIRAPPStats:
         
         # create objects
         stats = PyDAIRStats(self.__pydair_files, 'pydair', self.__sample_names,
-                                 self.__contain_ambiguous_D, self.__contain_stopcodon)
+                                 self.__contain_ambiguous_D, self.__all_seq)
         
         if self.__args.estimate_vdj_combination:
             stats.rarefaction_study('vdj', self.__args.n_tries)
