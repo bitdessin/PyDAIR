@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>PyDAIR Report</title>
+
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<style>
+h1, h2, h3, h4, h5, h6 {
+    font-family: -apple-system, Helvetica, Arial, sans-serif;
+    font-weight: 100;
+}
+article {
+    margin-top: 80px;
+    font-family: -apple-system, Helvetica, Arial, sans-serif;
+    font-weight: 100;
+}
+
+/* bootstrap style sheet */
+.panel {
+    margin-bottom: 20px;
+    background-color: #fff;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    box-shadow: 0 1px 1px rgba(0,0,0,.05);
+}
+.panel-heading {
+    padding: 10px 15px;
+    border-bottom: 1px solid transparent;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+.panel-default {
+    border-color: #ddd;
+}
+.panel-danger {
+    border-color: #ebccd1;
+}
+.panel-default > .panel-heading {
+    color: #333;
+    background-color: #f5f5f5;
+    border-color: #ddd;
+}
+.panel-danger > .panel-heading {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+.panel-body {
+    padding: 15px;
+}
+</style>
+
+
+</head>
+<body>
+
+<div class="container">
+<article id="h_top">
+    
+    <section id="load_status" class="panel panel-danger" style="display:none;">
+        <div class="panel-heading">Warnings</div>
+        <div class="panel-body">
+        <p>This page loads Google Charts API for drawing graphs and Bootstrap for rendering page desing via internet. Make sure you have internet connections.</p>
+        </div>
+    </section>
+
+
+    
+    <div class="page-header">
+        <h1>PyDAIR Analysis Report</h1>
+    </div>
+    
+    
+    
+        <table class="table table-bordered">
+        <thead>
+        <tr>
+            <td>Sample</td>
+            <td># sequences</td>
+            <td colspan="4">gene usage frequencies</td>
+            <td>rarefaction analysis</td>
+            <td colspan="2">CDR3 length</td>
+        </tr>
+        </thead>
+        <tbody>
+        
+            <tr>
+            <td>N152</td>
+            <td>474739</td>
+            <td><a href="stats.sample.N152.v.freq.tsv">V</a></td>
+            <td><a href="stats.sample.N152.d.freq.tsv">D</a></td>
+            <td><a href="stats.sample.N152.j.freq.tsv">J</a></td>
+            <td><a href="stats.sample.N152.vdj.freq.tsv">VDJ</a></td>
+            <td><a href="stats.sample.N152.rarefaction.tsv">VDJ</a></td>
+            <td><a href="stats.sample.N152.cdr3_prot_length.freq.tsv">amino acid</a></td>
+            <td><a href="stats.sample.N152.cdr3_nucl_length.freq.tsv">nucleotide</a></td>
+            </tr>
+        
+            <tr>
+            <td>IAVI84</td>
+            <td>239221</td>
+            <td><a href="stats.sample.IAVI84.v.freq.tsv">V</a></td>
+            <td><a href="stats.sample.IAVI84.d.freq.tsv">D</a></td>
+            <td><a href="stats.sample.IAVI84.j.freq.tsv">J</a></td>
+            <td><a href="stats.sample.IAVI84.vdj.freq.tsv">VDJ</a></td>
+            <td><a href="stats.sample.IAVI84.rarefaction.tsv">VDJ</a></td>
+            <td><a href="stats.sample.IAVI84.cdr3_prot_length.freq.tsv">amino acid</a></td>
+            <td><a href="stats.sample.IAVI84.cdr3_nucl_length.freq.tsv">nucleotide</a></td>
+            </tr>
+        
+        </tbody>
+        </table>
+
+
+
+
+    
+    <section id="h_V" class="panel panel-default">
+        <div class="panel-heading"><h2>V gene usage</h2></div>
+        <div class="row panel-body">
+           <div class="col-md-4">
+                <div style="margin-bottom:2em">
+                <button type="button" class="btn btn-default" onClick="drawChartV(true)">Percentage</button>
+                <button type="button" class="btn btn-default" onClick="drawChartV(false)">Frequency</button>
+                </div>
+                <div>
+                <p>The frequencies of gene usage.</p>
+                <textarea class="form-control" rows="10">Gene	N152	IAVI84
+X62106|IGHV1-2*02|Homo	0.0	83839.0
+AC244492|IGHV3-23D*01|Homo	53891.0	2.0
+M99658|IGHV3-21*02|Homo	44867.0	0.0
+M99641|IGHV1-18*01|Homo	0.0	39026.0
+HM855457|IGHV1-8*02|Homo	0.0	25912.0
+J00239|IGHV3-74*03|Homo	25749.0	0.0
+M99684|IGHV4-34*02|Homo	25295.0	93.0
+Z14214|IGHV1-69*13|Homo	1.0	21786.0
+AB019438|IGHV4-59*01|Homo	19428.0	214.0
+AB019439|IGHV4-34*01|Homo	15093.0	202.0
+Z14237|IGHV4-31*03|Homo	14957.0	106.0
+KC713934|IGHV1-69D*01|Homo	8.0	14442.0
+L33851|IGHV3-74*01|Homo	14097.0	0.0
+KF698735|IGHV3-53*02|Homo	13842.0	0.0
+HM855336|IGHV3-48*04|Homo	13589.0	0.0
+KC713945|IGHV3-30-3*03|Homo	13082.0	0.0
+X92218|IGHV3-66*01|Homo	12665.0	0.0
+X92216|IGHV3-15*01|Homo	12638.0	3.0
+Z14300|IGHV1-69*10|Homo	0.0	12404.0
+AB019439|IGHV4-39*01|Homo	10725.0	9.0
+M99657|IGHV3-20*01|Homo	10595.0	0.0
+AB019439|IGHV3-33*01|Homo	9742.0	0.0
+HM855583|IGHV3-11*05|Homo	8685.0	0.0
+M99675|IGHV3-48*01|Homo	7530.0	0.0
+M99642|IGHV1-24*01|Homo	0.0	7408.0
+AM940220|IGHV3-49*04|Homo	7243.0	0.0
+X92343|IGHV1-46*01|Homo	0.0	7006.0
+X70197|IGHV3-73*01|Homo	6884.0	0.0
+HM855616|IGHV3-13*04|Homo	6595.0	0.0
+AC245166|IGHV3-23D*02|Homo	6534.0	0.0
+M99649|IGHV3-7*01|Homo	6470.0	0.0
+M99654|IGHV3-15*02|Homo	6049.0	0.0
+X92232|IGHV4-4*02|Homo	5829.0	0.0
+L10097|IGHV4-61*02|Homo	5817.0	0.0
+M95114|IGHV4-59*03|Homo	5575.0	3.0
+HM855392|IGHV3-43*02|Homo	5319.0	0.0
+Z12367|IGHV4-38-2*01|Homo	4365.0	387.0
+KC713941|IGHV3-64D*06|Homo	4472.0	0.0
+X70208|IGHV3-66*04|Homo	4460.0	0.0
+KF698734|IGHV1-69-2*01|Homo	0.0	4459.0
+KC713948|IGHV1-69*14|Homo	3.0	4379.0
+M99682|IGHV3-64*01|Homo	4265.0	0.0
+X92288|IGHV3-7*02|Homo	4060.0	0.0
+L06612|IGHV1-46*03|Homo	0.0	4053.0
+HM855471|IGHV4-59*08|Homo	3764.0	172.0
+M99651|IGHV3-9*01|Homo	3463.0	0.0
+M99637|IGHV1-8*01|Homo	0.0	3457.0
+HM855436|IGHV3-33*06|Homo	3433.0	0.0
+X56591|IGHV4-34*12|Homo	2968.0	46.0
+HM855329|IGHV3-11*04|Homo	2681.0	0.0
+AC233755|IGHV4-38-2*02|Homo	2619.0	53.0
+AB019438|IGHV3-48*02|Homo	2619.0	0.0
+M29811|IGHV4-61*01|Homo	2618.0	0.0
+X62112|IGHV4-4*07|Homo	2446.0	121.0
+AB019438|IGHV1-58*02|Homo	0.0	2529.0
+HM855688|IGHV3-21*04|Homo	2365.0	0.0
+X05715|IGHV4-39*02|Homo	2221.0	3.0
+M99683|IGHV4-31*02|Homo	2196.0	4.0
+M99403|IGHV3-15*05|Homo	2015.0	0.0
+AB019437|IGHV4-61*08|Homo	1936.0	3.0
+KC713938|IGHV1-18*04|Homo	0.0	1928.0
+M29812|IGHV4-59*02|Homo	1891.0	17.0
+KC713947|IGHV3-9*03|Homo	1851.0	0.0
+X92206|IGHV3-72*01|Homo	1734.0	0.0
+KF698733|IGHV1-2*04|Homo	0.0	1730.0
+KC713950|IGHV3-43D*01|Homo	1581.0	0.0
+M77334|IGHV3-33*05|Homo	1215.0	0.0
+M77305|IGHV3-33*03|Homo	1130.0	0.0
+M99672|IGHV3-43*01|Homo	1083.0	0.0
+U03893|IGHV3-48*03|Homo	1043.0	0.0
+X05712|IGHV4/OR15-8*02|Homo	917.0	0.0
+M77335|IGHV3-33*04|Homo	802.0	0.0
+M99402|IGHV3-15*04|Homo	778.0	0.0
+J00240|IGHV1-46*02|Homo	0.0	775.0
+X92236|IGHV4-34*04|Homo	719.0	7.0
+X92230|IGHV4-61*03|Homo	710.0	0.0
+Z17392|IGHV3-74*02|Homo	677.0	0.0
+X56360|IGHV4-59*07|Homo	611.0	11.0
+Z14296|IGHV1-69*11|Homo	1.0	614.0
+M77324|IGHV3-30*14|Homo	613.0	0.0
+AB019437|IGHV3-73*02|Homo	586.0	0.0
+AY757302|IGHV3-23*05|Homo	542.0	0.0
+M99404|IGHV3-15*06|Homo	542.0	0.0
+Z14242|IGHV4-34*10|Homo	521.0	0.0
+L06616|IGHV3-30*19|Homo	505.0	0.0
+HM855674|IGHV1-2*05|Homo	0.0	429.0
+M95117|IGHV4-59*04|Homo	408.0	1.0
+HM855666|IGHV3-7*03|Homo	394.0	0.0
+HM855463|IGHV1-18*03|Homo	0.0	393.0
+M95120|IGHV4-31*04|Homo	376.0	1.0
+AB019437|IGHV3-64*02|Homo	338.0	0.0
+HM855323|IGHV3-21*03|Homo	335.0	0.0
+M99663|IGHV3-30*03|Homo	302.0	0.0
+AM940222|IGHV4-39*07|Homo	290.0	12.0
+Z14238|IGHV4-30-4*01|Homo	214.0	87.0
+AJ879485|IGHV3-69-1*02|Homo	292.0	0.0
+M99406|IGHV3-15*07|Homo	283.0	0.0
+AC244456|IGHV3-30-3*01|Homo	276.0	0.0
+X92208|IGHV1-2*03|Homo	0.0	261.0
+Z14301|IGHV1-69*12|Homo	0.0	238.0
+M99678|IGHV3-52*01|Homo	236.0	0.0
+AC244456|IGHV3-30-5*01|Homo	224.0	0.0
+M99679|IGHV3-53*01|Homo	199.0	0.0
+AM940223|IGHV3-23*03|Homo	197.0	0.0
+KC713942|IGHV4-4*08|Homo	192.0	1.0
+M35415|IGHV3-23*02|Homo	185.0	0.0
+M77300|IGHV3-30*09|Homo	178.0	0.0
+M29809|IGHV1-58*01|Homo	0.0	152.0
+HM855394|IGHV1/OR15-1*04|Homo	0.0	136.0
+X92272|IGHV4-31*08|Homo	126.0	0.0
+AB019439|IGHV3-21*01|Homo	121.0	0.0
+KC713940|IGHV3-11*06|Homo	107.0	0.0
+X05714|IGHV4-28*01|Homo	104.0	0.0
+M99401|IGHV3-49*02|Homo	84.0	0.0
+X67905|IGHV1-69*05|Homo	0.0	76.0
+M95113|IGHV4-34*08|Homo	71.0	1.0
+X92256|IGHV4-34*06|Homo	70.0	2.0
+M99652|IGHV3-11*01|Homo	71.0	0.0
+X62107|IGHV1-3*02|Homo	0.0	68.0
+KC713937|IGHV3-20*02|Homo	67.0	0.0
+AM940221|IGHV3-49*05|Homo	61.0	0.0
+X56356|IGHV4-61*05|Homo	59.0	0.0
+X92258|IGHV4-34*07|Homo	55.0	0.0
+X92273|IGHV4-31*09|Homo	54.0	0.0
+M95118|IGHV4-59*05|Homo	52.0	0.0
+X92233|IGHV4-28*03|Homo	49.0	0.0
+KC713939|IGHV3-13*05|Homo	45.0	0.0
+X05716|IGHV4-34*11|Homo	40.0	0.0
+M95119|IGHV4-59*06|Homo	38.0	0.0
+X92217|IGHV3-13*01|Homo	38.0	0.0
+M83134|IGHV3-30*01|Homo	38.0	0.0
+KF698736|IGHV1-38-4*01|Homo	0.0	37.0
+Z29605|IGHV3/OR16-8*01|Homo	36.0	0.0
+AC245243|IGHV3-30-5*02|Homo	30.0	4.0
+M77299|IGHV3-64*04|Homo	32.0	0.0
+M99665|IGHV3-33*02|Homo	32.0	0.0
+X92255|IGHV4-34*03|Homo	30.0	0.0
+X92259|IGHV4-39*03|Homo	29.0	0.0
+U29582|IGHV3-13*03|Homo	28.0	0.0
+HM855539|IGHV4/OR15-8*01|Homo	28.0	0.0
+Z29596|IGHV1/OR15-4*01|Homo	0.0	28.0
+KC713936|IGHV4-28*07|Homo	26.0	1.0
+Z14241|IGHV4-34*09|Homo	25.0	1.0
+AB019438|IGHV3-49*03|Homo	24.0	0.0
+AJ879484|IGHV3-69-1*01|Homo	24.0	0.0
+HM855939|IGHV3-NL1*01|Homo	24.0	0.0
+AB019437|IGHV3-66*03|Homo	21.0	0.0
+Z14309|IGHV1-69*08|Homo	0.0	20.0
+AB019439|IGHV3-22*02|Homo	20.0	0.0
+Z14243|IGHV4-59*10|Homo	19.0	0.0
+HM855339|IGHV4-28*05|Homo	17.0	0.0
+X92287|IGHV3-11*03|Homo	15.0	0.0
+M77327|IGHV3-30*15|Homo	13.0	0.0
+HM855297|IGHV1/OR15-2*02|Homo	0.0	13.0
+M77329|IGHV3-30*17|Homo	12.0	0.0
+X92250|IGHV4-61*04|Homo	11.0	0.0
+AB019437|IGHV3-71*01|Homo	11.0	0.0
+Z12314|IGHV1/OR15-5*02|Homo	0.0	11.0
+Z14307|IGHV1-69*09|Homo	0.0	11.0
+X92274|IGHV4-30-4*03|Homo	10.0	0.0
+M77302|IGHV3-30-3*02|Homo	10.0	0.0
+AB019438|IGHV1-45*02|Homo	0.0	10.0
+X92237|IGHV4-34*05|Homo	9.0	0.0
+AF254982|IGHV1/OR21-1*01|Homo	0.0	9.0
+Z27504|IGHV3-66*02|Homo	8.0	0.0
+HM855875|IGHV3-71*02|Homo	8.0	0.0
+L06614|IGHV3-30*07|Homo	8.0	0.0
+HM855455|IGHV3-71*03|Homo	8.0	0.0
+X92270|IGHV4-31*06|Homo	6.0	1.0
+KF698732|IGHV3-38-3*01|Homo	6.0	1.0
+M77326|IGHV3-30*10|Homo	6.0	0.0
+M99666|IGHV3-35*01|Homo	6.0	0.0
+HM855453|IGHV3-53*04|Homo	5.0	0.0
+M99676|IGHV3-49*01|Homo	5.0	0.0
+M95116|IGHV4-39*05|Homo	4.0	0.0
+M95121|IGHV4-31*05|Homo	3.0	1.0
+L06617|IGHV3-30*06|Homo	3.0	0.0
+M77328|IGHV3-30*16|Homo	3.0	0.0
+Z75356|IGHV4-34*13|Homo	3.0	0.0
+X92235|IGHV4-55*09|Homo	3.0	0.0
+Z75347|IGHV4-61*06|Homo	3.0	0.0
+X07448|IGHV1-2*01|Homo	0.0	3.0
+AB019437|IGHV7-81*01|Homo	0.0	3.0
+X56368|IGHV5-51*03|Homo	2.0	0.0
+Z75348|IGHV4-61*07|Homo	2.0	0.0
+HM855782|IGHV4-28*06|Homo	2.0	0.0
+M77339|IGHV3-30*13|Homo	2.0	0.0
+X92271|IGHV4-31*07|Homo	2.0	0.0
+X92229|IGHV4-30-2*03|Homo	2.0	0.0
+Z75355|IGHV4-4*06|Homo	2.0	0.0
+HM855577|IGHV3-9*02|Homo	2.0	0.0
+Z75351|IGHV4-30-2*04|Homo	1.0	0.0
+Z75359|IGHV4-59*09|Homo	1.0	0.0
+Z29631|IGHV1/OR15-1*01|Homo	0.0	1.0
+M77338|IGHV3-30*12|Homo	1.0	0.0
+HM855427|IGHV3/OR16-8*02|Homo	1.0	0.0
+M99685|IGHV4-55*01|Homo	1.0	0.0
+M99408|IGHV3-15*03|Homo	1.0	0.0
+AB019439|IGHV7-34-1*01|Homo	0.0	1.0
+KC713946|IGHV4-30-4*07|Homo	1.0	0.0
+HM855418|IGHV4/OR15-8*03|Homo	1.0	0.0
+M99686|IGHV5-51*01|Homo	1.0	0.0
+J03617|IGHV3-53*03|Homo	1.0	0.0
+AJ004954|IGHV1/OR15-1*02|Homo	0.0	1.0
+X60503|IGHV1-18*02|Homo	0.0	1.0
+J00237|IGHV3-52*03|Homo	1.0	0.0
+HM855668|IGHV3/OR16-6*02|Homo	1.0	0.0
+X92268|IGHV4-55*07|Homo	1.0	0.0
+HM855556|IGHV1/OR15-2*03|Homo	0.0	1.0
+X92252|IGHV4-4*03|Homo	1.0	0.0
+X92253|IGHV4-4*04|Homo	1.0	0.0
+Z75360|IGHV4-30-4*06|Homo	0.0	1.0
+</textarea>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div id="V_freq_plot"></div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="h_D" class="panel panel-default">
+        <div class="panel-heading"><h2>D gene usage</h2></div>
+        <div class="row panel-body">
+           <div class="col-md-4">
+                <div style="margin-bottom:2em">
+                <button type="button" class="btn btn-default" onClick="drawChartD(true)">Percentage</button>
+                <button type="button" class="btn btn-default" onClick="drawChartD(false)">Frequency</button>
+                </div>
+                <div>
+                <p>The frequencies of gene usage.</p>
+                <textarea class="form-control" rows="10">Gene	N152	IAVI84
+unidentifiable	390670	167061.0
+X13972|IGHD3-10*01|Homo	17477	17131.0
+X93616|IGHD3-22*01|Homo	15620	16221.0
+X13972|IGHD3-9*01|Homo	10669	6007.0
+J00234|IGHD2-15*01|Homo	6417	5509.0
+X97051|IGHD6-19*01|Homo	5135	5167.0
+X13972|IGHD6-13*01|Homo	6008	3802.0
+X97051|IGHD3-16*02|Homo	3316	2063.0
+X13972|IGHD3-3*01|Homo	5224	23.0
+X13972|IGHD5-12*01|Homo	1882	2337.0
+M35648|IGHD2-2*03|Homo	1658	2501.0
+X97051|IGHD2-2*02|Homo	599	2555.0
+X97051|IGHD2-21*02|Homo	1432	1595.0
+X97051|IGHD4-17*01|Homo	1390	964.0
+X97051|IGHD1-26*01|Homo	641	1698.0
+X13972|IGHD5-5*01|Homo	852	1329.0
+X97051|IGHD5-24*01|Homo	1093	695.0
+X93615|IGHD3-10*02|Homo	372	1007.0
+J00233|IGHD2-8*02|Homo	713	276.0
+X55580|IGHD3/OR15-3b*01|Homo	884	60.0
+J00235|IGHD2-21*01|Homo	760	183.0
+X97051|IGHD4-23*01|Homo	516	420.0
+X93618|IGHD3-3*02|Homo	434	1.0
+X55584|IGHD5/OR15-5b*01|Homo	83	297.0
+X13972|IGHD6-6*01|Homo	357	0.0
+X93614|IGHD3-16*01|Homo	137	125.0
+X97051|IGHD1-1*01|Homo	46	103.0
+X13972|IGHD1-7*01|Homo	75	0.0
+J00232|IGHD2-2*01|Homo	64	11.0
+X13972|IGHD4-4*01|Homo	72	2.0
+X55576|IGHD1/OR15-1b*01|Homo	53	1.0
+X97051|IGHD1-20*01|Homo	20	31.0
+X97051|IGHD6-25*01|Homo	29	21.0
+X13972|IGHD2-8*01|Homo	24	20.0
+X55578|IGHD2/OR15-2b*01|Homo	16	5.0
+X55582|IGHD4/OR15-4b*01|Homo	1	0.0
+</textarea>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div id="D_freq_plot"></div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="h_J" class="panel panel-default">
+        <div class="panel-heading"><h2>J gene usage</h2></div>
+        <div class="row panel-body">
+           <div class="col-md-4">
+                <div style="margin-bottom:2em">
+                <button type="button" class="btn btn-default" onClick="drawChartJ(true)">Percentage</button>
+                <button type="button" class="btn btn-default" onClick="drawChartJ(false)">Frequency</button>
+                </div>
+                <div>
+                <p>The frequencies of gene usage.</p>
+                <textarea class="form-control" rows="10">Gene	N152	IAVI84
+X86355|IGHJ4*02|Homo	223118	89019
+X86355|IGHJ5*02|Homo	64332	37089
+X86355|IGHJ3*02|Homo	39589	39063
+X86355|IGHJ6*02|Homo	39433	31675
+X86356|IGHJ6*03|Homo	32780	24103
+J00256|IGHJ2*01|Homo	18775	5584
+J00256|IGHJ1*01|Homo	19615	3824
+J00256|IGHJ3*01|Homo	11285	3387
+M25625|IGHJ4*03|Homo	13111	1029
+AJ879487|IGHJ6*04|Homo	6240	3073
+J00256|IGHJ4*01|Homo	3488	498
+J00256|IGHJ6*01|Homo	1521	454
+J00256|IGHJ5*01|Homo	1452	423
+</textarea>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div id="J_freq_plot"></div>
+            </div>
+        </div>
+    </section>
+    
+ 
+
+
+    <section id="h_CDR3" class="panel panel-default">
+        <div class="panel-heading"><h2>CDR3 length</h2></div>
+        <div class="row panel-body">
+           <div class="col-md-4">
+                <div style="margin-bottom:2em">
+                <button type="button" class="btn btn-default" onClick="drawChartCDR3Length(true)">Percentage</button>
+                <button type="button" class="btn btn-default" onClick="drawChartCDR3Length(false)">Frequency</button>
+                </div>
+                <div>
+                <p>The frequencies of the length of CDR3 amino acid sequences.</p>
+                <textarea class="form-control" rows="10">Length	N152	IAVI84
+0	116366.0	24042.0
+1	16.0	10.0
+2	76.0	196.0
+3	136.0	539.0
+4	1341.0	206.0
+5	905.0	2452.0
+6	3272.0	693.0
+7	5061.0	679.0
+8	4289.0	1524.0
+9	6478.0	2617.0
+10	15002.0	5756.0
+11	25131.0	9757.0
+12	37258.0	24696.0
+13	40417.0	22421.0
+14	40223.0	23338.0
+15	36692.0	20909.0
+16	36439.0	19122.0
+17	28378.0	19880.0
+18	24006.0	18201.0
+19	17050.0	13557.0
+20	10952.0	8915.0
+21	12023.0	8510.0
+22	7007.0	3613.0
+23	3045.0	3630.0
+24	1309.0	1056.0
+25	949.0	1334.0
+26	210.0	281.0
+27	95.0	265.0
+28	110.0	504.0
+29	22.0	19.0
+30	13.0	0.0
+31	0.0	1.0
+32	0.0	60.0
+33	0.0	287.0
+34	0.0	119.0
+37	1.0	0.0
+39	0.0	2.0
+40	2.0	0.0
+43	1.0	0.0
+44	2.0	0.0
+45	1.0	0.0
+46	6.0	0.0
+48	1.0	0.0
+49	4.0	0.0
+50	1.0	0.0
+52	2.0	0.0
+53	5.0	0.0
+54	139.0	0.0
+55	229.0	0.0
+56	18.0	0.0
+57	10.0	0.0
+58	1.0	0.0
+61	3.0	0.0
+62	4.0	0.0
+63	0.0	1.0
+64	1.0	0.0
+73	2.0	0.0
+74	1.0	0.0
+75	2.0	0.0
+76	1.0	0.0
+77	3.0	0.0
+78	1.0	0.0
+79	1.0	27.0
+82	6.0	0.0
+83	18.0	1.0
+86	1.0	0.0
+87	1.0	0.0
+88	0.0	1.0
+</textarea>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div id="cdr3len_freq_plot"></div>
+            </div>
+        </div>
+    </section>
+    
+    
+    
+    
+    <section id="h_rarefaction" class="panel panel-default">
+        <div class="panel-heading"><h2>Rarefaction study for VDJ combinations</h2></div>
+        <div class="row panel-body">
+           <div class="col-md-4">
+                <p>The coordinates of rarefaction curves.</p>
+                <textarea class="form-control" rows="10">CapturedSeq	N152	IAVI84
+1000	381.917	262.508
+2000	562.242	374.26
+3000	694.715	453.311
+4000	804.763	515.817
+5000	898.511	568.257
+6000	981.743	612.548
+7000	1054.978	652.237
+8000	1124.715	688.386
+9000	1186.609	720.915
+10000	1244.792	751.305
+20000	1688.563	967.787
+40000	2236.176	1223.062
+60000	2604.524	1394.64
+80000	2891.002	1531.425
+100000	3128.229	1643.964
+200000	3953.77	2046.189
+239221		2162.0
+300000	4508.317	
+400000	4936.238	
+474739	5205.0	
+</textarea>
+            </div>
+            <div class="col-md-8">
+                <div id="rarefaction_VDJ_plot"></div>
+            </div>
+        </div>
+    </section>
+    
+    
+    
+    
+    
+
+</article>       
+</div>
+
+
+
+
+
+
+
+
+</article>
+
+</div>
+
+
+
+
+<script type="text/javascript">
+<!--
+if (! navigator.onLine) {
+    document.getElementById("load_status").style.display = "block";
+    document.getElementById("load_status").style.visibility = "visible";
+}
+
+
+function jsonToDataTable(dataJson, idName = '', transToValue = false, prob = false) {
+    var colNames = Object.keys(dataJson);
+    var rowNames = Object.keys(dataJson[colNames[0]]);
+    var dataTable = [];
+    var dataTableHeader = [idName];
+    for (var i = 0; i < colNames.length; i++) {
+        dataTableHeader.push(colNames[i]);
+    }
+    dataTable.push(dataTableHeader);
+    for (var j = 0; j < rowNames.length; j++) {
+        var dataRow = [rowNames[j]];
+        for (var i = 0; i < colNames.length; i++) {
+            dataRow.push(dataJson[colNames[i]][rowNames[j]]);
+        }
+        dataTable.push(dataRow);
+    }
+    
+   if (prob) {
+        for (var j = 0; j < colNames.length; j++) {
+            var sum = 0;
+            for (var i = 0; i < rowNames.length; i++) {
+                sum += dataTable[i + 1][j + 1];
+            }
+            for (var i = 0; i < rowNames.length; i++) {
+                dataTable[i + 1][j + 1] = dataTable[i + 1][j + 1] / sum;
+            }
+        }
+    }
+    if (transToValue) {
+        for (var i = 0; i < rowNames.length; i++) {
+            dataTable[i + 1][0] = Number(dataTable[i + 1][0]);
+        }
+    }
+    return {'dataTable': dataTable,
+            'colNames' : colNames,
+            'rowNames' : rowNames};
+}
+
+
+google.charts.load('current', {packages:['bar', 'line']});
+
+
+
+
+
+google.charts.setOnLoadCallback(drawChartV);
+function drawChartV(prob = true) {
+    
+    var xlab = "Frequency of V gene usage";
+    var ylab = "V gene family";
+    var axisFormat = "scientific"
+    if (prob) {
+        xlab = "Percentage of V gene usage";
+        axisFormat = "percent"
+    }
+    
+    var data = jsonToDataTable({"N152":{"X62106|IGHV1-2*02|Homo":0.0,"AC244492|IGHV3-23D*01|Homo":53891.0,"M99658|IGHV3-21*02|Homo":44867.0,"M99641|IGHV1-18*01|Homo":0.0,"HM855457|IGHV1-8*02|Homo":0.0,"J00239|IGHV3-74*03|Homo":25749.0,"M99684|IGHV4-34*02|Homo":25295.0,"Z14214|IGHV1-69*13|Homo":1.0,"AB019438|IGHV4-59*01|Homo":19428.0,"AB019439|IGHV4-34*01|Homo":15093.0,"Z14237|IGHV4-31*03|Homo":14957.0,"KC713934|IGHV1-69D*01|Homo":8.0,"L33851|IGHV3-74*01|Homo":14097.0,"KF698735|IGHV3-53*02|Homo":13842.0,"HM855336|IGHV3-48*04|Homo":13589.0,"KC713945|IGHV3-30-3*03|Homo":13082.0,"X92218|IGHV3-66*01|Homo":12665.0,"X92216|IGHV3-15*01|Homo":12638.0,"Z14300|IGHV1-69*10|Homo":0.0,"AB019439|IGHV4-39*01|Homo":10725.0,"M99657|IGHV3-20*01|Homo":10595.0,"AB019439|IGHV3-33*01|Homo":9742.0,"HM855583|IGHV3-11*05|Homo":8685.0,"M99675|IGHV3-48*01|Homo":7530.0,"M99642|IGHV1-24*01|Homo":0.0,"AM940220|IGHV3-49*04|Homo":7243.0,"X92343|IGHV1-46*01|Homo":0.0,"X70197|IGHV3-73*01|Homo":6884.0,"HM855616|IGHV3-13*04|Homo":6595.0,"AC245166|IGHV3-23D*02|Homo":6534.0,"M99649|IGHV3-7*01|Homo":6470.0,"M99654|IGHV3-15*02|Homo":6049.0,"X92232|IGHV4-4*02|Homo":5829.0,"L10097|IGHV4-61*02|Homo":5817.0,"M95114|IGHV4-59*03|Homo":5575.0,"HM855392|IGHV3-43*02|Homo":5319.0,"Z12367|IGHV4-38-2*01|Homo":4365.0,"KC713941|IGHV3-64D*06|Homo":4472.0,"X70208|IGHV3-66*04|Homo":4460.0,"KF698734|IGHV1-69-2*01|Homo":0.0,"KC713948|IGHV1-69*14|Homo":3.0,"M99682|IGHV3-64*01|Homo":4265.0,"X92288|IGHV3-7*02|Homo":4060.0,"L06612|IGHV1-46*03|Homo":0.0,"HM855471|IGHV4-59*08|Homo":3764.0,"M99651|IGHV3-9*01|Homo":3463.0,"M99637|IGHV1-8*01|Homo":0.0,"HM855436|IGHV3-33*06|Homo":3433.0,"X56591|IGHV4-34*12|Homo":2968.0,"HM855329|IGHV3-11*04|Homo":2681.0,"AC233755|IGHV4-38-2*02|Homo":2619.0,"AB019438|IGHV3-48*02|Homo":2619.0,"M29811|IGHV4-61*01|Homo":2618.0,"X62112|IGHV4-4*07|Homo":2446.0,"AB019438|IGHV1-58*02|Homo":0.0,"HM855688|IGHV3-21*04|Homo":2365.0,"X05715|IGHV4-39*02|Homo":2221.0,"M99683|IGHV4-31*02|Homo":2196.0,"M99403|IGHV3-15*05|Homo":2015.0,"AB019437|IGHV4-61*08|Homo":1936.0,"KC713938|IGHV1-18*04|Homo":0.0,"M29812|IGHV4-59*02|Homo":1891.0,"KC713947|IGHV3-9*03|Homo":1851.0,"X92206|IGHV3-72*01|Homo":1734.0,"KF698733|IGHV1-2*04|Homo":0.0,"KC713950|IGHV3-43D*01|Homo":1581.0,"M77334|IGHV3-33*05|Homo":1215.0,"M77305|IGHV3-33*03|Homo":1130.0,"M99672|IGHV3-43*01|Homo":1083.0,"U03893|IGHV3-48*03|Homo":1043.0,"X05712|IGHV4\/OR15-8*02|Homo":917.0,"M77335|IGHV3-33*04|Homo":802.0,"M99402|IGHV3-15*04|Homo":778.0,"J00240|IGHV1-46*02|Homo":0.0,"X92236|IGHV4-34*04|Homo":719.0,"X92230|IGHV4-61*03|Homo":710.0,"Z17392|IGHV3-74*02|Homo":677.0,"X56360|IGHV4-59*07|Homo":611.0,"Z14296|IGHV1-69*11|Homo":1.0,"M77324|IGHV3-30*14|Homo":613.0,"AB019437|IGHV3-73*02|Homo":586.0,"AY757302|IGHV3-23*05|Homo":542.0,"M99404|IGHV3-15*06|Homo":542.0,"Z14242|IGHV4-34*10|Homo":521.0,"L06616|IGHV3-30*19|Homo":505.0,"HM855674|IGHV1-2*05|Homo":0.0,"M95117|IGHV4-59*04|Homo":408.0,"HM855666|IGHV3-7*03|Homo":394.0,"HM855463|IGHV1-18*03|Homo":0.0,"M95120|IGHV4-31*04|Homo":376.0,"AB019437|IGHV3-64*02|Homo":338.0,"HM855323|IGHV3-21*03|Homo":335.0,"M99663|IGHV3-30*03|Homo":302.0,"AM940222|IGHV4-39*07|Homo":290.0,"Z14238|IGHV4-30-4*01|Homo":214.0,"AJ879485|IGHV3-69-1*02|Homo":292.0,"M99406|IGHV3-15*07|Homo":283.0,"AC244456|IGHV3-30-3*01|Homo":276.0,"X92208|IGHV1-2*03|Homo":0.0,"Z14301|IGHV1-69*12|Homo":0.0,"M99678|IGHV3-52*01|Homo":236.0,"AC244456|IGHV3-30-5*01|Homo":224.0,"M99679|IGHV3-53*01|Homo":199.0,"AM940223|IGHV3-23*03|Homo":197.0,"KC713942|IGHV4-4*08|Homo":192.0,"M35415|IGHV3-23*02|Homo":185.0,"M77300|IGHV3-30*09|Homo":178.0,"M29809|IGHV1-58*01|Homo":0.0,"HM855394|IGHV1\/OR15-1*04|Homo":0.0,"X92272|IGHV4-31*08|Homo":126.0,"AB019439|IGHV3-21*01|Homo":121.0,"KC713940|IGHV3-11*06|Homo":107.0,"X05714|IGHV4-28*01|Homo":104.0,"M99401|IGHV3-49*02|Homo":84.0,"X67905|IGHV1-69*05|Homo":0.0,"M95113|IGHV4-34*08|Homo":71.0,"X92256|IGHV4-34*06|Homo":70.0,"M99652|IGHV3-11*01|Homo":71.0,"X62107|IGHV1-3*02|Homo":0.0,"KC713937|IGHV3-20*02|Homo":67.0,"AM940221|IGHV3-49*05|Homo":61.0,"X56356|IGHV4-61*05|Homo":59.0,"X92258|IGHV4-34*07|Homo":55.0,"X92273|IGHV4-31*09|Homo":54.0,"M95118|IGHV4-59*05|Homo":52.0,"X92233|IGHV4-28*03|Homo":49.0,"KC713939|IGHV3-13*05|Homo":45.0,"X05716|IGHV4-34*11|Homo":40.0,"M95119|IGHV4-59*06|Homo":38.0,"X92217|IGHV3-13*01|Homo":38.0,"M83134|IGHV3-30*01|Homo":38.0,"KF698736|IGHV1-38-4*01|Homo":0.0,"Z29605|IGHV3\/OR16-8*01|Homo":36.0,"AC245243|IGHV3-30-5*02|Homo":30.0,"M77299|IGHV3-64*04|Homo":32.0,"M99665|IGHV3-33*02|Homo":32.0,"X92255|IGHV4-34*03|Homo":30.0,"X92259|IGHV4-39*03|Homo":29.0,"U29582|IGHV3-13*03|Homo":28.0,"HM855539|IGHV4\/OR15-8*01|Homo":28.0,"Z29596|IGHV1\/OR15-4*01|Homo":0.0,"KC713936|IGHV4-28*07|Homo":26.0,"Z14241|IGHV4-34*09|Homo":25.0,"AB019438|IGHV3-49*03|Homo":24.0,"AJ879484|IGHV3-69-1*01|Homo":24.0,"HM855939|IGHV3-NL1*01|Homo":24.0,"AB019437|IGHV3-66*03|Homo":21.0,"Z14309|IGHV1-69*08|Homo":0.0,"AB019439|IGHV3-22*02|Homo":20.0,"Z14243|IGHV4-59*10|Homo":19.0,"HM855339|IGHV4-28*05|Homo":17.0,"X92287|IGHV3-11*03|Homo":15.0,"M77327|IGHV3-30*15|Homo":13.0,"HM855297|IGHV1\/OR15-2*02|Homo":0.0,"M77329|IGHV3-30*17|Homo":12.0,"X92250|IGHV4-61*04|Homo":11.0,"AB019437|IGHV3-71*01|Homo":11.0,"Z12314|IGHV1\/OR15-5*02|Homo":0.0,"Z14307|IGHV1-69*09|Homo":0.0,"X92274|IGHV4-30-4*03|Homo":10.0,"M77302|IGHV3-30-3*02|Homo":10.0,"AB019438|IGHV1-45*02|Homo":0.0,"X92237|IGHV4-34*05|Homo":9.0,"AF254982|IGHV1\/OR21-1*01|Homo":0.0,"Z27504|IGHV3-66*02|Homo":8.0,"HM855875|IGHV3-71*02|Homo":8.0,"L06614|IGHV3-30*07|Homo":8.0,"HM855455|IGHV3-71*03|Homo":8.0,"X92270|IGHV4-31*06|Homo":6.0,"KF698732|IGHV3-38-3*01|Homo":6.0,"M77326|IGHV3-30*10|Homo":6.0,"M99666|IGHV3-35*01|Homo":6.0,"HM855453|IGHV3-53*04|Homo":5.0,"M99676|IGHV3-49*01|Homo":5.0,"M95116|IGHV4-39*05|Homo":4.0,"M95121|IGHV4-31*05|Homo":3.0,"L06617|IGHV3-30*06|Homo":3.0,"M77328|IGHV3-30*16|Homo":3.0,"Z75356|IGHV4-34*13|Homo":3.0,"X92235|IGHV4-55*09|Homo":3.0,"Z75347|IGHV4-61*06|Homo":3.0,"X07448|IGHV1-2*01|Homo":0.0,"AB019437|IGHV7-81*01|Homo":0.0,"X56368|IGHV5-51*03|Homo":2.0,"Z75348|IGHV4-61*07|Homo":2.0,"HM855782|IGHV4-28*06|Homo":2.0,"M77339|IGHV3-30*13|Homo":2.0,"X92271|IGHV4-31*07|Homo":2.0,"X92229|IGHV4-30-2*03|Homo":2.0,"Z75355|IGHV4-4*06|Homo":2.0,"HM855577|IGHV3-9*02|Homo":2.0,"Z75351|IGHV4-30-2*04|Homo":1.0,"Z75359|IGHV4-59*09|Homo":1.0,"Z29631|IGHV1\/OR15-1*01|Homo":0.0,"M77338|IGHV3-30*12|Homo":1.0,"HM855427|IGHV3\/OR16-8*02|Homo":1.0,"M99685|IGHV4-55*01|Homo":1.0,"M99408|IGHV3-15*03|Homo":1.0,"AB019439|IGHV7-34-1*01|Homo":0.0,"KC713946|IGHV4-30-4*07|Homo":1.0,"HM855418|IGHV4\/OR15-8*03|Homo":1.0,"M99686|IGHV5-51*01|Homo":1.0,"J03617|IGHV3-53*03|Homo":1.0,"AJ004954|IGHV1\/OR15-1*02|Homo":0.0,"X60503|IGHV1-18*02|Homo":0.0,"J00237|IGHV3-52*03|Homo":1.0,"HM855668|IGHV3\/OR16-6*02|Homo":1.0,"X92268|IGHV4-55*07|Homo":1.0,"HM855556|IGHV1\/OR15-2*03|Homo":0.0,"X92252|IGHV4-4*03|Homo":1.0,"X92253|IGHV4-4*04|Homo":1.0,"Z75360|IGHV4-30-4*06|Homo":0.0},"IAVI84":{"X62106|IGHV1-2*02|Homo":83839.0,"AC244492|IGHV3-23D*01|Homo":2.0,"M99658|IGHV3-21*02|Homo":0.0,"M99641|IGHV1-18*01|Homo":39026.0,"HM855457|IGHV1-8*02|Homo":25912.0,"J00239|IGHV3-74*03|Homo":0.0,"M99684|IGHV4-34*02|Homo":93.0,"Z14214|IGHV1-69*13|Homo":21786.0,"AB019438|IGHV4-59*01|Homo":214.0,"AB019439|IGHV4-34*01|Homo":202.0,"Z14237|IGHV4-31*03|Homo":106.0,"KC713934|IGHV1-69D*01|Homo":14442.0,"L33851|IGHV3-74*01|Homo":0.0,"KF698735|IGHV3-53*02|Homo":0.0,"HM855336|IGHV3-48*04|Homo":0.0,"KC713945|IGHV3-30-3*03|Homo":0.0,"X92218|IGHV3-66*01|Homo":0.0,"X92216|IGHV3-15*01|Homo":3.0,"Z14300|IGHV1-69*10|Homo":12404.0,"AB019439|IGHV4-39*01|Homo":9.0,"M99657|IGHV3-20*01|Homo":0.0,"AB019439|IGHV3-33*01|Homo":0.0,"HM855583|IGHV3-11*05|Homo":0.0,"M99675|IGHV3-48*01|Homo":0.0,"M99642|IGHV1-24*01|Homo":7408.0,"AM940220|IGHV3-49*04|Homo":0.0,"X92343|IGHV1-46*01|Homo":7006.0,"X70197|IGHV3-73*01|Homo":0.0,"HM855616|IGHV3-13*04|Homo":0.0,"AC245166|IGHV3-23D*02|Homo":0.0,"M99649|IGHV3-7*01|Homo":0.0,"M99654|IGHV3-15*02|Homo":0.0,"X92232|IGHV4-4*02|Homo":0.0,"L10097|IGHV4-61*02|Homo":0.0,"M95114|IGHV4-59*03|Homo":3.0,"HM855392|IGHV3-43*02|Homo":0.0,"Z12367|IGHV4-38-2*01|Homo":387.0,"KC713941|IGHV3-64D*06|Homo":0.0,"X70208|IGHV3-66*04|Homo":0.0,"KF698734|IGHV1-69-2*01|Homo":4459.0,"KC713948|IGHV1-69*14|Homo":4379.0,"M99682|IGHV3-64*01|Homo":0.0,"X92288|IGHV3-7*02|Homo":0.0,"L06612|IGHV1-46*03|Homo":4053.0,"HM855471|IGHV4-59*08|Homo":172.0,"M99651|IGHV3-9*01|Homo":0.0,"M99637|IGHV1-8*01|Homo":3457.0,"HM855436|IGHV3-33*06|Homo":0.0,"X56591|IGHV4-34*12|Homo":46.0,"HM855329|IGHV3-11*04|Homo":0.0,"AC233755|IGHV4-38-2*02|Homo":53.0,"AB019438|IGHV3-48*02|Homo":0.0,"M29811|IGHV4-61*01|Homo":0.0,"X62112|IGHV4-4*07|Homo":121.0,"AB019438|IGHV1-58*02|Homo":2529.0,"HM855688|IGHV3-21*04|Homo":0.0,"X05715|IGHV4-39*02|Homo":3.0,"M99683|IGHV4-31*02|Homo":4.0,"M99403|IGHV3-15*05|Homo":0.0,"AB019437|IGHV4-61*08|Homo":3.0,"KC713938|IGHV1-18*04|Homo":1928.0,"M29812|IGHV4-59*02|Homo":17.0,"KC713947|IGHV3-9*03|Homo":0.0,"X92206|IGHV3-72*01|Homo":0.0,"KF698733|IGHV1-2*04|Homo":1730.0,"KC713950|IGHV3-43D*01|Homo":0.0,"M77334|IGHV3-33*05|Homo":0.0,"M77305|IGHV3-33*03|Homo":0.0,"M99672|IGHV3-43*01|Homo":0.0,"U03893|IGHV3-48*03|Homo":0.0,"X05712|IGHV4\/OR15-8*02|Homo":0.0,"M77335|IGHV3-33*04|Homo":0.0,"M99402|IGHV3-15*04|Homo":0.0,"J00240|IGHV1-46*02|Homo":775.0,"X92236|IGHV4-34*04|Homo":7.0,"X92230|IGHV4-61*03|Homo":0.0,"Z17392|IGHV3-74*02|Homo":0.0,"X56360|IGHV4-59*07|Homo":11.0,"Z14296|IGHV1-69*11|Homo":614.0,"M77324|IGHV3-30*14|Homo":0.0,"AB019437|IGHV3-73*02|Homo":0.0,"AY757302|IGHV3-23*05|Homo":0.0,"M99404|IGHV3-15*06|Homo":0.0,"Z14242|IGHV4-34*10|Homo":0.0,"L06616|IGHV3-30*19|Homo":0.0,"HM855674|IGHV1-2*05|Homo":429.0,"M95117|IGHV4-59*04|Homo":1.0,"HM855666|IGHV3-7*03|Homo":0.0,"HM855463|IGHV1-18*03|Homo":393.0,"M95120|IGHV4-31*04|Homo":1.0,"AB019437|IGHV3-64*02|Homo":0.0,"HM855323|IGHV3-21*03|Homo":0.0,"M99663|IGHV3-30*03|Homo":0.0,"AM940222|IGHV4-39*07|Homo":12.0,"Z14238|IGHV4-30-4*01|Homo":87.0,"AJ879485|IGHV3-69-1*02|Homo":0.0,"M99406|IGHV3-15*07|Homo":0.0,"AC244456|IGHV3-30-3*01|Homo":0.0,"X92208|IGHV1-2*03|Homo":261.0,"Z14301|IGHV1-69*12|Homo":238.0,"M99678|IGHV3-52*01|Homo":0.0,"AC244456|IGHV3-30-5*01|Homo":0.0,"M99679|IGHV3-53*01|Homo":0.0,"AM940223|IGHV3-23*03|Homo":0.0,"KC713942|IGHV4-4*08|Homo":1.0,"M35415|IGHV3-23*02|Homo":0.0,"M77300|IGHV3-30*09|Homo":0.0,"M29809|IGHV1-58*01|Homo":152.0,"HM855394|IGHV1\/OR15-1*04|Homo":136.0,"X92272|IGHV4-31*08|Homo":0.0,"AB019439|IGHV3-21*01|Homo":0.0,"KC713940|IGHV3-11*06|Homo":0.0,"X05714|IGHV4-28*01|Homo":0.0,"M99401|IGHV3-49*02|Homo":0.0,"X67905|IGHV1-69*05|Homo":76.0,"M95113|IGHV4-34*08|Homo":1.0,"X92256|IGHV4-34*06|Homo":2.0,"M99652|IGHV3-11*01|Homo":0.0,"X62107|IGHV1-3*02|Homo":68.0,"KC713937|IGHV3-20*02|Homo":0.0,"AM940221|IGHV3-49*05|Homo":0.0,"X56356|IGHV4-61*05|Homo":0.0,"X92258|IGHV4-34*07|Homo":0.0,"X92273|IGHV4-31*09|Homo":0.0,"M95118|IGHV4-59*05|Homo":0.0,"X92233|IGHV4-28*03|Homo":0.0,"KC713939|IGHV3-13*05|Homo":0.0,"X05716|IGHV4-34*11|Homo":0.0,"M95119|IGHV4-59*06|Homo":0.0,"X92217|IGHV3-13*01|Homo":0.0,"M83134|IGHV3-30*01|Homo":0.0,"KF698736|IGHV1-38-4*01|Homo":37.0,"Z29605|IGHV3\/OR16-8*01|Homo":0.0,"AC245243|IGHV3-30-5*02|Homo":4.0,"M77299|IGHV3-64*04|Homo":0.0,"M99665|IGHV3-33*02|Homo":0.0,"X92255|IGHV4-34*03|Homo":0.0,"X92259|IGHV4-39*03|Homo":0.0,"U29582|IGHV3-13*03|Homo":0.0,"HM855539|IGHV4\/OR15-8*01|Homo":0.0,"Z29596|IGHV1\/OR15-4*01|Homo":28.0,"KC713936|IGHV4-28*07|Homo":1.0,"Z14241|IGHV4-34*09|Homo":1.0,"AB019438|IGHV3-49*03|Homo":0.0,"AJ879484|IGHV3-69-1*01|Homo":0.0,"HM855939|IGHV3-NL1*01|Homo":0.0,"AB019437|IGHV3-66*03|Homo":0.0,"Z14309|IGHV1-69*08|Homo":20.0,"AB019439|IGHV3-22*02|Homo":0.0,"Z14243|IGHV4-59*10|Homo":0.0,"HM855339|IGHV4-28*05|Homo":0.0,"X92287|IGHV3-11*03|Homo":0.0,"M77327|IGHV3-30*15|Homo":0.0,"HM855297|IGHV1\/OR15-2*02|Homo":13.0,"M77329|IGHV3-30*17|Homo":0.0,"X92250|IGHV4-61*04|Homo":0.0,"AB019437|IGHV3-71*01|Homo":0.0,"Z12314|IGHV1\/OR15-5*02|Homo":11.0,"Z14307|IGHV1-69*09|Homo":11.0,"X92274|IGHV4-30-4*03|Homo":0.0,"M77302|IGHV3-30-3*02|Homo":0.0,"AB019438|IGHV1-45*02|Homo":10.0,"X92237|IGHV4-34*05|Homo":0.0,"AF254982|IGHV1\/OR21-1*01|Homo":9.0,"Z27504|IGHV3-66*02|Homo":0.0,"HM855875|IGHV3-71*02|Homo":0.0,"L06614|IGHV3-30*07|Homo":0.0,"HM855455|IGHV3-71*03|Homo":0.0,"X92270|IGHV4-31*06|Homo":1.0,"KF698732|IGHV3-38-3*01|Homo":1.0,"M77326|IGHV3-30*10|Homo":0.0,"M99666|IGHV3-35*01|Homo":0.0,"HM855453|IGHV3-53*04|Homo":0.0,"M99676|IGHV3-49*01|Homo":0.0,"M95116|IGHV4-39*05|Homo":0.0,"M95121|IGHV4-31*05|Homo":1.0,"L06617|IGHV3-30*06|Homo":0.0,"M77328|IGHV3-30*16|Homo":0.0,"Z75356|IGHV4-34*13|Homo":0.0,"X92235|IGHV4-55*09|Homo":0.0,"Z75347|IGHV4-61*06|Homo":0.0,"X07448|IGHV1-2*01|Homo":3.0,"AB019437|IGHV7-81*01|Homo":3.0,"X56368|IGHV5-51*03|Homo":0.0,"Z75348|IGHV4-61*07|Homo":0.0,"HM855782|IGHV4-28*06|Homo":0.0,"M77339|IGHV3-30*13|Homo":0.0,"X92271|IGHV4-31*07|Homo":0.0,"X92229|IGHV4-30-2*03|Homo":0.0,"Z75355|IGHV4-4*06|Homo":0.0,"HM855577|IGHV3-9*02|Homo":0.0,"Z75351|IGHV4-30-2*04|Homo":0.0,"Z75359|IGHV4-59*09|Homo":0.0,"Z29631|IGHV1\/OR15-1*01|Homo":1.0,"M77338|IGHV3-30*12|Homo":0.0,"HM855427|IGHV3\/OR16-8*02|Homo":0.0,"M99685|IGHV4-55*01|Homo":0.0,"M99408|IGHV3-15*03|Homo":0.0,"AB019439|IGHV7-34-1*01|Homo":1.0,"KC713946|IGHV4-30-4*07|Homo":0.0,"HM855418|IGHV4\/OR15-8*03|Homo":0.0,"M99686|IGHV5-51*01|Homo":0.0,"J03617|IGHV3-53*03|Homo":0.0,"AJ004954|IGHV1\/OR15-1*02|Homo":1.0,"X60503|IGHV1-18*02|Homo":1.0,"J00237|IGHV3-52*03|Homo":0.0,"HM855668|IGHV3\/OR16-6*02|Homo":0.0,"X92268|IGHV4-55*07|Homo":0.0,"HM855556|IGHV1\/OR15-2*03|Homo":1.0,"X92252|IGHV4-4*03|Homo":0.0,"X92253|IGHV4-4*04|Homo":0.0,"Z75360|IGHV4-30-4*06|Homo":1.0}}, 'Gene', false, prob);
+    var dataTable = new google.visualization.arrayToDataTable(data.dataTable);
+    var options = {
+        title: 'V gene usage',
+        height: 14 * (data.colNames.length) * (data.rowNames.length * 1.05) + 40,
+        bars: 'horizontal',
+        hAxis: {title: xlab, format: axisFormat},
+        vAxis: {title: ylab},
+    };
+    var chart = new google.charts.Bar(document.getElementById('V_freq_plot'));
+    chart.draw(dataTable, google.charts.Bar.convertOptions(options));
+}
+
+google.charts.setOnLoadCallback(drawChartD);
+function drawChartD(prob = true) {
+    
+    var xlab = "Frequency of D gene usage";
+    var ylab = "D gene family";
+    var axisFormat = "scientific"
+    if (prob) {
+        xlab = "Percentage of D gene usage";
+        axisFormat = "percent"
+    }
+    
+    var data = jsonToDataTable({"N152":{"unidentifiable":390670,"X13972|IGHD3-10*01|Homo":17477,"X93616|IGHD3-22*01|Homo":15620,"X13972|IGHD3-9*01|Homo":10669,"J00234|IGHD2-15*01|Homo":6417,"X97051|IGHD6-19*01|Homo":5135,"X13972|IGHD6-13*01|Homo":6008,"X97051|IGHD3-16*02|Homo":3316,"X13972|IGHD3-3*01|Homo":5224,"X13972|IGHD5-12*01|Homo":1882,"M35648|IGHD2-2*03|Homo":1658,"X97051|IGHD2-2*02|Homo":599,"X97051|IGHD2-21*02|Homo":1432,"X97051|IGHD4-17*01|Homo":1390,"X97051|IGHD1-26*01|Homo":641,"X13972|IGHD5-5*01|Homo":852,"X97051|IGHD5-24*01|Homo":1093,"X93615|IGHD3-10*02|Homo":372,"J00233|IGHD2-8*02|Homo":713,"X55580|IGHD3\/OR15-3b*01|Homo":884,"J00235|IGHD2-21*01|Homo":760,"X97051|IGHD4-23*01|Homo":516,"X93618|IGHD3-3*02|Homo":434,"X55584|IGHD5\/OR15-5b*01|Homo":83,"X13972|IGHD6-6*01|Homo":357,"X93614|IGHD3-16*01|Homo":137,"X97051|IGHD1-1*01|Homo":46,"X13972|IGHD1-7*01|Homo":75,"J00232|IGHD2-2*01|Homo":64,"X13972|IGHD4-4*01|Homo":72,"X55576|IGHD1\/OR15-1b*01|Homo":53,"X97051|IGHD1-20*01|Homo":20,"X97051|IGHD6-25*01|Homo":29,"X13972|IGHD2-8*01|Homo":24,"X55578|IGHD2\/OR15-2b*01|Homo":16,"X55582|IGHD4\/OR15-4b*01|Homo":1},"IAVI84":{"unidentifiable":167061.0,"X13972|IGHD3-10*01|Homo":17131.0,"X93616|IGHD3-22*01|Homo":16221.0,"X13972|IGHD3-9*01|Homo":6007.0,"J00234|IGHD2-15*01|Homo":5509.0,"X97051|IGHD6-19*01|Homo":5167.0,"X13972|IGHD6-13*01|Homo":3802.0,"X97051|IGHD3-16*02|Homo":2063.0,"X13972|IGHD3-3*01|Homo":23.0,"X13972|IGHD5-12*01|Homo":2337.0,"M35648|IGHD2-2*03|Homo":2501.0,"X97051|IGHD2-2*02|Homo":2555.0,"X97051|IGHD2-21*02|Homo":1595.0,"X97051|IGHD4-17*01|Homo":964.0,"X97051|IGHD1-26*01|Homo":1698.0,"X13972|IGHD5-5*01|Homo":1329.0,"X97051|IGHD5-24*01|Homo":695.0,"X93615|IGHD3-10*02|Homo":1007.0,"J00233|IGHD2-8*02|Homo":276.0,"X55580|IGHD3\/OR15-3b*01|Homo":60.0,"J00235|IGHD2-21*01|Homo":183.0,"X97051|IGHD4-23*01|Homo":420.0,"X93618|IGHD3-3*02|Homo":1.0,"X55584|IGHD5\/OR15-5b*01|Homo":297.0,"X13972|IGHD6-6*01|Homo":0.0,"X93614|IGHD3-16*01|Homo":125.0,"X97051|IGHD1-1*01|Homo":103.0,"X13972|IGHD1-7*01|Homo":0.0,"J00232|IGHD2-2*01|Homo":11.0,"X13972|IGHD4-4*01|Homo":2.0,"X55576|IGHD1\/OR15-1b*01|Homo":1.0,"X97051|IGHD1-20*01|Homo":31.0,"X97051|IGHD6-25*01|Homo":21.0,"X13972|IGHD2-8*01|Homo":20.0,"X55578|IGHD2\/OR15-2b*01|Homo":5.0,"X55582|IGHD4\/OR15-4b*01|Homo":0.0}}, 'Gene', false, prob);
+    var dataTable = new google.visualization.arrayToDataTable(data.dataTable);
+    var options = {
+        title: 'D gene usage',
+        height: 14 * (data.colNames.length) * (data.rowNames.length * 1.05) + 40,
+        bars: 'horizontal',
+        hAxis: {title: xlab, format: axisFormat},
+        vAxis: {title: ylab},
+    };
+    var chart = new google.charts.Bar(document.getElementById('D_freq_plot'));
+    chart.draw(dataTable, google.charts.Bar.convertOptions(options));
+}
+
+google.charts.setOnLoadCallback(drawChartJ);
+function drawChartJ(prob = true) {
+    
+    var xlab = "Frequency of J gene usage";
+    var ylab = "J gene family";
+    var axisFormat = "scientific"
+    if (prob) {
+        xlab = "Percentage of J gene usage";
+        axisFormat = "percent"
+    }
+    
+    var data = jsonToDataTable({"N152":{"X86355|IGHJ4*02|Homo":223118,"X86355|IGHJ5*02|Homo":64332,"X86355|IGHJ3*02|Homo":39589,"X86355|IGHJ6*02|Homo":39433,"X86356|IGHJ6*03|Homo":32780,"J00256|IGHJ2*01|Homo":18775,"J00256|IGHJ1*01|Homo":19615,"J00256|IGHJ3*01|Homo":11285,"M25625|IGHJ4*03|Homo":13111,"AJ879487|IGHJ6*04|Homo":6240,"J00256|IGHJ4*01|Homo":3488,"J00256|IGHJ6*01|Homo":1521,"J00256|IGHJ5*01|Homo":1452},"IAVI84":{"X86355|IGHJ4*02|Homo":89019,"X86355|IGHJ5*02|Homo":37089,"X86355|IGHJ3*02|Homo":39063,"X86355|IGHJ6*02|Homo":31675,"X86356|IGHJ6*03|Homo":24103,"J00256|IGHJ2*01|Homo":5584,"J00256|IGHJ1*01|Homo":3824,"J00256|IGHJ3*01|Homo":3387,"M25625|IGHJ4*03|Homo":1029,"AJ879487|IGHJ6*04|Homo":3073,"J00256|IGHJ4*01|Homo":498,"J00256|IGHJ6*01|Homo":454,"J00256|IGHJ5*01|Homo":423}}, 'Gene', false, prob);
+    var dataTable = new google.visualization.arrayToDataTable(data.dataTable);
+    var options = {
+        title: 'J gene usage',
+        height: 14 * (data.colNames.length) * (data.rowNames.length * 1.05) + 40,
+        bars: 'horizontal',
+        hAxis: {title: xlab, format: axisFormat},
+        vAxis: {title: ylab},
+    };
+    var chart = new google.charts.Bar(document.getElementById('J_freq_plot'));
+    chart.draw(dataTable, google.charts.Bar.convertOptions(options));
+}
+
+
+
+google.charts.setOnLoadCallback(drawChartCDR3Length);
+function drawChartCDR3Length(prob = true) {
+    
+    var xlab = "CDR3 amino acid sequence length";
+    var ylab = "Frequency of sequences";
+    var axisFormat = "scientific"
+    if (prob) {
+        ylab = "Percentage of sequences";
+        axisFormat = "percent"
+    }
+    
+    var data = jsonToDataTable({"N152":{"0":116366.0,"1":16.0,"2":76.0,"3":136.0,"4":1341.0,"5":905.0,"6":3272.0,"7":5061.0,"8":4289.0,"9":6478.0,"10":15002.0,"11":25131.0,"12":37258.0,"13":40417.0,"14":40223.0,"15":36692.0,"16":36439.0,"17":28378.0,"18":24006.0,"19":17050.0,"20":10952.0,"21":12023.0,"22":7007.0,"23":3045.0,"24":1309.0,"25":949.0,"26":210.0,"27":95.0,"28":110.0,"29":22.0,"30":13.0,"31":0.0,"32":0.0,"33":0.0,"34":0.0,"37":1.0,"39":0.0,"40":2.0,"43":1.0,"44":2.0,"45":1.0,"46":6.0,"48":1.0,"49":4.0,"50":1.0,"52":2.0,"53":5.0,"54":139.0,"55":229.0,"56":18.0,"57":10.0,"58":1.0,"61":3.0,"62":4.0,"63":0.0,"64":1.0,"73":2.0,"74":1.0,"75":2.0,"76":1.0,"77":3.0,"78":1.0,"79":1.0,"82":6.0,"83":18.0,"86":1.0,"87":1.0,"88":0.0},"IAVI84":{"0":24042.0,"1":10.0,"2":196.0,"3":539.0,"4":206.0,"5":2452.0,"6":693.0,"7":679.0,"8":1524.0,"9":2617.0,"10":5756.0,"11":9757.0,"12":24696.0,"13":22421.0,"14":23338.0,"15":20909.0,"16":19122.0,"17":19880.0,"18":18201.0,"19":13557.0,"20":8915.0,"21":8510.0,"22":3613.0,"23":3630.0,"24":1056.0,"25":1334.0,"26":281.0,"27":265.0,"28":504.0,"29":19.0,"30":0.0,"31":1.0,"32":60.0,"33":287.0,"34":119.0,"37":0.0,"39":2.0,"40":0.0,"43":0.0,"44":0.0,"45":0.0,"46":0.0,"48":0.0,"49":0.0,"50":0.0,"52":0.0,"53":0.0,"54":0.0,"55":0.0,"56":0.0,"57":0.0,"58":0.0,"61":0.0,"62":0.0,"63":1.0,"64":0.0,"73":0.0,"74":0.0,"75":0.0,"76":0.0,"77":0.0,"78":0.0,"79":27.0,"82":0.0,"83":1.0,"86":0.0,"87":0.0,"88":1.0}}, 'Length', true, prob);
+    var dataLimited = [data.dataTable[0]]
+    for (var i = 0; i < data.rowNames.length; i++) {
+        if (7 < Number(data.rowNames[i]) && Number(data.rowNames[i]) < 25) {
+            dataLimited.push(data.dataTable[i + 1]);
+        }
+    }
+    var dataTable = new google.visualization.arrayToDataTable(dataLimited);
+    var options = {
+        title: 'CDR3 length distribution',
+        subtitle: 'Length distribution of complementarity determining region 3 (CDR3) amino acid sequences',
+        height: 400,
+        bars: 'vertical',
+        vAxis: {title: ylab, format: axisFormat},
+        hAxis: {title: xlab},
+    };
+    var chart = new google.charts.Bar(document.getElementById('cdr3len_freq_plot'));
+    chart.draw(dataTable, google.charts.Bar.convertOptions(options));
+}
+
+
+
+
+
+
+
+google.charts.setOnLoadCallback(drawChartRarefactionVDJ);
+function drawChartRarefactionVDJ() {
+    var data = jsonToDataTable({"N152":{"1000":381.917,"2000":562.242,"3000":694.715,"4000":804.763,"5000":898.511,"6000":981.743,"7000":1054.978,"8000":1124.715,"9000":1186.609,"10000":1244.792,"20000":1688.563,"40000":2236.176,"60000":2604.524,"80000":2891.002,"100000":3128.229,"200000":3953.77,"239221":null,"300000":4508.317,"400000":4936.238,"474739":5205.0},"IAVI84":{"1000":262.508,"2000":374.26,"3000":453.311,"4000":515.817,"5000":568.257,"6000":612.548,"7000":652.237,"8000":688.386,"9000":720.915,"10000":751.305,"20000":967.787,"40000":1223.062,"60000":1394.64,"80000":1531.425,"100000":1643.964,"200000":2046.189,"239221":2162.0,"300000":null,"400000":null,"474739":null}}, 'numSeq', true, false);
+    var dataTable = new google.visualization.arrayToDataTable(data.dataTable);
+    var options = {
+        title: 'Rarefaction study for VDJ combination diversity',
+        subtitle: 'Rarefaction study for VDJ combination diversity',
+        height: 400,
+        hAxis: {title: 'Number of captured sequences', format: 'scientific'},
+        vAxis: {title: 'Number of unique VDJ combinations'},
+        interpolateNulls: true,
+    };
+    var chart = new google.charts.Line(document.getElementById('rarefaction_VDJ_plot'));
+
+    chart.draw(dataTable, google.charts.Line.convertOptions(options));
+}
+
+
+
+
+-->
+</script>
+
+
+
+
+
+
+
+</body>
+</html>

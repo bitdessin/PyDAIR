@@ -304,10 +304,6 @@ and the summarized report were created (:download:`humanhiv_report.html`).
 
 
 
-
-
-
-
 Analysis of mouse heavy chain
 =============================
 
