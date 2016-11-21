@@ -69,6 +69,8 @@ def main_stats(args):
     logging.info('[2/4] Write statistical data.')
     pydairapp.write_freq()
     pydairapp.write_cdr3_len_freq()
+    if args.estimate_vdj_combination:
+        pydairapp.write_diversity_results('vdj')
     logging.info('[3/4] Plotting.')
     pydairapp.plot_figures()
     pydairapp.create_report()

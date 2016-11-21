@@ -16,7 +16,7 @@ class PyDAIRReport:
     It is expected to use PyDAIRReport class methods after analyzing data in PYDAIR format file.
     """
     
-    def __init__(self, stats):
+    def __init__(self, stats, file_path):
         """PyDAIRReport class initialize method.
         
         Args:
@@ -27,19 +27,9 @@ class PyDAIRReport:
         self.__env   = Environment(loader = FileSystemLoader(self.__tmpl_path))
         self.__tmpl  = self.__env.get_template('report.html')
         self.__stats = stats
-        self.__data_path = None
+        self.__file_path = file_path
         
     
-    def set_data_path(self, sample, v_path = None, d_path = None, j_path = None,
-                            vdj_path = None, cdr3len = None, cdr3fa = None):
-        self.__data_path_v = v_path
-        self.__data_path_d_freq = None
-        self.__data_path_j_freq = None
-        self.__data_path_vdj_freq = None
-        self.__data_path_vdj_freq = None
-        self.__data_path_cdr3len  = None
-        self.__data_path_cdr3 = None
-        
     
         
     def render(self, file_path):
@@ -60,9 +50,17 @@ class PyDAIRReport:
         
         # set up basic statistics
         sample_stats = []
-        for sample in self.__stats.samples:
-            sample_stats.append({'name': sample.name,
-                                 'libsize': sample.len()})
+        for i in range(len(self.__stats.samples)):
+            bsample = self.__stats.samples.get_record(i)
+            sample_stats.append({'name': bsample.name,
+                                 'libsize': bsample.len(),
+                                 'vfreq': self.__file_path['vfreq'][i],
+                                 'dfreq': self.__file_path['dfreq'][i],
+                                 'jfreq': self.__file_path['jfreq'][i],
+                                 'vdjfreq': self.__file_path['vdjfreq'][i],
+                                 'vdjrarefaction': self.__file_path['vdjrarefaction'][i],
+                                 'cdr3protlen': self.__file_path['cdr3protlen'][i],
+                                 'cdr3nucllen': self.__file_path['cdr3nucllen'][i]})
         report_data['sample_stats'] = sample_stats
         
         

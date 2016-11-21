@@ -65,7 +65,7 @@ class Test_app(unittest.TestCase):
         pydairapp = PyDAIRAPPStats(pydair_args)
         pydairapp.write_freq()
         pydairapp.write_cdr3_len_freq()
-        
+        pydairapp.write_diversity_results('vdj')
         pydairapp.stats.get_rarefaction_result()
         pydairapp.plot_figures()
         pydairapp.create_report()

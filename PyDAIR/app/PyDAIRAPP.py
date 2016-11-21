@@ -540,7 +540,15 @@ class PyDAIRAPPStats:
         
         self.stats  = stats
         self.plots  = PyDAIRPlot(stats, self.__figure_style, self.__figure_format)
-        self.report = PyDAIRReport(stats)
+        #[r.split('/')[-1] for r in glob.glob('test/*')]
+        __file_path = {'vfreq': [r.split('/')[-1] for r in self.__o_file_v_freq],
+                       'dfreq': [r.split('/')[-1] for r in self.__o_file_d_freq],
+                       'jfreq': [r.split('/')[-1] for r in self.__o_file_j_freq],
+                       'vdjfreq': [r.split('/')[-1] for r in self.__o_file_vdj_freq],
+                       'vdjrarefaction': [r.split('/')[-1] for r in self.__o_file_rarefaction],
+                       'cdr3protlen': [r.split('/')[-1] for r in self.__o_file_cdr3_prot_len_freq],
+                       'cdr3nucllen': [r.split('/')[-1] for r in self.__o_file_cdr3_nucl_len_freq]}
+        self.report = PyDAIRReport(stats, __file_path)
     
     
     
@@ -661,6 +669,20 @@ class PyDAIRAPPStats:
                 _freq.to_csv(file_path, sep = '\t', na_rep = 'NA', header = True, index = True)
     
     
+    def write_diversity_results(self, data):
+        """Write diversity study results.
+        
+        Args:
+            data (str): 'vdj' or 'cdr3'.
+        
+        Return diversity study results (i.e., the coordinates of rarefaction curve).
+        """
+        for sample_i in range(len(self.stats.samples)):
+            bsample = self.stats.samples.get_record(sample_i)
+            if bsample.div.rarefaction[data] is not None:
+                bsample.div.rarefaction[data].to_csv(self.__o_file_rarefaction[sample_i],
+                                                     sep = '\t', na_rep = 'NA', header = True, index = True)
+        
     
     
     def plot_figures(self):

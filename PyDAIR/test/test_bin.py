@@ -43,7 +43,7 @@ class Test_bin(unittest.TestCase):
     def test_bin_stats(self):
         cmd = 'pydair stats -i ' + _data_path + '/sample.1.pydair ' + _data_path + '/sample.2.pydair ' + _data_path + '/sample.3.pydair '
         cmd += '-n sample_1 smaple_2 sample_3 '
-        cmd += '-o ' + _result_path + '/test_output_bin_analysis '
+        cmd += '-o ' + _result_path + '/test_output_bin_analysis --estimate-vdj-combination'
         print(cmd)
         subprocess.call(cmd, shell = True)
     

@@ -77,20 +77,14 @@ article {
     
     
     
-    <section id="h_basic" class="panel panel-default">
-        <div class="panel-heading"><h2>Basic statistics</h2></div>
-        <div class="panel-body">
-        <table class="table table-condensed">
+        <table class="table table-bordered">
         <thead>
         <tr>
             <td>Sample</td>
             <td># sequences</td>
-            <td>V<br />frequency</td>
-            <td>D<br />frequency</td>
-            <td>J<br />frequency</td>
-            <td>VDJ<br />frequency</td>
-            <td>CDR3 length<br />frequency</td>
-            <td>CDR3<br />sequence</td>
+            <td colspan="4">gene usage frequencies</td>
+            <td>rarefaction analysis</td>
+            <td colspan="2">CDR3 length</td>
         </tr>
         </thead>
         <tbody>
@@ -98,18 +92,17 @@ article {
             <tr>
             <td>{{ item.name }}</td>
             <td>{{ item.libsize }}</td>
-            <td><a>TXT</a></td>
-            <td><a>TXT</a></td>
-            <td><a>TXT</a></td>
-            <td><a>TXT</a></td>
-            <td><a>TXT</a></td>
-            <td><a>FASTA</a></td>
+            <td><a href="{{ item.vfreq }}">V</a></td>
+            <td><a href="{{ item.dfreq }}">D</a></td>
+            <td><a href="{{ item.jfreq }}">J</a></td>
+            <td><a href="{{ item.vdjfreq }}">VDJ</a></td>
+            <td><a href="{{ item.vdjrarefaction }}">VDJ</a></td>
+            <td><a href="{{ item.cdr3protlen }}">amino acid</a></td>
+            <td><a href="{{ item.cdr3nucllen }}">nucleotide</a></td>
             </tr>
         {% endfor %}
         </tbody>
         </table>
-        </div>
-    </section>
 
 
 
