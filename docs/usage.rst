@@ -193,7 +193,7 @@ The :command:`stats` action is used to summarise the parsed results.
 | ``--contain_ambiguous_D``      | Contain IgH sequence that has      | ``True``       |
 |                                | unidentifiable D genes.            |                |
 +--------------------------------+------------------------------------+----------------+
-| ``--containe_stopcodon``       | Contain IgH sequence that has top  | ``False``      |
+| ``--all_seq``                  | Contain IgH sequence that has top  | ``False``      |
 |                                | codons.                            |                |
 +--------------------------------+------------------------------------+----------------+
 | ``--figure-format``            | Figure format.                     | ``png``        |
