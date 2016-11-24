@@ -65,7 +65,7 @@ article {
     <section id="load_status" class="panel panel-danger" style="display:none;">
         <div class="panel-heading">Warnings</div>
         <div class="panel-body">
-        <p>This page loads Google Charts API for drawing graphs and Bootstrap for rendering page desing via internect. Make sure you have internet connections.</p>
+        <p>This page loads Google Charts API for drawing graphs and Bootstrap for rendering page desing via internet. Make sure you have internet connections.</p>
         </div>
     </section>
 
@@ -112,8 +112,14 @@ article {
         <div class="panel-heading"><h2>{{ item.gene }} gene usage</h2></div>
         <div class="row panel-body">
            <div class="col-md-4">
+                <div style="margin-bottom:2em">
                 <button type="button" class="btn btn-default" onClick="drawChart{{ item.gene }}(true)">Percentage</button>
                 <button type="button" class="btn btn-default" onClick="drawChart{{ item.gene }}(false)">Frequency</button>
+                </div>
+                <div>
+                <p>The frequencies of gene usage.</p>
+                <textarea class="form-control" rows="10">{{ item.freq_csv }}</textarea>
+                </div>
             </div>
             <div class="col-md-8">
                 <div id="{{ item.gene }}_freq_plot"></div>
@@ -128,8 +134,14 @@ article {
         <div class="panel-heading"><h2>CDR3 length</h2></div>
         <div class="row panel-body">
            <div class="col-md-4">
+                <div style="margin-bottom:2em">
                 <button type="button" class="btn btn-default" onClick="drawChartCDR3Length(true)">Percentage</button>
                 <button type="button" class="btn btn-default" onClick="drawChartCDR3Length(false)">Frequency</button>
+                </div>
+                <div>
+                <p>The frequencies of the length of CDR3 amino acid sequences.</p>
+                <textarea class="form-control" rows="10">{{ cdr3_stats.freq_csv }}</textarea>
+                </div>
             </div>
             <div class="col-md-8">
                 <div id="cdr3len_freq_plot"></div>
@@ -144,7 +156,7 @@ article {
         <div class="panel-heading"><h2>Rarefaction study for VDJ combinations</h2></div>
         <div class="row panel-body">
            <div class="col-md-4">
-                <p>Basic statistics.</p>
+                <p>The coordinates of rarefaction curves.</p>
                 <textarea class="form-control" rows="10">{{ rarefaction_stats.tries_csv }}</textarea>
             </div>
             <div class="col-md-8">
