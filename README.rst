@@ -12,5 +12,4 @@ The main functions of PyDAIR are the identification of VDJ genes and determinati
 
 - Project page: `PyDAIR <http://bioinfoteam.org/PyDAIR>`_
 - PyPI package: `PyPI <https://pypi.python.org/pypi/PyDAIR/>`_
-- Documentation: `PyDAIR <http://pydair.readthedocs.io/en/latest/index.html>`_
 
