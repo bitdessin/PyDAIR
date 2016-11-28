@@ -17,7 +17,8 @@ class Test_pydair_utils_pydairArgs(unittest.TestCase):
         jalign = PyDAIRBlastArgs('path_to_blast_db_j', 4, -2, 3, 3, 6, 1e12)
         pydair_args = PyDAIRParseSeqArgs(_data_path + '/sample.1.fa', _db_path + '/v.fa',
                                          _db_path + '/d.fa', _db_path + '/j.fa',
-                                         _data_path + '/path_to_o', 'pydair_format', valign, dalign, jalign)
+                                         _data_path + '/path_to_o', 'pydair_format', valign, dalign, jalign,
+                                         v_motif = 'YYC', j_motif = 'WG.G')
         print(pydair_args.q_file_path)
         print(pydair_args.pydair_format)
         print(pydair_args.v_align_args.db)

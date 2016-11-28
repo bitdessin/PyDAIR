@@ -2,7 +2,7 @@ from PyDAIR.utils import *
 from PyDAIR.seq import *
 from PyDAIR.io import *
 from PyDAIR.stats import *
-from PyDAIR.plot import *
+#from PyDAIR.plot import *
 from PyDAIR.app import *
 
 

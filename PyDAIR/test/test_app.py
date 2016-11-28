@@ -33,7 +33,8 @@ class Test_app(unittest.TestCase):
         # PyDAIR arguemnts settings
         pydair_args = PyDAIRParseSeqArgs(q_fasta, v_gene_fasta, d_gene_fasta, j_gene_fasta,
                                        output_prefix, 'pydair',
-                                       v_gene_align_args, d_gene_align_args, j_gene_align_args)
+                                       v_gene_align_args, d_gene_align_args, j_gene_align_args,
+                                       v_motif = 'YYC', j_motif = 'WG.G')
         
         # main processes
         pydairapp = PyDAIRAPPParseSeq(pydair_args)
@@ -56,18 +57,18 @@ class Test_app(unittest.TestCase):
                          _data_path + '/sample.2.pydair',
                          _data_path + '/sample.3.pydair']
         pydair_args = PyDAIRStatsArgs(sample_names, pydair_files, True, False, False, 2,
-                                      _result_path + '/test_output_app_analysis_hasambigoD', 'pdf')
+                                      _result_path + '/test_output_app_analysis_hasambigoD')
         pydairapp = PyDAIRAPPStats(pydair_args)
         pydairapp.write_freq()
         pydairapp.write_cdr3_len_freq()
         pydair_args = PyDAIRStatsArgs(sample_names, pydair_files, False, False, True, 2,
-                                      _result_path + '/test_output_app_analysis', 'pdf')
+                                      _result_path + '/test_output_app_analysis')
         pydairapp = PyDAIRAPPStats(pydair_args)
         pydairapp.write_freq()
         pydairapp.write_cdr3_len_freq()
         pydairapp.write_diversity_results('vdj')
         pydairapp.stats.get_rarefaction_result()
-        pydairapp.plot_figures()
+        #pydairapp.plot_figures()
         pydairapp.create_report()
         
     

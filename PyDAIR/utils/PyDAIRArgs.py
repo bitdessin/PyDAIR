@@ -12,7 +12,8 @@ class PyDAIRParseSeqArgs:
     """
    
     def __init__(self, q = None, v = None, d = None, j = None, o = None, f = None,
-                 valign = None, dalign = None, jalign = None):
+                 valign = None, dalign = None, jalign = None,
+                 v_motif = None, j_motif = None):
         """Set up parameters for analysis of Rep-Seq data
         
         Args:
@@ -24,6 +25,8 @@ class PyDAIRParseSeqArgs:
             valign (PyDAIRBlastArgs): BLAST parameters for V gene identification.
             dalign (PyDAIRBlastArgs): BLAST parameters for D gene identification.
             jalign (PyDAIRBlastArgs): BLAST parameters for J gene identification.
+            v_motif (str): The motif on V gene to determine CDR3 segment.
+            j_motif (str): The motif on J gene to determine CDR3 segment.
         
         Raises:
             IOError: An error occurs when the FASTA files are not existed.
@@ -36,7 +39,8 @@ class PyDAIRParseSeqArgs:
         >>>                          gapextend = 4, wordsize = 9, eval_cutoff = 1e10)
         >>> args = PyDAIRParseSeqArgs('fugu', q = 'q.fa', v = 'v.fa', d = 'd.fa',
         >>>                           j = 'j.fa', o = 'out_prefix', f = 'pydair',
-        >>>                           valign = valign, dalign = dalign, jalign = jalign)
+        >>>                           valign = valign, dalign = dalign, jalign = jalign,
+        >>>                           v_motif = 'YYC', j_motif = 'WG.G')
         
         """
 
@@ -58,7 +62,8 @@ class PyDAIRParseSeqArgs:
         self.v_align_args = valign
         self.d_align_args = dalign
         self.j_align_args = jalign
-
+        self.v_motif = v_motif
+        self.j_motif = j_motif
 
 
 
@@ -123,7 +128,7 @@ class PyDAIRBlastArgs:
 class PyDAIRStatsArgs:
     """A class is to save parameters for statistical analysis.
     
-    There two arguments `contain_ambiguous_D` and `all_seq`
+    There two arguments `contain_ambiguous_D` and `productive_only`
     are important in analysis.
     
     An Ig sequence is composed of V, D, and J genes. In addition,
@@ -146,20 +151,19 @@ class PyDAIRStatsArgs:
     Then, analysis will be performed agains the remained Ig
     sequences with identificable D gene.
 
-    The `all_seq` argument is an option to specify
+    The `productive_only` argument is an option to specify
     how to treat these Ig seqeunces that contains stop codons.
     It is known to that Ig seqeunce freaquently contains stop codons.
     The Ig sequence with stop codons may not give the function in immune system.
-    If `all_seq` is `True`, analysis will be performed against
+    If `productive_only` is `True`, analysis will be performed against
     all Ig sequences.
-    If `all_seq` is `False`, analysis will be performed against
+    If `productive_only` is `False`, analysis will be performed against
     Ig seqeuences that do not contain any stop codon.
     """
     
-    def __init__(self, sample_names, pydair_files, contain_ambiguous_D, all_seq,
+    def __init__(self, sample_names, pydair_files, contain_ambiguous_D, productive_only,
                  estimate_vdj_combination, n_tries = 1000,
-                 output_prefix = './pydairstats_',
-                 figure_format = 'pdf', figure_style = 'ggplot'):
+                 output_prefix = './pydairstats_'):
         """Set up parameters for statistical analysis.
 
         Args:
@@ -169,33 +173,28 @@ class PyDAIRStatsArgs:
                                  The length of ``pydair_files`` should be equal to ``sample_names``.
             contain_ambiguous_D (bool):  If ``True``, analysis will contain Ig sequence with ambiguous D gene.
                                          Default is ``True``.
-            all_seq (bool): If ``True``, analysis will contain Ig sequence which contains stop codons.
+            productive_only (bool): If ``True``, analysis will contain Ig sequence which contains stop codons.
                                       Since Ig sequence with stop codon may not have function in immune system,
                                       therefore, default is ``False``.
             estimate_vdj_combination (bool): If ``True``, perform rarefaction study to estimate diversity of VDJ combination.
             output_prefix (str): A prefix to save the analysis results.
             n_tries (int): Number of simulation tries.
-            figure_format (str): A string to specify figure format.
-                                 One of ``png``, ``tiff``, ``pdf`` can be specified.
-            figure_style (str): A string to specify figure style.
-                                One of ``classic``, ``ggplot``, ``fivethirtyeight`` can be specified.
         
         >>> args = PyDAIRStatsArgs(sample_names = ['fugu 1', 'fugu 2', 'fugu 3'],
         >>>                        pydair_files = ['fugu1.pydair', 'fugu2.pydair', 'fugu3.pydair'],
-        >>>                        containe_ambiguous_D = True, all_seq = False,
+        >>>                        containe_ambiguous_D = True, productive_only = False,
         >>>                        estimate_vdj_combination = True, n_tries = 1000,
-        >>>                        output_prefix = './fugustat_result',
-        >>>                        figure_format = 'pdf', foigure_style = 'ggplot')
+        >>>                        output_prefix = './fugustat_result')
         
         """
         
         self.sample_names        = sample_names
         self.pydair_files        = pydair_files
         self.contain_ambiguous_D = contain_ambiguous_D
-        self.all_seq   = all_seq
+        self.productive_only   = productive_only
         self.output_prefix       = output_prefix
-        self.figure_format       = figure_format
-        self.figure_style        = figure_style
+        #self.figure_format       = figure_format
+        #self.figure_style        = figure_style
         self.estimate_vdj_combination = estimate_vdj_combination
         self.n_tries             = n_tries
 

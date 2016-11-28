@@ -12,7 +12,7 @@ from PyDAIR.utils.PyDAIRUtils import *
 from PyDAIR.utils.PyDAIRArgs import *
 from PyDAIR.app.PyDAIRAPP import *
 from PyDAIR.stats.PyDAIRStats import *
-from PyDAIR.plot.PyDAIRPlot import *
+#from PyDAIR.plot.PyDAIRPlot import *
 
 
 
@@ -29,7 +29,8 @@ def main_parse(args):
                                        args.j_mismatch_score, args.j_gap_open_penalty,
                                        args.j_gap_extend_penalty, args.j_wordsize, args.j_evalue_cutoff)
     pydair_args = PyDAIRParseSeqArgs(args.q_fasta, args.v_fasta, args.d_fasta, args.j_fasta, args.output, args.output_format,
-                                     v_gene_align_args, d_gene_align_args, j_gene_align_args)
+                                     v_gene_align_args, d_gene_align_args, j_gene_align_args,
+                                     args.v_motif, args.j_motif)
     logging.info('[ 1/10] Setting up parameters.')
     pydair = PyDAIRAPPParseSeq(pydair_args)
     logging.info('[ 2/10] BLAST for V genes.')
@@ -60,19 +61,16 @@ def main_stats(args):
     logging.info('[1/4] Read data files.')
     pydair_args = PyDAIRStatsArgs(sample_names, pydair_files,
                                 contain_ambiguous_D = args.contain_ambiguous_D,
-                                all_seq = args.all_seq,
+                                productive_only = args.productive_only,
                                 estimate_vdj_combination = args.estimate_vdj_combination,
-                                output_prefix = args.output,
-                                figure_format = args.figure_format,
-                                figure_style = args.figure_style)
+                                output_prefix = args.output)
     pydairapp = PyDAIRAPPStats(pydair_args)
     logging.info('[2/4] Write statistical data.')
     pydairapp.write_freq()
     pydairapp.write_cdr3_len_freq()
     if args.estimate_vdj_combination:
         pydairapp.write_diversity_results('vdj')
-    logging.info('[3/4] Plotting.')
-    pydairapp.plot_figures()
+    logging.info('[3/4] Create report.')
     pydairapp.create_report()
     logging.info('[4/4] Finishing...')
 
@@ -119,6 +117,10 @@ def parse_args():
     parse_parser.add_argument('--j-gap-extend-penalty', help = 'Penaly (> 0 )to extend a gap for J gene.',          type = int, default  =  6)
     parse_parser.add_argument('--j-wordsize',           help = 'Word size to find hotspots by BLAST for J gene.',   type = int, default  =  7)
     parse_parser.add_argument('--j-evalue-cutoff',      help = 'Expectation value (e-value) threshold for assiging J gene to immunoglobulin sequence.', type = float, default = 1e-5)
+    # motif
+    parse_parser.add_argument('--v-motif',  help = 'The motif at V gene for detemrining CDR3 segment. Usually it is YYC.', type = str, default = 'YYC')
+    parse_parser.add_argument('--j-motif',  help = 'The motif at J gene for detemrining CDR3 segment. Usually it is WG.G or FG.G.', type = str, default = 'WG.G')
+    
     parse_parser.set_defaults(action = 'parse')
     
     """
@@ -130,14 +132,11 @@ def parse_args():
     stat_parser.add_argument('-n', '--name',  help = 'Sample names for each PyDAIR file. Multiple names should be separated by a blank.', nargs= '*', action = 'append', required = True)
     stat_parser.add_argument('-o', '--output', help = 'Path to file for writing anaysis results.', required = True)
     stat_parser.add_argument('--contain_ambiguous_D', help = 'Contain immunoglobulin heavy chain sequences that has unidentifiable D genes when calculating the frequencies.', action = 'store_true')
-    stat_parser.add_argument('--all_seq',   help = 'Contain immunoglobulin heavy chain sequences that has stop codons when calculating the frequencies.',            action = 'store_true')
-    stat_parser.add_argument('--figure-format',   help = 'Format of figures.', default = 'png')
-    stat_parser.add_argument('--figure-dpi',      help = 'DPI of figures',     default = 300)
-    stat_parser.add_argument('--figure-style',    help = 'Stylesheet of figures', choices = ['classic', 'ggplot', 'fivethirtyeight'], default = 'ggplot')
+    stat_parser.add_argument('--productive_only', help = 'Only analysis the productive sequences.', action = 'store_true')
     #stat_parser.add_argument('--estimate-cdr3-population', help = 'Estimation of CDR-H3 population sizes by sampling-resampling study.', action = 'store_true')
     stat_parser.add_argument('--estimate-vdj-combination', help = 'Estimation of the numbers of VDJ combinations by rarefaction study.', action = 'store_true')
-    stat_parser.set_defaults(contain_ambiguous_D      = True)
-    stat_parser.set_defaults(all_seq        = False)
+    stat_parser.set_defaults(contain_ambiguous_D = True)
+    stat_parser.set_defaults(productive_only     = False)
     #stat_parser.set_defaults(estimate_cdr3_population = False)
     stat_parser.set_defaults(estimate_vdj_combination = False)
     stat_parser.set_defaults(action = 'stats')

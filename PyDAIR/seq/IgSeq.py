@@ -40,8 +40,9 @@ class IgConstantTag:
         # V end motif with a mismatch
         self.V_1mismatch = []
         for vp in self.V:
-            for i in range(0, len(vp)):
-                self.V_1mismatch.append(vp[:i] + '.' + vp[(i+1):])
+            if len(vp) > 3:
+                for i in range(0, len(vp)):
+                    self.V_1mismatch.append(vp[:i] + '.' + vp[(i+1):])
         # J end motif with a mismatch (too short, do NOT assume)
         
         self.V_re = re.compile('(' + '|'.join(self.V) + ')', re.IGNORECASE)
@@ -210,7 +211,6 @@ class IgSeqAlign:
         # if rev:
         #     logging.info('The sequences ' + self.sbjct.name + ' has changed to reverse complementary strand.')
         return rev    
-
 
 
 
@@ -920,39 +920,8 @@ class IgSeq:
         self.query.orfcode = ';'.join(orfcode)
     
     
-    """
-    def __seek_orf(self, orf_upper = None, exact_orf = None):
-        orf = None
-        if exact_orf is None:
-            exact_orf = [0, 1, 2]
-        else:
-            exact_orf = [exact_orf]
-        
-        re_start = re.compile('M')
-        
-        aa_orf = None
-        aa = None
-        for exact_orf_i in exact_orf:
-            slice_start = exact_orf_i
-            slice_end = int(math.floor((len(self.query.seq) - exact_orf_i) / 3)) * 3 + exact_orf_i
-            aa = str(Seq(self.query.seq[slice_start:slice_end], generic_dna).translate())
-            for start_pos in re_start.finditer(aa):
-                aa_orf = aa[(start_pos.start() + 1):]
-                if '*' not in aa_orf:
-                    orf = start_pos.start() * 3 + exact_orf_i
-                    break
-            if orf is not None:
-                break
-        
-        # if ORF is exceed out of V region, set ORF to None
-        if orf is not None and orf_upper is not None:
-            if orf > orf_upper:
-                orf = None
-        
-        return orf
-    """
 
-    def seek_cdr3(self):
+    def seek_cdr3(self, v_motif = None, j_motif = None):
         """Search cdr3 region.
         
         If the query sequence has the correct alignments with V and J genes, then search the cdr3
@@ -966,27 +935,22 @@ class IgSeq:
             # seek unaligned region
             untmpl_start, untmpl_end = self.__seek_untemplated_region()
             # seek CDR3
-            const_tag = IgConstantTag()
-            cdr3_start = self.__seek_cdr3_YYC( self.query.seq, untmpl_start - 1, untmpl_end, const_tag)
-            cdr3_end   = self.__seek_cdr3_WGxG(self.query.seq, untmpl_start - 1, untmpl_end, const_tag)
+            const_tag = IgConstantTag(V = v_motif, J = j_motif)
+            cdr3_nucl_start = self.__seek_cdr3_YYC( self.query.seq, untmpl_start - 1, untmpl_end, const_tag)
+            cdr3_nucl_end   = self.__seek_cdr3_WGxG(self.query.seq, untmpl_start - 1, untmpl_end, const_tag)
             
             # fix the end position (assume that the YYC is the base position)
-            if cdr3_start is not None and cdr3_end is not None:
-                codons = (cdr3_end - (cdr3_start)) % 3
-                if codons == 1:
-                    cdr3_end += -1
-                elif codons == 2:
-                    cdr3_end += -2
+            #cdr3_prot_start = cdr3_nucl_start
+            #if cdr3_nucl_start is not None and cdr3_nucl_end is not None:
+            #    codons = (cdr3_nucl_end - (cdr3_nucl_start)) % 3
+            #    if codons == 1:
+            #        cdr3_prot_end = cdr3_nucl_end - 1
+            #    elif codons == 2:
+            #        cdr3_prot_end += cdr3_nucl_end - 2
             # setup data to object
-            self.variable_region = IgSeqVariableRegion(self.query.name, self.query.seq, untmpl_start, untmpl_end, cdr3_start, cdr3_end)
-            # ORF of IgH
-            #orf_upper = self.j.query.start
-            #if cdr3_start is not None:
-            #    orf_upper = cdr3_start
-            #self.query.orf = self.__seek_orf(orf_upper = orf_upper)
-        #else:
-        #    logging.warning('The alignments of ' + self.query.name + ' is not correct. Discarded this sequence.')
-    
+            #if cdr3_nucl_end is not None and cdr3_nucl_start is not None:
+            #    print(self.query.name + '\t' +  str((cdr3_nucl_end - cdr3_nucl_start - 1) % 3))
+            self.variable_region = IgSeqVariableRegion(self.query.name, self.query.seq, untmpl_start, untmpl_end, cdr3_nucl_start, cdr3_nucl_end)
     
     
     
@@ -1009,16 +973,13 @@ class IgSeq:
         cdr3_nucl = None
         cdr3_prot = None
         
-        untemplate_range = self.variable_region.untemplate_region
         cdr3_range = self.variable_region.cdr3
-        orf = self.query.orf
-        
-        # get CDR3 sequence
         if cdr3_range is not None:
             cdr3_nucl = self.query.seq[(cdr3_range[0] + v_adj):(cdr3_range[1] + j_adj)]
+            cdr3_nucl_inframe = cdr3_nucl
             if len(cdr3_nucl) % 3 != 0:
-                cdr3_nucl = cdr3_nucl[:-(len(cdr3_nucl) % 3)]
-            cdr3_prot = str(Seq(cdr3_nucl, generic_dna).translate())
+                cdr3_nucl_inframe = cdr3_nucl[:-(len(cdr3_nucl) % 3)]
+            cdr3_prot = str(Seq(cdr3_nucl_inframe, generic_dna).translate())
         cdr3_data = CDR3Data(cdr3_nucl, cdr3_prot)
         
         return cdr3_data

@@ -42,7 +42,7 @@ class PyDAIRStatsRecord:
     
     def __init__(self, name = None, v = None, d = None, j = None, orf = None,
                  cdr3_nucl_seq = None, cdr3_prot_seq = None,
-                 contain_ambiguous_D = False, all_seq = False):
+                 contain_ambiguous_D = False, productive_only = False):
         """PyDAIRStatsRecord class initialize method.
         
         Args:
@@ -54,7 +54,7 @@ class PyDAIRStatsRecord:
             cdr3_nucl_seq (list): A list of CDR3 nucleotide sequences.
             cdr3_prot_seq (list): A list of CDR3 amino acid sequences.
             contain_ambiguous_D (bool): If ``True``, analysis sequence with ambiguous D gene.
-            all_seq (bool): If ``True``, analysis sequence with stop codons.
+            productive_only (bool): If ``True``, analysis sequence with stop codons.
         """
         # calculate the number of entries
         
@@ -74,10 +74,10 @@ class PyDAIRStatsRecord:
             filter_ambigoD = self.vdj.d.notnull()
         
         filter_stopcodon = None
-        if all_seq:
-            filter_stopcodon = pd.Series([True] * self.vdj.shape[0])
-        else:
+        if productive_only:
             filter_stopcodon = pd.Series(orf).notnull()
+        else:
+            filter_stopcodon = pd.Series([True] * self.vdj.shape[0])
             
         filters = pd.Series(filter_ambigoD & filter_stopcodon)
         
@@ -399,7 +399,7 @@ class PyDAIRStats:
     '''
     
     def __init__(self, pydair_file, pydair_format = None, pydair_id = None,
-                 contain_ambiguous_D = False, all_seq = False):
+                 contain_ambiguous_D = False, productive_only = False):
         """PyDAIRStats class initialize method.
         
         Args:
@@ -407,7 +407,7 @@ class PyDAIRStats:
             pydair_format (str): ``pydair`` should be specified in this version.
             pydair_id (list): A list of sample names.
             contain_ambiguous_D (bool): If true, anlayze sequences with ambiguous D genes.
-            all_seq (bool): If true, analyze sequences with stop codons.
+            productive_only (bool): If true, analyze sequences with stop codons.
         """
         
         if pydair_format is None:
@@ -421,7 +421,7 @@ class PyDAIRStats:
         self.__pydair_format = pydair_format
         self.__pydair_id     = pydair_id
         self.__contain_ambiguous_D = contain_ambiguous_D
-        self.__all_seq = all_seq
+        self.__productive_only = productive_only
         self.samples   = None
         
         # parse PyDAIR files
@@ -449,12 +449,15 @@ class PyDAIRStats:
                 if cdr3_data.nucl_seq is None:
                     cdr3_data.nucl_seq = ''
                     cdr3_data.prot_seq = ''
+                if '*' in cdr3_data.prot_seq:
+                    cdr3_data.nucl_seq = ''
+                    cdr3_data.prot_seq = ''
                 cdr3_prot_seq.append(cdr3_data.prot_seq)
                 cdr3_nucl_seq.append(cdr3_data.nucl_seq)
             
             sample_record = PyDAIRStatsRecord(self.__pydair_id[i], v, d, j, orf,
                                               cdr3_nucl_seq, cdr3_prot_seq,
-                                              self.__contain_ambiguous_D, self.__all_seq)
+                                              self.__contain_ambiguous_D, self.__productive_only)
             self.samples.append(sample_record)
             pydair_fh.close()
     

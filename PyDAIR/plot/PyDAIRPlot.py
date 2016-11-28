@@ -3,8 +3,8 @@ import os
 import sys
 import numpy as np
 import pandas as pd
-import matplotlib
-import matplotlib.pyplot as plt
+#import matplotlib
+#import matplotlib.pyplot as plt
 #from mpl_toolkits.mplot3d import Axes3D
 #import matplotlib.cm as cmx
 from PyDAIR.stats.PyDAIRStats import *

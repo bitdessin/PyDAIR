@@ -35,6 +35,7 @@ class Test_bin(unittest.TestCase):
         cmd += '--j-match-score 3 --j-mismatch-score -3 '
         cmd += '--j-gap-open-penalty 6 --j-gap-extend-penalty 6 '
         cmd += '--j-wordsize 7 --j-evalue-cutoff 1e-5 '
+        cmd += '--j-motif FG.G '
         print(cmd)
         subprocess.call(cmd, shell = True)
     
@@ -54,7 +55,6 @@ class Test_bin(unittest.TestCase):
         cmd += '-n sample_1 smaple_2 sample_3 '
         cmd += '-o ' + _result_path + '/test_output_bin_analysis_hasambigoD '
         cmd += '--contain_ambiguous_D '
-        cmd += '--figure-style ggplot '
         print(cmd)
         subprocess.call(cmd, shell = True)
 

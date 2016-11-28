@@ -12,7 +12,7 @@ from PyDAIR.io.PyDAIRIO import *
 from PyDAIR.utils.PyDAIRArgs import *
 from PyDAIR.app.PyDAIRAPP import *
 from PyDAIR.stats.PyDAIRStats import *
-from PyDAIR.plot.PyDAIRPlot import *
+#from PyDAIR.plot.PyDAIRPlot import *
 
 from Bio import SeqIO
 
@@ -62,6 +62,9 @@ class PyDAIRAPPParseSeq:
         # data
         self.__pydair_records = []
         
+        # motif
+        self.__v_motif = self.__args.v_motif
+        self.__j_motif = self.__args.j_motif
         
         # protocol log
         self.__log_parsed_v = False
@@ -243,7 +246,7 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
             # create IgSeq class object
             igseq = IgSeq(igseqv, igseqd, igseqj)
             # find CDR3 region
-            igseq.seek_cdr3()
+            igseq.seek_cdr3(v_motif = self.__v_motif, j_motif = self.__j_motif)
             igseq.seek_orf()
             # if alignemnt of V and J are correct, then print out the results into file
             if igseq.valid_alignment:
@@ -485,10 +488,10 @@ class PyDAIRAPPStats:
         self.__sample_names        = args.sample_names
         self.__pydair_files        = args.pydair_files
         self.__contain_ambiguous_D = args.contain_ambiguous_D
-        self.__all_seq   = args.all_seq
+        self.__productive_only   = args.productive_only
         self.__output_prefix       = args.output_prefix
-        self.__figure_format       = args.figure_format
-        self.__figure_style        = args.figure_style
+        #self.__figure_format       = args.figure_format
+        #self.__figure_style        = args.figure_style
         self.__estimate_vdj_combination = args.estimate_vdj_combination
         
         # data files
@@ -514,17 +517,17 @@ class PyDAIRAPPStats:
         self.__out_file_samplingresamplig  = self.__output_prefix + '.samplingresamplig.tsv'
         
         # plot files
-        self.__o_figure_v_freq   = self.__output_prefix + '.v.freq.' + self.__figure_format
-        self.__o_figure_d_freq   = self.__output_prefix + '.d.freq.' + self.__figure_format
-        self.__o_figure_j_freq   = self.__output_prefix + '.j.freq.' + self.__figure_format
-        self.__o_figure_vdj_freq = []
-        for sample_name in self.__sample_names:
-            sample_name_f = sample_name.replace(' ', '_')
-            self.__o_figure_vdj_freq.append(self.__output_prefix + '.sample.' + sample_name_f + '.vdj.freq.' + self.__figure_format)
+        #self.__o_figure_v_freq   = self.__output_prefix + '.v.freq.' + self.__figure_format
+        #self.__o_figure_d_freq   = self.__output_prefix + '.d.freq.' + self.__figure_format
+        #self.__o_figure_j_freq   = self.__output_prefix + '.j.freq.' + self.__figure_format
+        #self.__o_figure_vdj_freq = []
+        #for sample_name in self.__sample_names:
+        #    sample_name_f = sample_name.replace(' ', '_')
+        #    self.__o_figure_vdj_freq.append(self.__output_prefix + '.sample.' + sample_name_f + '.vdj.freq.' + self.__figure_format)
         
-        self.__o_figure_rarefaction        = self.__output_prefix + '.vdj.rarefaction.' + self.__figure_format
-        self.__o_figure_samplingresampling = self.__output_prefix + '.cdr3.samplingresampling.' + self.__figure_format
-        self.__o_figure_cdr3_len_dist      = self.__output_prefix + '.cdr3.length.dist.' + self.__figure_format
+        #self.__o_figure_rarefaction        = self.__output_prefix + '.vdj.rarefaction.' + self.__figure_format
+        #self.__o_figure_samplingresampling = self.__output_prefix + '.cdr3.samplingresampling.' + self.__figure_format
+        #self.__o_figure_cdr3_len_dist      = self.__output_prefix + '.cdr3.length.dist.' + self.__figure_format
         
         
         # Report
@@ -533,13 +536,13 @@ class PyDAIRAPPStats:
         
         # create objects
         stats = PyDAIRStats(self.__pydair_files, 'pydair', self.__sample_names,
-                                 self.__contain_ambiguous_D, self.__all_seq)
+                            self.__contain_ambiguous_D, self.__productive_only)
         
         if self.__args.estimate_vdj_combination:
             stats.rarefaction_study('vdj', self.__args.n_tries)
         
         self.stats  = stats
-        self.plots  = PyDAIRPlot(stats, self.__figure_style, self.__figure_format)
+        #self.plots  = PyDAIRPlot(stats, self.__figure_style, self.__figure_format)
         #[r.split('/')[-1] for r in glob.glob('test/*')]
         __file_path = {'vfreq': [r.split('/')[-1] for r in self.__o_file_v_freq],
                        'dfreq': [r.split('/')[-1] for r in self.__o_file_d_freq],
@@ -685,16 +688,16 @@ class PyDAIRAPPStats:
         
     
     
-    def plot_figures(self):
-        """Plot figures.
-        
-        Plot all statistical analysis results with figures.
-        """
-        
-        self.plots.barplot_freq(gene = 'v', fig_name = self.__o_figure_v_freq, prob = True)
-        self.plots.barplot_freq(gene = 'd', fig_name = self.__o_figure_d_freq, prob = True)
-        self.plots.barplot_freq(gene = 'j', fig_name = self.__o_figure_j_freq, prob = True)
-        self.plots.hist_cdr3_len(fig_name = self.__o_figure_cdr3_len_dist, xlim = [5, 40], prob = True)
+    #def plot_figures(self):
+    #    """Plot figures.
+    #    
+    #    Plot all statistical analysis results with figures.
+    #    """
+    #    pass
+    #    #self.plots.barplot_freq(gene = 'v', fig_name = self.__o_figure_v_freq, prob = True)
+    #    #self.plots.barplot_freq(gene = 'd', fig_name = self.__o_figure_d_freq, prob = True)
+    #    #self.plots.barplot_freq(gene = 'j', fig_name = self.__o_figure_j_freq, prob = True)
+    #    #self.plots.hist_cdr3_len(fig_name = self.__o_figure_cdr3_len_dist, xlim = [5, 40], prob = True)
         
     
     def create_report(self):
