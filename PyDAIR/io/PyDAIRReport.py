@@ -21,6 +21,7 @@ class PyDAIRReport:
         
         Args:
             stats (PyDAIRStats): A PyDAIRStats class object.
+            file_path (dictionary): A dictionary to the summary files.
         """
         
         self.__tmpl_path = str(os.path.dirname(__file__)) + '/../templates'
@@ -50,48 +51,66 @@ class PyDAIRReport:
         
         # set up basic statistics
         sample_stats = []
-        freq_stats = [{'name': 'V', 'freq': []},
-                       {'name': 'D', 'freq': []},
-                       {'name': 'J', 'freq': []}]
-        cdr3_stats = []
+        for i in range(len(self.__stats.samples)):
+            bsample = self.__stats.samples.get_record(i)
+            _s = {'name': bsample.name, 'libsize': bsample.len()}
+            _s.update(self.__file_path[bsample.name])
+            sample_stats.append(_s)
+        _s = {'name': 'all', 'libsize': '-'}
+        _s.update(self.__file_path['all'])
+        sample_stats.append(_s)
+        report_data['sample_stats'] = sample_stats
+        
+        
+        freq_stats = []
+        for g in ['V', 'D', 'J']:
+            _s = {'freq_name': g, 'freq_title': g, 'freq': []}
+            for i in range(len(self.__stats.samples)):
+                _b = self.__stats.samples.get_record(i)
+                _f = _b.get_summary(g.lower(), prob = True)
+                _s['freq'].append({
+                    'sample_name': '"' + _b.name + '"',
+                    'gene': '["' + '","'.join(map(str, _f.index.get_values())) + '"]',
+                    'freq': '[' + ','.join(map(str, _f.tolist())) + ']'
+                })
+            freq_stats.append(_s)
+        report_data['freq_stats'] = freq_stats
+        
+        
+        dist_stats = []
+        dist_stats_names = ['cdr3_prot_len', 'v_del_len', 'j_del_len', 'vj_ins_len']
+        dist_stats_title = {'cdr3_prot_len': 'CDR3 amino acid length',
+                            'v_del_len': '5\'-end V deletion length',
+                            'j_del_len': '3\'-end J deletion length',
+                            'vj_ins_len': 'V-J junction insertion length'}
+        for g in dist_stats_names:
+            _s = {'dist_name': g, 'dist_title': dist_stats_title[g], 'freq': []}
+            for i in range(len(self.__stats.samples)):
+                _b = self.__stats.samples.get_record(i)
+                _f = _b.get_summary(g, prob = True)
+                _s['freq'].append({
+                    'sample_name': '"' + _b.name + '"',
+                    'len': '["' + '","'.join(map(str, _f.index.get_values())) + '"]',
+                    'freq': '[' + ','.join(map(str, _f.tolist())) + ']'
+                })
+            dist_stats.append(_s)
+        report_data['dist_stats'] = dist_stats
+        
+        
+        
+        
         rare_stats = []
         vdjidx = {'v': 0, 'd': 1, 'j': 2}
         for i in range(len(self.__stats.samples)):
             bsample = self.__stats.samples.get_record(i)
-            sample_stats.append({'name': bsample.name,
-                                 'libsize': bsample.len(),
-                                 'vfreq': self.__file_path['vfreq'][i],
-                                 'dfreq': self.__file_path['dfreq'][i],
-                                 'jfreq': self.__file_path['jfreq'][i],
-                                 'vdjfreq': self.__file_path['vdjfreq'][i],
-                                 'vdjrarefaction': self.__file_path['vdjrarefaction'][i],
-                                 'cdr3protlen': self.__file_path['cdr3protlen'][i],
-                                 'cdr3nucllen': self.__file_path['cdr3nucllen'][i]})
-            
-            for g in ['v', 'd', 'j']:
-                freq_g = bsample.get_freq(g, prob = True)
-                freq_stats[vdjidx[g]]['freq'].append({'sample_name': '"' + bsample.name + '"',
-                         'gene': '["' + '","'.join(map(str, freq_g.index.get_values())) + '"]',
-                         'freq': '[' + ','.join(map(str, freq_g.tolist())) + ']'})
-            
-            cdr3_g = bsample.get_freq('cdr3_prot_len', prob = True, remove_cdr3_zero_len = True)
-            cdr3_stats.append({'sample_name': '"' + bsample.name + '"',
-                                'length': '[' + ','.join(map(str, cdr3_g.index.get_values())) + ']',
-                                'freq': '[' + ','.join(map(str, cdr3_g.tolist())) +  ']'})
-            
             if bsample.div.rarefaction['vdj'] is not None:
                 rare_stats.append({'sample_name': '"' + bsample.name + '"',
                                    'vdj_combn': '[' + ','.join(map(str, bsample.div.rarefaction['vdj'].mean(axis = 1))) + ']',
                                    'sample_size': '[' + ','.join(map(str, bsample.div.rarefaction['vdj'].index.get_values())) + ']'})
             
-        report_data['sample_stats'] = sample_stats
-        report_data['freq_stats'] = freq_stats
-        report_data['cdr3_stats'] = cdr3_stats
         report_data['rare_stats'] = rare_stats
         
         
-
-
         
         
         html = self.__tmpl.render(report_data)

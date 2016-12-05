@@ -32,7 +32,8 @@ class Test_pydair_seq_IgSeq(unittest.TestCase):
         igseq_j = IgSeqAlign(igseq_j_query, igseq_j_sbjct)
         
         igseq = IgSeq(igseq_v, igseq_d, igseq_j)
-        igseq.seek_cdr3()
+        const_tag = IgConstantTag('(YYC|FFC|YFC)', 'WG.G')
+        igseq.seek_cdr3(const_tag)
         print([igseq.variable_region.untemplate_region,
                igseq.query.seq[igseq.variable_region.untemplate_region[0]:igseq.variable_region.untemplate_region[1]]])
         ## => [[255, 269], 'gactcctataacgg']
@@ -42,6 +43,11 @@ class Test_pydair_seq_IgSeq(unittest.TestCase):
             ## => [[247, 286], Seq('CSRTPITDEFDKW', ExtendedIUPACProtein())]
         cdr3_data = igseq.get_cdr3_data()
         print([cdr3_data.nucl_seq, cdr3_data.prot_seq])
+            
+        print('--------- indels ---------')
+        igseq.find_indels()
+        print([igseq.indels.v_deletion, igseq.indels.j_deletion, igseq.indels.vj_insertion])
+        
     
     def test_revcomp_igseq(self):
         # rev. comp. query and forward subjcet
@@ -67,7 +73,8 @@ class Test_pydair_seq_IgSeq(unittest.TestCase):
         igseq_j = IgSeqAlign(igseq_j_query, igseq_j_sbjct)
         
         igseq = IgSeq(igseq_v, igseq_d, igseq_j)
-        igseq.seek_cdr3()
+        const_tag = IgConstantTag('(YYC|FFC|YFC)', 'WG.G')
+        igseq.seek_cdr3(const_tag)
         
         print([igseq.variable_region.untemplate_region,
                igseq.query.seq[igseq.variable_region.untemplate_region[0]:igseq.variable_region.untemplate_region[1]]])

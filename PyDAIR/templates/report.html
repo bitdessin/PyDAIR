@@ -78,13 +78,14 @@ article {
     
     
         <table class="table table-bordered">
-        <thead>
+        <thead style="text-align:center">
         <tr>
             <td>Sample</td>
             <td># sequences</td>
             <td colspan="4">gene usage frequencies</td>
             <td>rarefaction analysis</td>
-            <td colspan="2">CDR3 length</td>
+            <td colspan="2">CDR3</td>
+            <td colspan="3">indels</td>
         </tr>
         </thead>
         <tbody>
@@ -92,13 +93,16 @@ article {
             <tr>
             <td>{{ item.name }}</td>
             <td>{{ item.libsize }}</td>
-            <td><a href="{{ item.vfreq }}">V</a></td>
-            <td><a href="{{ item.dfreq }}">D</a></td>
-            <td><a href="{{ item.jfreq }}">J</a></td>
-            <td><a href="{{ item.vdjfreq }}">VDJ</a></td>
-            <td><a href="{{ item.vdjrarefaction }}">VDJ</a></td>
-            <td><a href="{{ item.cdr3protlen }}">amino acid</a></td>
-            <td><a href="{{ item.cdr3nucllen }}">nucleotide</a></td>
+            <td><a href="{{ item.v }}">V</a></td>
+            <td><a href="{{ item.d }}">D</a></td>
+            <td><a href="{{ item.j }}">J</a></td>
+            <td><a href="{{ item.vdj }}">VDJ</a></td>
+            <td><a href="{{ item.vdj_rarefaction }}">VDJ</a></td>
+            <td><a href="{{ item.cdr3_prot_len }}">aa</a></td>
+            <td><a href="{{ item.cdr3_nucl_len }}">nt</a></td>
+            <td><a href="{{ item.v_del_len }}">5'V-del</a></td>
+            <td><a href="{{ item.j_del_len }}">3'J-del</a></td>
+            <td><a href="{{ item.vj_ins_len }}">VJ-ins</a></td>
             </tr>
         {% endfor %}
         </tbody>
@@ -108,23 +112,23 @@ article {
 
 
     {% for item in freq_stats %}
-    <section id="h_{{ item.name }}" class="panel panel-default">
-        <div class="panel-heading"><h2>{{ item.gene }} gene usage</h2></div>
+    <section id="h_{{ item.freq_name }}" class="panel panel-default">
+        <div class="panel-heading"><h2>{{ item.freq_title }} gene usage</h2></div>
         <div class="row panel-body">
-            <div id="{{ item.name }}_freq_plot"></div>
+            <div id="{{ item.freq_name }}_freq_plot"></div>
         </div>
     </section>
     {% endfor %}
  
 
-
-    <section id="h_CDR3" class="panel panel-default">
-        <div class="panel-heading"><h2>CDR3 length</h2></div>
+    {% for item in dist_stats %}
+    <section id="h_{{ item.dist_name }}" class="panel panel-default">
+        <div class="panel-heading"><h2>{{ item.dist_title }}</h2></div>
         <div class="row panel-body">
-            <div id="cdr3len_freq_plot"></div>
+            <div id="{{ item.dist_name }}_dist_plot"></div>
         </div>
     </section>
-    
+    {% endfor %}
     
     
     {% if rarefaction_stats is not none %}
@@ -170,53 +174,59 @@ if (! navigator.onLine) {
 
 
 {% for item in freq_stats %}
-var data_{{ item.name }} = [];
-    
-{% for freq in item.freq %}
-var data_i = {
-    x: {{ freq.gene }},
-    y: {{ freq.freq }},
-    name: {{ freq.sample_name }},
-    type: 'bar'
-};
-data_{{ item.name }}.push(data_i)
-{% endfor %}
- 
-var layout = {
-    title: '',
-    barmode: 'group',
-    xaxis: {
-        tickangle: -45
-    }
-};
-    
-Plotly.newPlot('{{ item.name }}_freq_plot', data_{{ item.name }}, layout);
+    var data_{{ item.freq_name }} = [];
+    {% for freq in item.freq %}
+        var data_i = {
+            x: {{ freq.gene }},
+            y: {{ freq.freq }},
+            name: {{ freq.sample_name }},
+            type: 'bar'
+        };
+        data_{{ item.freq_name }}.push(data_i)
+    {% endfor %}
+    var layout = {
+        title: '',
+        barmode: 'group',
+        xaxis: {
+            tickangle: -45
+        }
+    };
+    Plotly.newPlot('{{ item.freq_name }}_freq_plot', data_{{ item.freq_name }}, layout);
 {% endfor %}
 
 
 
 
-var data_cdr3len = [];
-    
-{% for item in cdr3_stats %}
-var data_i = {
-    x: {{ item.length }},
-    y: {{ item.freq }},
-    name: {{ item.sample_name }},
-    type: 'bar'
-};
-data_cdr3len.push(data_i)
-{% endfor %}
- 
-var layout = {
-    title: '',
-    barmode: 'group',
-    xaxis: {
-        range: [5, 30]
-    }
-};
 
-Plotly.newPlot('cdr3len_freq_plot', data_cdr3len, layout);
+{% for item in dist_stats %}
+    var data_{{ item.dist_name }} = [];
+    {% for freq in item.freq %}
+        var data_i = {
+            x: {{ freq.len }},
+            y: {{ freq.freq }},
+            name: {{ freq.sample_name }},
+            type: 'bar'
+        };
+        data_{{ item.dist_name }}.push(data_i)
+    {% endfor %}
+    var layout = {
+        title: '',
+        barmode: 'group',
+        xaxis: {
+            range: [-1, 40]
+        }
+    };
+    Plotly.newPlot('{{ item.dist_name }}_dist_plot', data_{{ item.dist_name }}, layout);
+{% endfor %}
+
+
+
+
+
+
+
+
+
 
 
 

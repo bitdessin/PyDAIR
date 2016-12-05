@@ -42,7 +42,8 @@ class PyDAIRStatsRecord:
     
     def __init__(self, name = None, v = None, d = None, j = None, orf = None,
                  cdr3_nucl_seq = None, cdr3_prot_seq = None,
-                 contain_ambiguous_D = False, productive_only = False):
+                 v_del = None, j_del = None, vj_ins = None,
+                 discard_ambiguous_D = False, productive_only = False):
         """PyDAIRStatsRecord class initialize method.
         
         Args:
@@ -53,7 +54,10 @@ class PyDAIRStatsRecord:
             orf (list): A list of ORF.
             cdr3_nucl_seq (list): A list of CDR3 nucleotide sequences.
             cdr3_prot_seq (list): A list of CDR3 amino acid sequences.
-            contain_ambiguous_D (bool): If ``True``, analysis sequence with ambiguous D gene.
+            v_del (list): Deleted nucleotides of 3'-end V gene.
+            j_del (list): Deleted nucleotides of 5'-end J gene.
+            vj_ins (list): Inserted nucleotides.
+            discard_ambiguous_D (bool): If ``True``, ambiguous D gene will be discarded before analysis.
             productive_only (bool): If ``True``, analysis sequence with stop codons.
         """
         # calculate the number of entries
@@ -65,13 +69,19 @@ class PyDAIRStatsRecord:
                                   'nucl_len': pd.Series(cdr3_nucl_seq).str.len(),
                                   'prot_len': pd.Series(cdr3_prot_seq).str.len()},
                                   columns = ['nucl_seq', 'prot_seq', 'nucl_len', 'prot_len']).fillna(value = np.nan)
+        self.indels = pd.DataFrame({'v_del': v_del, 'v_del_len': pd.Series(v_del).str.len(),
+                                    'j_del': j_del, 'j_del_len': pd.Series(j_del).str.len(),
+                                    'vj_ins': vj_ins, 'vj_ins_len': pd.Series(vj_ins).str.len()},
+                                    columns = ['v_del', 'v_del_len', 'j_del', 'j_del_len',
+                                               'vj_ins', 'vj_ins_len']).fillna(value = np.nan)
+        
         
         # set filters
         filter_ambigoD = None
-        if contain_ambiguous_D:
-            filter_ambigoD = pd.Series([True] * self.vdj.shape[0])
-        else:
+        if discard_ambiguous_D:
             filter_ambigoD = self.vdj.d.notnull()
+        else:
+            filter_ambigoD = pd.Series([True] * self.vdj.shape[0])
         
         filter_stopcodon = None
         if productive_only:
@@ -84,6 +94,7 @@ class PyDAIRStatsRecord:
         # filter data
         self.vdj  = self.vdj[filters]
         self.cdr3 = self.cdr3[filters]
+        self.indels = self.indels[filters]
         
         # diversity study
         self.div = PyDAIRDiversity()
@@ -102,61 +113,103 @@ class PyDAIRStatsRecord:
         return self.__len__()
     
     
-    def get_freq(self, gene):
-        """Returns frequency.
+    def get_summary(self, data_type, prob = False, func = 'mean'):
+        """Returns summary statistics.
         
         Args:
-            gene (str): A string of gene name.
-        
-        Returns:
-            A Pandas DataFrame.
-        
-        Raises:
-            ValueError
-        
-        Returns frequency.
+            data_type (str): A string to specify data type. ``v``, 
+                             ``d``, ``j``, ``vdj``, ``cdr3_nucl_len``,
+                             ``cdr3_prot_len``, ``v_del_len``, ``j_del_len``,
+                             and ``vj_ins_len`` are supported.
+            prob (bool): If ``True``, calculate the probability.
+            func (str): A string to specify data calculations when data_type is vdj_rarefation.
         """
         
-        freq = None
-        if gene.lower() == 'cdr3_prot_len':
-            freq = self.cdr3.prot_len.value_counts(dropna = False)
-            freq = freq.sort_index(ascending = True)
-            freq.name = 'frequency'
-        elif gene.lower() == 'cdr3_nucl_len':
-            freq = self.cdr3.nucl_len.value_counts(dropna = False)
-            freq = freq.sort_index(ascending = True)
-            freq.name = 'frequency'
-        elif gene.lower() == 'v':
-            freq = self.vdj.v.value_counts(dropna = False)
-            freq.name = 'frequency'
-        elif gene.lower() == 'd':
-            freq = self.vdj.d.value_counts(dropna = False)
-            freq.name = 'frequency'
-            freq.index = ['unidentifiable' if (type(_i) == np.float and np.isnan(_i)) else _i for _i in freq.index]
-        elif gene.lower() == 'j':
-            freq = self.vdj.j.value_counts(dropna = False)
-            freq.name = 'frequency'
-        elif gene.lower() == 'vdj':
-            __sep = '__________'
-            vdj_combinations = self.vdj.v.replace(np.nan, 'NaN') + __sep + \
-                               self.vdj.d.replace(np.nan, 'NaN') + __sep + \
-                               self.vdj.j.replace(np.nan, 'NaN')
-            freq = vdj_combinations.value_counts(dropna = False)
-            vdj_v = []
-            vdj_d = []
-            vdj_j = []
-            for vdj_combination in freq.index:
-                vv, dd, jj = vdj_combination.split(__sep)
-                vdj_v.append(vv)
-                vdj_d.append(dd)
-                vdj_j.append(jj)
-            freq = pd.DataFrame({'v': vdj_v, 'd': vdj_d, 'j': vdj_j, 'frequency': freq.values},
-                                columns = ['v', 'd', 'j', 'frequency']).replace('NaN', np.nan)
+        s = None
+        
+        if data_type in ['v', 'd', 'j', 'cdr3_prot_len', 'cdr3_nucl_len', 'v_del_len', 'j_del_len', 'vj_ins_len']:
+            s = self.__get_freq(data_type, prob)
+        elif data_type == 'vdj':
+            s = self.__get_freq_vdj(data_type, prob)
+        elif data_type == 'vdj_rarefaction':
+            s = self.__get_est_vdj_rarefaction(data_type, func)
         else:
-            raise ValueError('The \'gene\' argument of \'get_freq\' gene should be one of \'v\', \'d\', \'j\', and \'vdj\'.')
+            raise ValueError(data_type + ' is not supported by get_summary method.')
+        
+        return s
+    
+    
+    def __get_freq(self, data_type, prob = False):
+        freq = None
+        if data_type == 'v_del_len':
+            freq = self.indels.v_del_len.value_counts(dropna = False)
+            freq.index = ['ambiguous' if (type(_i) == np.float and np.isnan(_i)) else _i for _i in freq.index]
+            freq = freq.sort_index(ascending = True)
+        elif data_type == 'j_del_len':
+            freq = self.indels.j_del_len.value_counts(dropna = False)
+            freq.index = ['ambiguous' if (type(_i) == np.float and np.isnan(_i)) else _i for _i in freq.index]
+            freq = freq.sort_index(ascending = True)
+        elif data_type == 'vj_ins_len':
+            freq = self.indels.vj_ins_len.value_counts(dropna = False)
+            freq.index = ['ambiguous' if (type(_i) == np.float and np.isnan(_i)) else _i for _i in freq.index]
+            freq = freq.sort_index(ascending = True)
+        elif data_type == 'cdr3_prot_len':
+            freq = self.cdr3.prot_len.value_counts(dropna = False)
+            freq.index = ['ambiguous' if (type(_i) == np.float and np.isnan(_i)) else _i for _i in freq.index]
+            freq = freq.sort_index(ascending = True)
+        elif data_type == 'cdr3_nucl_len':
+            freq = self.cdr3.nucl_len.value_counts(dropna = False)
+            freq.index = ['ambiguous' if (type(_i) == np.float and np.isnan(_i)) else _i for _i in freq.index]
+            freq = freq.sort_index(ascending = True)
+        elif data_type == 'v':
+            freq = self.vdj.v.value_counts(dropna = False)
+        elif data_type == 'd':
+            freq = self.vdj.d.value_counts(dropna = False)
+            freq.index = ['ambiguous' if (type(_i) == np.float and np.isnan(_i)) else _i for _i in freq.index]
+        elif data_type == 'j':
+            freq = self.vdj.j.value_counts(dropna = False)
+        if prob:
+            freq = freq / freq.sum()
         
         return freq
     
+    
+    
+    def __get_freq_vdj(self, data_type, prob):
+        __sep = '__________'
+        vdj_combinations = self.vdj.v.replace(np.nan, 'NA') + __sep + \
+                           self.vdj.d.replace(np.nan, 'NA') + __sep + \
+                           self.vdj.j.replace(np.nan, 'NA')
+        freq = vdj_combinations.value_counts(dropna = False)
+        
+        if prob:
+            freq = freq / freq.sum(axis = 2)
+        
+        vdj_v = []
+        vdj_d = []
+        vdj_j = []
+        for vdj_combination in freq.index:
+            vv, dd, jj = vdj_combination.split(__sep)
+            vdj_v.append(vv)
+            vdj_d.append(dd)
+            vdj_j.append(jj)
+        freq = pd.DataFrame({'v': vdj_v, 'd': vdj_d, 'j': vdj_j, 'frequency': freq.values},
+                             columns = ['v', 'd', 'j', 'frequency']).replace('NA', np.nan)
+        return freq
+    
+    
+    
+    def __get_est_vdj_rarefaction(self, data_type, func = 'mean'):
+        rdata = None
+        if self.div.rarefaction['vdj'] is not None:
+            if func == 'raw':
+                rdata = self.div.rarefaction['vdj']
+            elif func == 'mean':
+                rdata = self.div.rarefaction['vdj'].mean(axis = 1)
+        return rdata
+ 
+        
+        
     
     def samplingresampling_study(self, data = None, n = 1000):
         """Sampling-resampling study.
@@ -168,7 +221,7 @@ class PyDAIRStatsRecord:
         """
         
         if data is None or data == 'all':
-            data = ['vdj', 'cdr3']
+            data = ['vdj']
         if not isinstance(data, list):
             data = [data]
 
@@ -242,7 +295,7 @@ class PyDAIRStatsRecord:
         """
         
         if data is None or data == 'all':
-            data = ['vdj', 'cdr3']
+            data = ['vdj']
         if not isinstance(data, list):
             data = [data]
         
@@ -398,29 +451,25 @@ class PyDAIRStats:
     stored many data of analyzed data.
     '''
     
-    def __init__(self, pydair_file, pydair_format = None, pydair_id = None,
-                 contain_ambiguous_D = False, productive_only = False):
+    def __init__(self, pydair_file, pydair_id = None,
+                 discard_ambiguous_D = False, productive_only = False):
         """PyDAIRStats class initialize method.
         
         Args:
             pydair_file (list): A list the contains multiple PYDAIR file path. 
-            pydair_format (str): ``pydair`` should be specified in this version.
             pydair_id (list): A list of sample names.
-            contain_ambiguous_D (bool): If true, anlayze sequences with ambiguous D genes.
+            discard_ambiguous_D (bool): If true, discard ambiguous D before analysis.
             productive_only (bool): If true, analyze sequences with stop codons.
         """
         
-        if pydair_format is None:
-            pydair_format = 'PyDAIR'
         if pydair_id is None:
             pydair_id = []
             for i in range(len(pydair_file)):
                 pydair_id.append('individual ' + str(i + 1))
         
         self.__pydair_file   = pydair_file
-        self.__pydair_format = pydair_format
         self.__pydair_id     = pydair_id
-        self.__contain_ambiguous_D = contain_ambiguous_D
+        self.__discard_ambiguous_D = discard_ambiguous_D
         self.__productive_only = productive_only
         self.samples   = None
         
@@ -437,8 +486,11 @@ class PyDAIRStats:
             orf = []
             cdr3_prot_seq = []
             cdr3_nucl_seq = []
+            v_del = []
+            j_del = []
+            vj_ins = []
             
-            pydair_fh = PyDAIRIO(self.__pydair_file[i], 'r', self.__pydair_format)
+            pydair_fh = PyDAIRIO(self.__pydair_file[i], 'r')
             for igseq in pydair_fh.parse():
                 v.append(igseq.v.sbjct.name)
                 d.append(igseq.d.sbjct.name)
@@ -454,80 +506,17 @@ class PyDAIRStats:
                     cdr3_data.prot_seq = ''
                 cdr3_prot_seq.append(cdr3_data.prot_seq)
                 cdr3_nucl_seq.append(cdr3_data.nucl_seq)
-            
+                
+                v_del.append(igseq.indels.v_deletion)
+                j_del.append(igseq.indels.j_deletion)
+                vj_ins.append(igseq.indels.vj_insertion)
+                
             sample_record = PyDAIRStatsRecord(self.__pydair_id[i], v, d, j, orf,
                                               cdr3_nucl_seq, cdr3_prot_seq,
-                                              self.__contain_ambiguous_D, self.__productive_only)
+                                              v_del, j_del, vj_ins,
+                                              self.__discard_ambiguous_D, self.__productive_only)
             self.samples.append(sample_record)
             pydair_fh.close()
-    
-    
-    def get_freq(self, gene, sort = True, prob = False):
-        '''Get the frequence of usage with data frame class object.
-        
-        Args:
-            gene (str): A gene name. Specify 'v', 'd', 'j'.
-            sort (bool): Sort data frame by freqeunces.
-            freq (bool): If `True`, return the frequences of counts.
-            prob (bool): If prob is `True`, return the probability, and omit `freq`.
-        
-        Returns:
-            A Pandas DataFrame class object.
-        
-        Get the frequence of usages of the `gene` as DataFrame class object.
-        '''
-        
-        if gene not in ['v', 'd', 'j']:
-            raise ValueError('One of \'v\', \'d\', \'j\' should be specified.')
-        
-        sample_freqs = []
-        sample_names = []
-        for sample in self.samples:
-            sample_freqs.append(sample.get_freq(gene))
-            sample_names.append(sample.name)
-        
-        freq_dataframe = pd.concat(sample_freqs, axis = 1).fillna(0)
-        freq_dataframe.columns = sample_names
-        
-        if prob:
-            freq_dataframe = freq_dataframe / freq_dataframe.sum(axis = 0)
-        
-        freq_dataframe.columns = sample_names
-        
-        if sort:
-            freq_dataframe = freq_dataframe.ix[freq_dataframe.mean(axis = 1).sort_values(ascending = False).index]
-        
-        return freq_dataframe
-       
-    
-    def get_cdr3len_freq(self, prob = False):
-        """Return CDR3 length.
-        
-        Args:
-            prob (bool): Calculate probability.
-        
-        Returns:
-            A Pandas DataFrame.
-        
-        Return CDR3 length.
-        """
-        
-        sample_dists = []
-        sample_names = []
-        for bsample in self.samples:
-            sample_dists.append(bsample.get_freq('cdr3_prot_len'))
-            sample_names.append(bsample.name)
-
-        dist_dataframe = pd.concat(sample_dists, axis = 1).fillna(0)
-        dist_dataframe.columns = sample_names
-        
-        if prob:
-            dist_dataframe = dist_dataframe / dist_dataframe.sum(axis = 0)
-        
-        dist_dataframe = dist_dataframe.set_index([[int(dx) for dx in dist_dataframe.index.values]])
-        
-        return dist_dataframe
-    
     
     
     def rarefaction_study(self, data = None, n = 1000):
@@ -541,45 +530,107 @@ class PyDAIRStats:
         
         for bsample in self.samples:
             bsample.rarefaction_study(data, n)
-        
     
     
-    def get_rarefaction_result(self, fun = 'mean'):
-        """Return rarefaction results.
+    
+    def get_summary(self, data_type, prob = False):
+        '''Get the frequence of usage with data frame class object.
         
         Args:
-            fun (str): 'mean' or 'sd' should be specified.
+            data_type (str): A string to specify data type. ``v``, 
+                             ``d``, ``j``, ``vdj``, ``cdr3_nucl_len``,
+                             ``cdr3_prot_len``, ``v_del_len``, ``j_del_len``,
+                             and ``vj_ins_len`` are supported.
+            freq (bool): If `True`, return the frequences of counts.
+            prob (bool): If prob is `True`, return the probability, and omit `freq`.
         
         Returns:
-            A Pandas DataFrame that contains results of rarefaction study.
+            A Pandas DataFrame class object.
+        
+        Get the frequence of usages of the ``data_type`` as DataFrame class object.
+        '''
+        
+        s = None
+        
+        if data_type in ['v', 'd', 'j', 'cdr3_prot_len', 'cdr3_nucl_len', 'v_del_len', 'j_del_len', 'vj_ins_len']:
+            s = self.__get_freq(data_type, prob)
+        elif data_type == 'vdj':
+            s = self.__get_freq_vdj(data_type, prob)
+        elif data_type == 'vdj_rarefaction':
+            s = self.__get_est_vdj_rarefaction(data_type)
+        else:
+            raise ValueError(data_type + ' is not supported by get_summary method.')
+        
+        return s
         
         
-        """
         
+    def __get_freq(self, data_type, prob = False):
+        sample_freqs = []
+        sample_names = []
+        for sample in self.samples:
+            sample_freqs.append(sample.get_summary(data_type, prob = prob))
+            sample_names.append(sample.name)
+        freq_dataframe = pd.concat(sample_freqs, axis = 1)
+        freq_dataframe.columns = sample_names
+        
+        if prob:
+            freq_dataframe = freq_dataframe / freq_dataframe.sum(axis = 1)
+        
+        freq_dataframe.columns = sample_names
+        
+        if data_type in ['v', 'd', 'j']:
+            freq_dataframe = freq_dataframe.ix[freq_dataframe.mean(axis = 1).sort_values(ascending = False).index]
+        else:
+            freq_dataframe = freq_dataframe.set_index([[int(dx) for dx in freq_dataframe.index.values]])
+        return freq_dataframe
+    
+    
+    def __get_freq_vdj(self, data_type, prob = False):
+        __sep = '__________'
+        sample_freqs = []
+        sample_names = []
+        for sample in self.samples:
+            freq = sample.get_summary(data_type, prob = prob)
+            freqval = pd.Series(freq.frequency)
+            freqval.index = freq.v.replace(np.nan, 'NA') + __sep + \
+                            freq.d.replace(np.nan, 'NA') + __sep + \
+                            freq.j.replace(np.nan, 'NA')
+            sample_freqs.append(freqval)
+            sample_names.append(sample.name)
+        
+        freq_dataframe = pd.concat(sample_freqs, axis = 1)
+        
+        vdj_v = []
+        vdj_d = []
+        vdj_j = []
+        for vdj_combination in freq_dataframe.index:
+            vv, dd, jj = vdj_combination.split(__sep)
+            vdj_v.append(vv)
+            vdj_d.append(dd)
+            vdj_j.append(jj)
+ 
+        freq_vdjcmbn = pd.DataFrame({'v': vdj_v, 'd': vdj_d, 'j': vdj_j}).replace('NA', np.nan)
+        freq = pd.concat([freq_vdjcmbn, freq_dataframe], axis = 1)
+        return freq
+    
+    
+    
+    def __get_est_vdj_rarefaction(self, data_type):
         rdata = []
         sample_names = []
-        for bsample in self.samples:
-            if bsample.div.rarefaction['vdj'] is None:
-                rdata = None
-                break
-            sample_names.append(bsample.name)
-            if fun == 'mean':
-                rdata.append(bsample.div.rarefaction['vdj'].mean(axis = 1))
-            elif fun == 'sd':
-                rdata.append(bsample.div.rarefaction['vdj'].sd(axis = 1))
-            else:
-                raise ValueError('Should be \'mean\' or \'sd\'.')
-        
-        if rdata is not None:
+        for sample in self.samples:
+            sample_rdata = sample.get_summary('vdj_rarefaction', 'mean')
+            sample_names.append(sample.name)
+            if sample_rdata is not None:
+                rdata.append(sample_rdata)
+        if len(rdata) > 0:
             rdata = pd.concat(rdata, axis = 1)
             rdata.columns = sample_names
+        else:
+            rdata = None
         
         return rdata
         
-    
-    
-    
-    
-    
     
     

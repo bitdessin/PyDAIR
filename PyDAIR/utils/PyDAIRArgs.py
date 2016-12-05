@@ -11,7 +11,7 @@ class PyDAIRParseSeqArgs:
     PyDAIRParseSeqArgs is a class to store the parameters for parsing Rep-Seq data.
     """
    
-    def __init__(self, q = None, v = None, d = None, j = None, o = None, f = None,
+    def __init__(self, q = None, v = None, d = None, j = None, o = None,
                  valign = None, dalign = None, jalign = None,
                  v_motif = None, j_motif = None):
         """Set up parameters for analysis of Rep-Seq data
@@ -21,7 +21,6 @@ class PyDAIRParseSeqArgs:
             d (str): A path to D gene FASTA file.
             j (str): A path to J gene FASTA file.
             o (str): A prefix to save the result files.
-            f (str): A format. One of ``pydair`` or ``simple`` can be specified.
             valign (PyDAIRBlastArgs): BLAST parameters for V gene identification.
             dalign (PyDAIRBlastArgs): BLAST parameters for D gene identification.
             jalign (PyDAIRBlastArgs): BLAST parameters for J gene identification.
@@ -58,7 +57,6 @@ class PyDAIRParseSeqArgs:
         self.d_file_path = d
         self.j_file_path = j
         self.output_path = o
-        self.pydair_format = f
         self.v_align_args = valign
         self.d_align_args = dalign
         self.j_align_args = jalign
@@ -128,7 +126,7 @@ class PyDAIRBlastArgs:
 class PyDAIRStatsArgs:
     """A class is to save parameters for statistical analysis.
     
-    There two arguments `contain_ambiguous_D` and `productive_only`
+    There two arguments `discard_ambiguous_D` and `productive_only`
     are important in analysis.
     
     An Ig sequence is composed of V, D, and J genes. In addition,
@@ -142,11 +140,11 @@ class PyDAIRStatsArgs:
     CDR3 seqeunce) Rep-Seq data, there plenty of Ig sequence may have
     unidentificable D genes (i.e., ambiguous D).
     
-    The `contain_ambiguous_D` argument is an option to specify
+    The `discard_ambiguous_D` argument is an option to specify
     how to treat these Ig sequences with ambiguous D gene.
-    If `contain_ambiguous_D` is `True`, analysis will be performed
+    If `discard_ambiguous_D` is `True`, analysis will be performed
     against all Ig sequences.
-    If `contain_ambiguous_D` is `False`, before analysis,
+    If `discard_ambiguous_D` is `False`, before analysis,
     all Ig sequences with ambiguous D gene are discarded.
     Then, analysis will be performed agains the remained Ig
     sequences with identificable D gene.
@@ -161,7 +159,7 @@ class PyDAIRStatsArgs:
     Ig seqeuences that do not contain any stop codon.
     """
     
-    def __init__(self, sample_names, pydair_files, contain_ambiguous_D, productive_only,
+    def __init__(self, sample_names, pydair_files, discard_ambiguous_D, productive_only,
                  estimate_vdj_combination, n_tries = 1000,
                  output_prefix = './pydairstats_'):
         """Set up parameters for statistical analysis.
@@ -171,7 +169,7 @@ class PyDAIRStatsArgs:
                                  The analysis results will use ``sample_names`` instead of file names.
             pydair_files (list): A list of string containing path to PYDAIR flat file.
                                  The length of ``pydair_files`` should be equal to ``sample_names``.
-            contain_ambiguous_D (bool):  If ``True``, analysis will contain Ig sequence with ambiguous D gene.
+            discard_ambiguous_D (bool):  If ``True``, analysis will contain Ig sequence with ambiguous D gene.
                                          Default is ``True``.
             productive_only (bool): If ``True``, analysis will contain Ig sequence which contains stop codons.
                                       Since Ig sequence with stop codon may not have function in immune system,
@@ -190,7 +188,7 @@ class PyDAIRStatsArgs:
         
         self.sample_names        = sample_names
         self.pydair_files        = pydair_files
-        self.contain_ambiguous_D = contain_ambiguous_D
+        self.discard_ambiguous_D = discard_ambiguous_D
         self.productive_only   = productive_only
         self.output_prefix       = output_prefix
         #self.figure_format       = figure_format

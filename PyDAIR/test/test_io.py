@@ -14,16 +14,13 @@ class Test_pydair_io(unittest.TestCase):
     
     
     def setUp(self):
-        # Inputs
-        self.pydair_input_path       = _data_path + '/sample.1.pydair'
-        # Outputs
-        self.pydair_output_path       = _result_path + '/test_output_io.pydair'
-        self.pydairsimple_output_path = _result_path + '/test_output_io.pydair.simple'
+        self.pydair_input_path  = _data_path + '/sample.1.pydair'
+        self.pydair_output_path = _result_path + '/test_output_io.pydair'
     
     
     def test_pydair_io(self):
-        pydair_i_fh = PyDAIRIO(self.pydair_input_path, 'r', 'pydair')
-        pydair_o_fh = PyDAIRIO(self.pydair_output_path, 'w', 'pydair')
+        pydair_i_fh = PyDAIRIO(self.pydair_input_path, 'r')
+        pydair_o_fh = PyDAIRIO(self.pydair_output_path, 'w')
         # read record in PyDAIR flat file
         for igseq in pydair_i_fh.parse():
             # print contents
@@ -38,13 +35,6 @@ class Test_pydair_io(unittest.TestCase):
         pydair_o_fh.close()
     
     
-    def test_pydairsimple_io(self):
-        pydair_i_fh = PyDAIRIO(self.pydair_input_path, 'r', 'pydair')
-        pydair_o_fh = PyDAIRIO(self.pydairsimple_output_path, 'w', 'simple')
-        for igseq in pydair_i_fh.parse():
-            pydair_o_fh.write(igseq)
-        pydair_i_fh.close()
-        pydair_o_fh.close()
     
     
 if __name__ == '__main__':

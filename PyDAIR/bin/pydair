@@ -28,7 +28,7 @@ def main_parse(args):
     j_gene_align_args = PyDAIRBlastArgs(args.j_blastdb, args.j_match_score,
                                        args.j_mismatch_score, args.j_gap_open_penalty,
                                        args.j_gap_extend_penalty, args.j_wordsize, args.j_evalue_cutoff)
-    pydair_args = PyDAIRParseSeqArgs(args.q_fasta, args.v_fasta, args.d_fasta, args.j_fasta, args.output, args.output_format,
+    pydair_args = PyDAIRParseSeqArgs(args.q_fasta, args.v_fasta, args.d_fasta, args.j_fasta, args.output,
                                      v_gene_align_args, d_gene_align_args, j_gene_align_args,
                                      args.v_motif, args.j_motif)
     logging.info('[ 1/10] Setting up parameters.')
@@ -49,7 +49,6 @@ def main_parse(args):
     pydair.parse_VDJ()
     logging.info('[ 9/10] Writing result file.')
     pydair.write_pydair()
-    pydair.write_pydair(file_format = 'simple')
     logging.info('[10/10] Finishing.')
 
 
@@ -60,17 +59,13 @@ def main_stats(args):
     sample_names = args.name[0]
     logging.info('[1/4] Read data files.')
     pydair_args = PyDAIRStatsArgs(sample_names, pydair_files,
-                                contain_ambiguous_D = args.contain_ambiguous_D,
+                                discard_ambiguous_D = args.discard_ambiguous_D,
                                 productive_only = args.productive_only,
                                 estimate_vdj_combination = args.estimate_vdj_combination,
                                 output_prefix = args.output)
     pydairapp = PyDAIRAPPStats(pydair_args)
     logging.info('[2/4] Write statistical data.')
-    pydairapp.write_freq()
-    pydairapp.write_cdr3_len_freq()
-    if args.estimate_vdj_combination:
-        pydairapp.write_diversity_results('vdj')
-    logging.info('[3/4] Create report.')
+    pydairapp.write_summary()
     pydairapp.create_report()
     logging.info('[4/4] Finishing...')
 
@@ -89,7 +84,6 @@ def parse_args():
     ## general parameters
     parse_parser.add_argument('-q', '--q-fasta',  help = 'Path to FASTA file that contains immunoglobulin heavy chain sequences.', required = True)
     parse_parser.add_argument('-o', '--output',   help = 'Path to file for writing anaysis results.', required = True)
-    parse_parser.add_argument('-f', '--output-format', help = 'File format of analysis results.', choices = ['pydair', 'tsv', 'simple'], default = 'pydair')
     parse_parser.add_argument('-v', '--v-fasta', help = 'Path to FASTA file of V sequences.', required = True)
     parse_parser.add_argument('-d', '--d-fasta', help = 'Path to FASTA file of D sequences.', required = True)
     parse_parser.add_argument('-j', '--j-fasta', help = 'Path to FASTA file of J sequences.', required = True)
@@ -100,7 +94,7 @@ def parse_args():
     parse_parser.add_argument('--v-gap-open-penalty',   help = 'Penalty (> 0) to open a gap for V gene.',           type = int, default =  6)
     parse_parser.add_argument('--v-gap-extend-penalty', help = 'Penaly (> 0 )to extend a gap for V gene.',          type = int, default =  6)
     parse_parser.add_argument('--v-wordsize',           help = 'Word size to find hotspots by BLAST for V gene.',   type = int, default = 10)
-    parse_parser.add_argument('--v-evalue-cutoff',      help = 'Expectation value (e-value) threshold for assiging V gene to immunoglobulin sequence.', type = float, default = 1e-10)
+    parse_parser.add_argument('--v-evalue-cutoff',      help = 'Expectation value (e-value) threshold for assiging V gene to immunoglobulin sequence.', type = float, default = 1e-50)
     ## alignment parameters D
     parse_parser.add_argument('--d-blastdb',            help = 'Path to D gene BLAST database index.', required = True)
     parse_parser.add_argument('--d-match-score',        help = 'Score (> 0) for a nucleotide match for D gene.',    type = int, default  =  1)
@@ -131,11 +125,11 @@ def parse_args():
     stat_parser.add_argument('-i', '--input', help = 'Input PyDAIR files. Multiple files should be separated by a blank.', nargs = '*', action = 'append', required = True)
     stat_parser.add_argument('-n', '--name',  help = 'Sample names for each PyDAIR file. Multiple names should be separated by a blank.', nargs= '*', action = 'append', required = True)
     stat_parser.add_argument('-o', '--output', help = 'Path to file for writing anaysis results.', required = True)
-    stat_parser.add_argument('--contain_ambiguous_D', help = 'Contain immunoglobulin heavy chain sequences that has unidentifiable D genes when calculating the frequencies.', action = 'store_true')
-    stat_parser.add_argument('--productive_only', help = 'Only analysis the productive sequences.', action = 'store_true')
+    stat_parser.add_argument('--discard-ambiguous-D', help = 'Contain immunoglobulin heavy chain sequences that has unidentifiable D genes when calculating the frequencies.', action = 'store_true')
+    stat_parser.add_argument('--productive-only', help = 'Only analysis the productive sequences.', action = 'store_true')
     #stat_parser.add_argument('--estimate-cdr3-population', help = 'Estimation of CDR-H3 population sizes by sampling-resampling study.', action = 'store_true')
     stat_parser.add_argument('--estimate-vdj-combination', help = 'Estimation of the numbers of VDJ combinations by rarefaction study.', action = 'store_true')
-    stat_parser.set_defaults(contain_ambiguous_D = True)
+    stat_parser.set_defaults(discard_ambiguous_D = False)
     stat_parser.set_defaults(productive_only     = False)
     #stat_parser.set_defaults(estimate_cdr3_population = False)
     stat_parser.set_defaults(estimate_vdj_combination = False)

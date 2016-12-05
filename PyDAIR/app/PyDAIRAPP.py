@@ -215,6 +215,8 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
         and (iii) save the results into IgSeq class object.
         BLAST results of V and J genes are saved in the specified directory.
         """
+        const_tag_obj = IgConstantTag(self.__v_motif, self.__j_motif)
+        
         
         # load FASTA file into dictionary
         fa_q_dict = self.__create_dict_from_fasta(self.__args.q_file_path)
@@ -246,8 +248,9 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
             # create IgSeq class object
             igseq = IgSeq(igseqv, igseqd, igseqj)
             # find CDR3 region
-            igseq.seek_cdr3(v_motif = self.__v_motif, j_motif = self.__j_motif)
+            igseq.seek_cdr3(const_tag_obj)
             igseq.seek_orf()
+            igseq.find_indels()
             # if alignemnt of V and J are correct, then print out the results into file
             if igseq.valid_alignment:
                 self.__pydair_records.append(igseq)
@@ -300,18 +303,13 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
 
     
     
-    def write_pydair(self, file_name = None, file_format = 'pydair'):
+    def write_pydair(self, file_name = None):
         """Write results into file with PYDAIR format.
         
         Write parsed results into file with PYDAIR format.
-        One of 'pydair' and 'simple' can be specified to ``file_format``.
-        The 'pydair' format contains whole parsed results with flat file format.
-        The 'simple' format contains assigned V, D, J genes, CDR3 sequences,
-        and ORF information with TSV format.
         
         Args:
             file_name (str): A file path to save the result.
-            file_format (str): A file format. 'pydair' or 'simple' can be specified. 
         
         """
         
@@ -326,11 +324,8 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
             elif self.__log_parsed_v and self.__log_parsed_j:
                 self.__pydair_output_vj = file_name
         
-        if file_format == 'simple':
-            file_name = file_name + '.simple'
-        
         # open file and write Igseq object into file
-        pydair_o_fh = PyDAIRIO(file_name, 'w', file_format)
+        pydair_o_fh = PyDAIRIO(file_name, 'w')
         # read record in PyDAIR flat file
         for igseq in self.__pydair_records:
             pydair_o_fh.write(igseq)
@@ -382,9 +377,9 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
         
         with open(filename, 'w') as output_fa_fh:
             if os.path.exists(self.__pydair_output_vdj):
-                pydair_fh = PyDAIRIO(self.__pydair_output_vdj, 'r', self.__args.pydair_format)
+                pydair_fh = PyDAIRIO(self.__pydair_output_vdj, 'r')
             else:
-                pydair_fh = PyDAIRIO(self.__pydair_output_vj, 'r', self.__args.pydair_format)
+                pydair_fh = PyDAIRIO(self.__pydair_output_vj, 'r')
             
             for igseq in pydair_fh.parse():
                 cdr3_data = igseq.get_cdr3_data()
@@ -411,22 +406,16 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
         
         with open(filename, 'w') as output_fa_fh:
             if os.path.exists(self.__pydair_output_vdj):
-                pydair_fh = PyDAIRIO(self.__pydair_output_vdj, 'r', self.__args.pydair_format)
+                pydair_fh = PyDAIRIO(self.__pydair_output_vdj, 'r')
             else:
-                pydair_fh = PyDAIRIO(self.__pydair_output_vj, 'r', self.__args.pydair_format)
+                pydair_fh = PyDAIRIO(self.__pydair_output_vj, 'r')
             
             for igseq in pydair_fh.parse():
-                # first check CDR3, if CDR3 is not exsisted, then use unaligned region
-                if igseq.variable_region.cdr3 is not None:
-                    output_fa_fh.write('>' + igseq.query.name  + ' [CDR3_region]\n' + \
-                        igseq.query.seq[(igseq.variable_region.cdr3[0] - 1):(igseq.variable_region.cdr3[1] - 1)] + '\n')
-                else:
-                    if igseq.variable_region.untemplate_region is not None:
-                        untemplate_region_seq = igseq.query.seq[(igseq.variable_region.untemplate_region[0] - 1):(igseq.variable_region.untemplate_region[1] - 1)]
-                        if untemplate_region_seq != '':
-                            output_fa_fh.write('>' + igseq.query.name  + ' [Unaligned_region]\n' + untemplate_region_seq + '\n')
+                if igseq.indels is not None and igseq.indels.vj_insertion is not None:
+                    if len(igseq.indels.vj_insertion) > 4:
+                        output_fa_fh.write('>' + igseq.query.name + '\n' + igseq.indels.vj_insertion + '\n')
             pydair_fh.close()
-        logging.info('Data (unaligned sequences) has been saved into ' + filename + '.\n')
+        logging.info('Data (unaligned sequences >= 5 nt.) has been saved into ' + filename + '.\n')
     
     
     def parse_VDJ(self):
@@ -444,7 +433,7 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
         d_dict = {}
         self.__create_dict_from_blastoutput(self.__blast_output_d, 'd', d_dict, self.__args.d_align_args.cutoff)
         # save to PyDAIR format file with VJ results
-        pydair_vj  = PyDAIRIO(self.__pydair_output_vj,  'r', self.__args.pydair_format)
+        pydair_vj  = PyDAIRIO(self.__pydair_output_vj,  'r')
         for i in range(len(self.__pydair_records)):
             igseq = self.__pydair_records[i]
             igseqd = None
@@ -487,217 +476,89 @@ class PyDAIRAPPStats:
         self.__args = args
         self.__sample_names        = args.sample_names
         self.__pydair_files        = args.pydair_files
-        self.__contain_ambiguous_D = args.contain_ambiguous_D
+        self.__discard_ambiguous_D = args.discard_ambiguous_D
         self.__productive_only   = args.productive_only
         self.__output_prefix       = args.output_prefix
-        #self.__figure_format       = args.figure_format
-        #self.__figure_style        = args.figure_style
         self.__estimate_vdj_combination = args.estimate_vdj_combination
         
         # data files
-        self.__o_file_v_freq = []
-        self.__o_file_d_freq = []
-        self.__o_file_j_freq = []
-        self.__o_file_vdj_freq = []
-        self.__o_file_rarefaction = []
-        self.__o_file_samplingresampling = []
-        self.__o_file_cdr3_prot_len_freq = []
-        self.__o_file_cdr3_nucl_len_freq = []
-        for sample_name in self.__sample_names:
+        __o_path = {
+            'v': {},
+            'd': {},
+            'j': {},
+            'vdj': {},
+            'cdr3_nucl_len': {},
+            'cdr3_prot_len': {},
+            'v_del_len': {},
+            'j_del_len': {},
+            'vj_ins_len': {},
+            'vdj_rarefaction': {}
+        }
+        __o_name = {}
+        __sample_names = self.__sample_names
+        __sample_names.append('all')
+        for sample_name in __sample_names:
             sample_name_f = sample_name.replace(' ', '_')
-            self.__o_file_v_freq.append(self.__output_prefix + '.sample.' + sample_name_f + '.v.freq.tsv')
-            self.__o_file_d_freq.append(self.__output_prefix + '.sample.' + sample_name_f + '.d.freq.tsv')
-            self.__o_file_j_freq.append(self.__output_prefix + '.sample.' + sample_name_f + '.j.freq.tsv')
-            self.__o_file_vdj_freq.append(self.__output_prefix + '.sample.' + sample_name_f + '.vdj.freq.tsv')
-            self.__o_file_rarefaction.append(self.__output_prefix + '.sample.' + sample_name_f + '.rarefaction.tsv')
-            self.__o_file_samplingresampling.append(self.__output_prefix + '.sample.' + sample_name_f + '.samplingresampling.tsv')
-            self.__o_file_cdr3_prot_len_freq.append(self.__output_prefix + '.sample.' + sample_name_f + '.cdr3_prot_length.freq.tsv')
-            self.__o_file_cdr3_nucl_len_freq.append(self.__output_prefix + '.sample.' + sample_name_f + '.cdr3_nucl_length.freq.tsv')
-        self.__out_file_rarefaction  = self.__output_prefix + '.rarefaction.tsv'
-        self.__out_file_samplingresamplig  = self.__output_prefix + '.samplingresamplig.tsv'
-        
-        # plot files
-        #self.__o_figure_v_freq   = self.__output_prefix + '.v.freq.' + self.__figure_format
-        #self.__o_figure_d_freq   = self.__output_prefix + '.d.freq.' + self.__figure_format
-        #self.__o_figure_j_freq   = self.__output_prefix + '.j.freq.' + self.__figure_format
-        #self.__o_figure_vdj_freq = []
-        #for sample_name in self.__sample_names:
-        #    sample_name_f = sample_name.replace(' ', '_')
-        #    self.__o_figure_vdj_freq.append(self.__output_prefix + '.sample.' + sample_name_f + '.vdj.freq.' + self.__figure_format)
-        
-        #self.__o_figure_rarefaction        = self.__output_prefix + '.vdj.rarefaction.' + self.__figure_format
-        #self.__o_figure_samplingresampling = self.__output_prefix + '.cdr3.samplingresampling.' + self.__figure_format
-        #self.__o_figure_cdr3_len_dist      = self.__output_prefix + '.cdr3.length.dist.' + self.__figure_format
-        
+            if sample_name not in __o_name:
+                __o_name[sample_name] = {}
+            for file_tag in __o_path.keys():
+                _f = self.__output_prefix + '.' + sample_name_f + '.' + file_tag + '.freq.tsv'
+                __o_path[file_tag][sample_name] = _f
+                __o_name[sample_name][file_tag] = _f.split('/')[-1]
+        self.__o_path = __o_path
         
         # Report
         self.__o_report = self.__output_prefix + '.report.html'
         
-        
         # create objects
-        stats = PyDAIRStats(self.__pydair_files, 'pydair', self.__sample_names,
-                            self.__contain_ambiguous_D, self.__productive_only)
+        stats = PyDAIRStats(self.__pydair_files, self.__sample_names,
+                            self.__discard_ambiguous_D, self.__productive_only)
         
         if self.__args.estimate_vdj_combination:
             stats.rarefaction_study('vdj', self.__args.n_tries)
         
         self.stats  = stats
-        #self.plots  = PyDAIRPlot(stats, self.__figure_style, self.__figure_format)
-        #[r.split('/')[-1] for r in glob.glob('test/*')]
-        __file_path = {'vfreq': [r.split('/')[-1] for r in self.__o_file_v_freq],
-                       'dfreq': [r.split('/')[-1] for r in self.__o_file_d_freq],
-                       'jfreq': [r.split('/')[-1] for r in self.__o_file_j_freq],
-                       'vdjfreq': [r.split('/')[-1] for r in self.__o_file_vdj_freq],
-                       'vdjrarefaction': [r.split('/')[-1] for r in self.__o_file_rarefaction],
-                       'cdr3protlen': [r.split('/')[-1] for r in self.__o_file_cdr3_prot_len_freq],
-                       'cdr3nucllen': [r.split('/')[-1] for r in self.__o_file_cdr3_nucl_len_freq]}
-        self.report = PyDAIRReport(stats, __file_path)
+        self.report = PyDAIRReport(stats, __o_name)
     
     
     
     
-    def write_cdr3_len_freq(self):
-        """Write the length distribution of CDR3 sequence.
+    def write_summary(self, data_types = None):
+        """Write summarized data.
         
-        Write the length distribution of CDR3 nucleotide and protein sequences.
-        The output file is TSV format, and consists of two columns.
-        The first column is the length of CDR3 sequence,
-        and the second column is frequency of the coressponding length.
-        """
-        
-        _freq_nucl = []
-        _freq_prot = []
-        for sample_i in range(len(self.stats.samples)):
-            bsample = self.stats.samples.get_record(sample_i)
-            _freq_nucl.append(bsample.get_freq('cdr3_nucl_len'))
-            _freq_prot.append(bsample.get_freq('cdr3_prot_len'))
-        
-        for _i in range(len(self.stats.samples)):
-            _freq_nucl[_i].to_csv(self.__o_file_cdr3_nucl_len_freq[_i], sep = '\t', na_rep = 'NA',
-                                  header = True, index = True)
-            _freq_prot[_i].to_csv(self.__o_file_cdr3_prot_len_freq[_i], sep = '\t', na_rep = 'NA',
-                                  header = True, index = True)
-    
-    
-    
-    
-    def write_diversity(self, methods = ['rarefaction', 'samplingresampling']):
-        """Write results of diversity studies.
-        
-        Args:
-            methods (str): A string to specify the method of diversity study.
-                           One of `rarefaction` and `samplingresampling` can be specified.
-        
-        Write the reuslts of diversity studies with TSV format.
-        The file has multiple (N + 1) columns, if the number of simulation tries is N.
-        The first column indicates that the smapling size,
-        and from the second columns indicate the results of sampling-resampling study.
+        data_types (list): Data type. If ``None``, the write all data types.
         
         """
+        if data_types is None:
+            data_types = self.__o_path.keys()
         
-        if not isinstance(methods, list):
-            methods = [methods]
-        
-        for method in methods:
+        for data_type in data_types:
             for sample_i in range(len(self.stats.samples)):
                 bsample = self.stats.samples.get_record(sample_i)
-                x = None
-                y = None
-                file_path = None
-                
-                if method == 'rarefaction':
-                    if bsample.rarefaction is not None:
-                        x = bsample.rarefaction.x
-                        y = bsample.rarefaction.y
-                        file_path = self.__o_file_rarefaction[sample_i]
-                elif method == 'samplingresampling':
-                    if bsample.samplingresampling is not None:
-                        x = bsample.rarefaction.x
-                        y = bsample.rarefaction.y
-                        file_path = self.__o_file_samplingresampling[sample_i]
+                data_type_freq = bsample.get_summary(data_type, func = 'raw')
+                if data_type_freq is not None:
+                    data_type_freq.to_csv(self.__o_path[data_type][self.__sample_names[sample_i]],
+                                          sep = '\t', na_rep = 'NA',
+                                          header = True, index = True)
                 else:
-                    raise ValueError('The \'methods\' argument of \'write_diversity\' method should be one of \'rarefaction\' and \'samplingresampling\'.')
-                
-                if x is None and y is None:
-                    continue
-                dat = []
-                for x_i in range(len(x)):
-                    _dat = [x[x_i]]
-                    for y_i in range(len(y)):
-                        _dat.append(y[y_i][x_i])
-                    dat.append(_dat)
-                with open(file_path, 'w') as fh:
-                    for i in range(len(dat)):
-                        fh.write('\t'.join([str(_dat).replace('None', 'NA') for _dat in dat[i]]) + '\n')
-    
-    
-    
-    
-    
-    def write_freq(self,  genes = ['v', 'd', 'j', 'vdj']):
-        """Write V, D, J gene usage into TSV file.
-        
-        Args:
-            genes (list): A list of string to specify which gene usage should be specified.
-                          The combination of ``v``, ``d``, ``j``, and ``vdj`` can be specified.
-        
-        Write frequency of V, D, J genes and VDJ combinations into text file.
-        The output file is tab-separator format text file.
-        If 'genes' option is one of 'v', 'd', 'j',
-        the output file consists of two columns,
-        and the first column is gene name and the second column is the frequency of the related gene.
-        If 'genes' option is 'vdj', the output file consists of four columns,
-        the first three columns is the gene names of V, D, and J,
-        and the fifth column is the frequency of the related combination of V, D and J.
-        """
-        
-        if not isinstance(genes, list):
-            genes = [genes]
-        
-        for gene in genes:
-            for sample_i in range(len(self.stats.samples)):
-                bsample = self.stats.samples.get_record(sample_i)
-                _freq = bsample.get_freq(gene)
-                
-                if gene == 'v' or gene == 'V':
-                    file_path = self.__o_file_v_freq[sample_i]
-                elif gene == 'd' or gene == 'D':
-                    file_path = self.__o_file_d_freq[sample_i]
-                elif gene == 'j' or gene == 'J':
-                    file_path = self.__o_file_j_freq[sample_i]
-                elif gene == 'vdj' or gene == 'VDJ':
-                    file_path = self.__o_file_vdj_freq[sample_i]
-                else:
-                    raise ValueError('The \'genes\' argument of \'write_freq\' method should be one of \'v\', \'d\', \'j\', and \'vdj\'.')
-                _freq.to_csv(file_path, sep = '\t', na_rep = 'NA', header = True, index = True)
-    
-    
-    def write_diversity_results(self, data):
-        """Write diversity study results.
-        
-        Args:
-            data (str): 'vdj' or 'cdr3'.
-        
-        Return diversity study results (i.e., the coordinates of rarefaction curve).
-        """
-        for sample_i in range(len(self.stats.samples)):
-            bsample = self.stats.samples.get_record(sample_i)
-            if bsample.div.rarefaction[data] is not None:
-                bsample.div.rarefaction[data].to_csv(self.__o_file_rarefaction[sample_i],
-                                                     sep = '\t', na_rep = 'NA', header = True, index = True)
+                    with open(self.__o_path[data_type][self.__sample_names[sample_i]], 'w') as statsoutfh:
+                        statsoutfh.write('Not avaliable')
+            data_type_freq = self.stats.get_summary(data_type)
+            
+            if data_type_freq is not None:
+                data_type_freq.to_csv(self.__o_path[data_type]['all'],
+                                      sep = '\t', na_rep = 'NA',
+                                      header = True, index = True)
+            else:
+                with open(self.__o_path[data_type][self.__sample_names[sample_i]], 'w') as statsoutfh:
+                    statsoutfh.write('Not avaliable')
         
     
     
-    #def plot_figures(self):
-    #    """Plot figures.
-    #    
-    #    Plot all statistical analysis results with figures.
-    #    """
-    #    pass
-    #    #self.plots.barplot_freq(gene = 'v', fig_name = self.__o_figure_v_freq, prob = True)
-    #    #self.plots.barplot_freq(gene = 'd', fig_name = self.__o_figure_d_freq, prob = True)
-    #    #self.plots.barplot_freq(gene = 'j', fig_name = self.__o_figure_j_freq, prob = True)
-    #    #self.plots.hist_cdr3_len(fig_name = self.__o_figure_cdr3_len_dist, xlim = [5, 40], prob = True)
+    
+    
+    
+    
         
     
     def create_report(self):

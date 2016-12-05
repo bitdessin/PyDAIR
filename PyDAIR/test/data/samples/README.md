@@ -10,13 +10,13 @@ pydair parse -q sample.${i}.fa \
              --v-blastdb ../db/v --d-blastdb ../db/d --j-blastdb ../db/j \
              --v-match-score 3 --v-mismatch-score -3         \
              --v-gap-open-penalty 6 --v-gap-extend-penalty 6 \
-             --v-wordsize 21 --v-evalue-cutoff 1e-50         \
+             --v-wordsize 21 --v-evalue-cutoff 1e-100         \
              --d-match-score 1 --d-mismatch-score -1         \
              --d-gap-open-penalty 0 --d-gap-extend-penalty 2 \
              --d-wordsize 4 --d-evalue-cutoff 1e-2           \
              --j-match-score 3 --j-mismatch-score -3         \
              --j-gap-open-penalty 6 --j-gap-extend-penalty 6 \
-             --j-wordsize 7 --j-evalue-cutoff 1e-5           \
+             --j-wordsize 7 --j-evalue-cutoff 1e-10           \
              -o sample.${i}
 done
 rm *.tsv

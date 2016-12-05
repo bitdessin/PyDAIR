@@ -30,7 +30,8 @@ class IgConstantTag:
         """
         
         if V is None:
-            V = ['AVFFC', 'PVFFC', 'AVYYC', 'AAYYC', 'VVYYC', 'AVFYC', 'SVYYC']
+            #V = ['AVFFC', 'PVFFC', 'AVYYC', 'AAYYC', 'VVYYC', 'AVFYC', 'SVYYC']
+            V = '(FFC|YYC|FYC)'
             #V = 'YYC'
         if J is None:
             J = 'WG.G'
@@ -38,21 +39,21 @@ class IgConstantTag:
         self.J = J
         
         # V end motif with a mismatch
-        self.V_1mismatch = []
-        for vp in self.V:
-            if len(vp) > 3:
-                for i in range(0, len(vp)):
-                    self.V_1mismatch.append(vp[:i] + '.' + vp[(i+1):])
+        #self.V_1mismatch = []
+        #for vp in self.V:
+        #    if len(vp) > 3:
+        #        for i in range(0, len(vp)):
+        #            self.V_1mismatch.append(vp[:i] + '.' + vp[(i+1):])
         # J end motif with a mismatch (too short, do NOT assume)
         
-        self.V_re = re.compile('(' + '|'.join(self.V) + ')', re.IGNORECASE)
-        self.V_1mismatch_re = re.compile('(' + '|'.join(self.V_1mismatch) + ')', re.IGNORECASE)
+        self.V_re = re.compile(self.V, re.IGNORECASE)
+        #self.V_1mismatch_re = re.compile('(' + '|'.join(self.V_1mismatch) + ')', re.IGNORECASE)
         self.J_re = re.compile(self.J, re.IGNORECASE)
         
         if cdr3_motif_start_adjust is None:
-            cdr3_motif_start_adjust = len(self.V[0])
+            cdr3_motif_start_adjust = len(self.V.split('|')[0].replace('(', ''))
         if cdr3_motif_end_adjust is None:
-            cdr3_motif_end_adjust = len(self.J)
+            cdr3_motif_end_adjust = len(self.J.split('|')[0].replace('(', ''))
         
         self.cdr3_motif_start_len = cdr3_motif_start_adjust - 1
         self.cdr3_motif_end_len   = cdr3_motif_end_adjust - 1
@@ -244,9 +245,9 @@ class IgSeqVariableRegion:
         
         # untemplated region (V-J junction)
         if untmpl_start is not None and untmpl_end is not None:
-            self.untemplate_region = [untmpl_start, untmpl_end]
+            self.untemplate_region = [int(untmpl_start), int(untmpl_end)]
         if cdr3_start is not None and cdr3_end is not None:
-            self.cdr3 = [cdr3_start,   cdr3_end]
+            self.cdr3 = [int(cdr3_start), int(cdr3_end)]
 
 
 
@@ -257,7 +258,7 @@ class IgSeqQuery:
     sequence is came from FASTQ or FASTA file.
     """
     
-    def __init__(self, name, seq, strand = None, orf = None, orfcode = None):
+    def __init__(self, name, seq, strand = None, orf = None):
         """IgSeqQuery class initialize method.
         
         Args:
@@ -265,7 +266,6 @@ class IgSeqQuery:
             seq (str): A query sequence.
             strane (str): A strand (``+`` or ``-``) of query sequence.
             orf (int): An ORF position.
-            orfcode (str): An ORFCODE.
         """
         
         self.name = name
@@ -278,7 +278,6 @@ class IgSeqQuery:
             self.orf = int(orf)
         else:
             self.orf = None
-        self.orfcode = orfcode
     
         
     def get_record(self):
@@ -288,7 +287,7 @@ class IgSeqQuery:
             list: A list contains all information of IgSeqQuery class object.
         """
         
-        return [self.name, self.seq, self.strand, self.orf, self.orfcode]
+        return [self.name, self.seq, self.strand, self.orf]
         
 
 
@@ -357,7 +356,8 @@ class IgSeq:
         --------------------------------------------------------------
        
     """
-    def __init__(self, ig_seq_align_v = None, ig_seq_align_d = None, ig_seq_align_j = None, ig_seq_variable_region = None):
+    def __init__(self, ig_seq_align_v = None, ig_seq_align_d = None, ig_seq_align_j = None,
+                       ig_seq_variable_region = None, ig_seq_indels = None):
         """IgSeq class initialize method.
         
         Args:
@@ -381,6 +381,7 @@ class IgSeq:
         self.j = ig_seq_align_j
         self.variable_region = ig_seq_variable_region
         self.valid_alignment = None
+        self.indels = ig_seq_indels
     
     def set_igseqalign(self, igseqalign, gene):
         """Set IgSeqAlign class object into IgSeq class object.
@@ -397,98 +398,6 @@ class IgSeq:
         elif gene == 'j':
             self.j = igseqalign
     
-    def set_record(self, r):
-        """Set a list into IgSeq class object.
-        
-        Args:
-            r (list): A list contains all information of IgSeq class object.
-        """
-        
-        for i in range(len(r)):
-            if r[i] == '.':
-                r[i] = None
-        self.query = IgSeqQuery(r[0], r[1], r[2], r[3], r[4])
-        self.v = IgSeqAlign(
-            IgSeqAlignQuery(r[0], r[1], r[14], r[15], r[16], r[2]),
-            IgSeqAlignSbjct(r[5], r[6], r[17], r[18], r[19], r[7]),
-            r[20], r[21]
-        )
-        self.d = IgSeqAlign(
-            IgSeqAlignQuery(r[0], r[1], r[22], r[23], r[24], r[2]),
-            IgSeqAlignSbjct(r[8], r[9], r[25], r[26], r[27], r[10]),
-            r[28], r[29]
-        )
-        self.j = IgSeqAlign(
-            IgSeqAlignQuery(r[0], r[1], r[30], r[31], r[32], r[2]),
-            IgSeqAlignSbjct(r[11], r[12], r[33], r[34], r[35], r[13]),
-            r[36], r[37]
-        )
-        self.variable_region = IgSeqVariableRegion(r[0], r[1], r[38], r[39], r[40], r[41])
-    
-    
-    def get_record(self):
-        """Retrive IgSeq class data with list.
-        
-        Returns:
-            list: A list contains all information of IgSeq class object.
-        """
-        
-        record = []
-        # query
-        if self.query is not None:
-            record.extend(self.query.get_record())
-        else:
-            record.extend([None, None, None, None, None])
-        # V
-        if self.v is not None:
-            record.extend([self.v.sbjct.name, self.v.sbjct.seq, self.v.sbjct.strand])
-        else:
-            record.extend([None, None, None])
-        # D
-        if self.d is not None:
-            record.extend([self.d.sbjct.name, self.d.sbjct.seq, self.d.sbjct.strand])
-        else:
-            record.extend([None, None, None])
-        # J
-        if self.j is not None:
-            record.extend([self.j.sbjct.name, self.j.sbjct.seq, self.j.sbjct.strand])
-        else:
-            record.extend([None, None, None])
-        # alignment with V
-        if self.v is not None:
-            record.extend([self.v.query.aligned_seq, self.v.query.start, self.v.query.end,
-                           self.v.sbjct.aligned_seq, self.v.sbjct.start, self.v.sbjct.end,
-                           self.v.metadata['identity'], self.v.metadata['score']])
-        else:
-            record.extend([None, None, None, None, None, None, None, None])
-        # alignment with D
-        if self.d is not None:
-            record.extend([self.d.query.aligned_seq, self.d.query.start, self.d.query.end,
-                           self.d.sbjct.aligned_seq, self.d.sbjct.start, self.d.sbjct.end,
-                           self.d.metadata['identity'], self.d.metadata['score']])
-        else:
-            record.extend([None, None, None, None, None, None, None, None])
-        # alignment with J
-        if self.j is not None:
-            record.extend([self.j.query.aligned_seq, self.j.query.start, self.j.query.end,
-                           self.j.sbjct.aligned_seq, self.j.sbjct.start, self.j.sbjct.end,
-                           self.j.metadata['identity'], self.j.metadata['score']])
-        else:
-            record.extend([None, None, None, None, None, None, None, None])
-        # variable region
-        if self.variable_region is not None:
-            if self.variable_region.untemplate_region is not None:
-                record.extend([self.variable_region.untemplate_region[0], self.variable_region.untemplate_region[1]])
-            else:
-                record.extend([None, None])
-            if self.variable_region.cdr3 is not None:
-                record.extend([self.variable_region.cdr3[0], self.variable_region.cdr3[1]])
-            else:
-                record.extend([None, None])
-        else:
-            record.extend([None, None, None, None])
-        
-        return record
     
     
     
@@ -785,8 +694,7 @@ class IgSeq:
     
     
     def __seek_cdr3_YYC(self, seq, v_end, j_start, const_tag):
-        cdr3_start     = None
-        
+        cdr3_start = None
         # try three ORFs
         for i in range(3):
             has_v_tag     = None
@@ -807,23 +715,22 @@ class IgSeq:
                 cdr3_start = (cdr3_aa_start + 1) * 3 + i
                 break
         # assume that there is one mismatch in YYC motifs
-        if cdr3_start is None:
-            for i in range(3):
-                has_v_tag     = None
-                cdr3_aa_start = None
-                slice_start = i
-                slice_end = int(math.floor((len(seq) - i) / 3)) * 3 + i
-                v_aa_end   = int(v_end / 3 + 1)
-                j_aa_start = int(j_start / 3 - 1)
-
-                aa = str(Seq(seq[slice_start:slice_end], generic_dna).translate())
-                aa_left  = aa[:(j_aa_start - 1)]
-                for has_v_tag in const_tag.V_1mismatch_re.finditer(aa_left):
-                    pass
-                if has_v_tag:
-                    cdr3_aa_start = has_v_tag.start() + const_tag.cdr3_motif_start_len
-                    cdr3_start = (cdr3_aa_start + 1) * 3 + i
-                    break
+        #if cdr3_start is None:
+        #    for i in range(3):
+        #        has_v_tag     = None
+        #        cdr3_aa_start = None
+        #        slice_start = i
+        #        slice_end = int(math.floor((len(seq) - i) / 3)) * 3 + i
+        #        v_aa_end   = int(v_end / 3 + 1)
+        #        j_aa_start = int(j_start / 3 - 1)
+        #        aa = str(Seq(seq[slice_start:slice_end], generic_dna).translate())
+        #        aa_left  = aa[:(j_aa_start - 1)]
+        #        for has_v_tag in const_tag.V_1mismatch_re.finditer(aa_left):
+        #            pass
+        #        if has_v_tag:
+        #            cdr3_aa_start = has_v_tag.start() + const_tag.cdr3_motif_start_len
+        #            cdr3_start = (cdr3_aa_start + 1) * 3 + i
+        #            break
         
         return cdr3_start
     
@@ -883,51 +790,28 @@ class IgSeq:
         else:
             j_start = len(self.query.seq) + 1
         
-        orfcode = [None] * 3
-        re_orfcode = re.compile('[M|\*]')
+        orf = None
         
-        orfs = [0, 1, 2]
-        for i in orfs:
-            orfcode_i = {'v': '__', 'd': '__', 'j': '__'}
-            
+        for i in [0, 1, 2]:
             slice_start = i
             slice_end = int(math.floor((len(self.query.seq) - i) / 3)) * 3 + i
-            aa = str(Seq(self.query.seq[slice_start:slice_end], generic_dna).translate())
-            
-            for orf_re_obj in re_orfcode.finditer(aa):
-                orf_str_pos = orf_re_obj.start() * 3 + i
-                orf_str     = aa[orf_re_obj.start():orf_re_obj.end()]
-                
-                if orf_str_pos < v_end:
-                    orfcode_i['v'] += orf_str
-                elif orf_str_pos < j_start:
-                    orfcode_i['d'] += orf_str
-                else:
-                    orfcode_i['j'] += orf_str
-            
-            for k in orfcode_i.keys():
-                if len(orfcode_i[k]) == 3:
-                    orfcode_i[k] = orfcode_i[k][1:3]
-                elif len(orfcode_i[k]) > 3:
-                    orfcode_i[k] = orfcode_i[k][2:3] + orfcode_i[k][-1]
-            orfcode[i] = orfcode_i['v'] + orfcode_i['d'] + orfcode_i['j']
-        
-        orf = None
-        for i in range(len(orfcode)):
-            if '*' not in orfcode[i][1:]:
+            if '*' not in  str(Seq(self.query.seq[slice_start:slice_end], generic_dna).translate()):
                 orf = i + 1
+                break
+        
         self.query.orf = orf
-        self.query.orfcode = ';'.join(orfcode)
     
     
 
-    def seek_cdr3(self, v_motif = None, j_motif = None):
+    def seek_cdr3(self, const_tag = None):
         """Search cdr3 region.
         
         If the query sequence has the correct alignments with V and J genes, then search the cdr3
         region. The cdr3 region should be the region between the end of V gene and the start of J
         gene. Therefore, this method tries to file the cdr3 sequences at that region.
         """
+        if const_tag is None:
+            raise ValueError('IgConstantTag class object should be given.')
         
         # only process for corect sequence
         has_valid_alignment = self.forward_ig_seq()
@@ -935,21 +819,11 @@ class IgSeq:
             # seek unaligned region
             untmpl_start, untmpl_end = self.__seek_untemplated_region()
             # seek CDR3
-            const_tag = IgConstantTag(V = v_motif, J = j_motif)
             cdr3_nucl_start = self.__seek_cdr3_YYC( self.query.seq, untmpl_start - 1, untmpl_end, const_tag)
             cdr3_nucl_end   = self.__seek_cdr3_WGxG(self.query.seq, untmpl_start - 1, untmpl_end, const_tag)
             
-            # fix the end position (assume that the YYC is the base position)
-            #cdr3_prot_start = cdr3_nucl_start
-            #if cdr3_nucl_start is not None and cdr3_nucl_end is not None:
-            #    codons = (cdr3_nucl_end - (cdr3_nucl_start)) % 3
-            #    if codons == 1:
-            #        cdr3_prot_end = cdr3_nucl_end - 1
-            #    elif codons == 2:
-            #        cdr3_prot_end += cdr3_nucl_end - 2
-            # setup data to object
             #if cdr3_nucl_end is not None and cdr3_nucl_start is not None:
-            #    print(self.query.name + '\t' +  str((cdr3_nucl_end - cdr3_nucl_start - 1) % 3))
+            #    print(self.query.name + '\t' + str(Seq(self.query.seq[cdr3_nucl_start:cdr3_nucl_end], generic_dna).translate()))
             self.variable_region = IgSeqVariableRegion(self.query.name, self.query.seq, untmpl_start, untmpl_end, cdr3_nucl_start, cdr3_nucl_end)
     
     
@@ -983,6 +857,62 @@ class IgSeq:
         cdr3_data = CDR3Data(cdr3_nucl, cdr3_prot)
         
         return cdr3_data
+    
+    
+    def find_indels(self):
+        """Find insertions and deletions on VD and DJ junctions.
+        
+        This method is used for finding the nucleotides that deleted from 3'-end of V gene
+        and 5'-end of J gene, and finding the nucleotides that inserted into 3'V-5'J region.
+        The inserted nucleotides contain D segment.
+        
+        """
+        
+        [aligned_q, aligned_v, aligned_j, aligned_untmpl, aligned_cdr3] = self.print_alignment()
+        
+        v_del = ''
+        j_del = ''
+        vj_ins = ''
+        
+        # find 5'V-deletions
+        vvseq = aligned_v.rstrip()[::-1]
+        qvseq = aligned_q[0:len(vvseq)][::-1]
+        vi = 0
+        for vi in range(len(vvseq)):
+            if vvseq[(vi):(vi + 3)] == qvseq[(vi):(vi + 3)]:
+                v_del = vvseq[0:vi][::-1]
+                break
+        
+        # find 3'J-deletions
+        jjseq = aligned_j.lstrip()
+        qjseq = aligned_q[(len(aligned_j) - len(jjseq)):]
+        ji = 0
+        for ji in range(len(jjseq)):
+            if jjseq[(ji):(ji + 3)] == qjseq[(ji):(ji + 3)]:
+                j_del = jjseq[0:ji]
+                break
+        
+        # find VJ-additions
+        vj_ins = aligned_q[(len(vvseq) - vi):(len(aligned_j) - len(jjseq) + ji)]
+        self.indels = IgSeqIndels(v_del, j_del, vj_ins)
+        
+
+
+
+class IgSeqIndels:
+    """A class to save additions and deletions.
+        
+    Args:
+        v_del (str): A sequence deleted from 3'V gene.
+        j_del (str): A sequence deleted from 5'J gene.
+        vj_add (str): A sequence inserted between 5'V and 3'J.
+    """
+    
+    def __init__(self, v_del, j_del, vj_ins):
+        self.v_deletion = v_del
+        self.j_deletion = j_del
+        self.vj_insertion = vj_ins
+
 
 
 
