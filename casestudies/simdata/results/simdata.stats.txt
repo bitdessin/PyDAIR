@@ -1,8 +1,0 @@
-   	  TP  	  TN  	  FP  	  FN  	  fault
-ORF	16971	37668	34499	8785	2077
-
-feature	correct	mistake	ambigo	fault
-V      	89110	8813	0	2077
-D      	52051	5876	39996	2077
-J      	95183	2740	0	2077
-CDR3   	61799	975	35149	2077

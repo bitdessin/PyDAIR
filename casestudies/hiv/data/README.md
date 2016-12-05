@@ -1,4 +1,4 @@
-Directory to save raw data.
+Download data from SRA via the following commands.
 
 ```
 prefetch SRR654169

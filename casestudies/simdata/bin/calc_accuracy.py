@@ -49,19 +49,30 @@ def check(d, true = None, estimated = None, t = 'seq', seqid = None):
 
 with open(res_file, 'r') as fh:
     for buf in fh:
-        fields  = buf.strip().split('\t')
-        seq_id  = fields[0].replace(';', '')
-        orf     = fields[1]
-        orfcode = fields[2]
-        vgene   = fields[3]
-        dgene   = fields[4]
-        jgene   = fields[5]
-        cdr3    = fields[7]
-        if orf == '.':
-            orf = '*'
-        else:
-            orf = 'N'
-        fa_dict[seq_id] = {'v': vgene, 'd': dgene, 'j': jgene, 'cdr3': cdr3, 'stop': orf}
+        buf = buf.strip()
+        if buf[0:6] == '#BEGIN':
+            seq_id = ''
+            orf   = ''
+            vgene = ''
+            dgene = ''
+            jgene = ''
+            cdr3  = ''
+        if buf[0:2] == 'QN':
+            seq_id = buf[3:].replace(';', '')
+        if buf[0:2] == 'VN':
+            vgene = buf[3:]
+        if buf[0:2] == 'DN':
+            dgene = buf[3:]
+        if buf[0:2] == 'JN':
+            jgene = buf[3:]
+        if buf[0:2] == 'OP':
+            orf = buf[3:]
+            if orf == '.':
+                orf = '*'
+            else:
+                orf = 'N'
+        if buf[0:4] == '#END':
+            fa_dict[seq_id] = {'v': vgene, 'd': dgene, 'j': jgene, 'cdr3': cdr3, 'stop': orf}
 
 
 with open(sim_file, 'r') as fh:

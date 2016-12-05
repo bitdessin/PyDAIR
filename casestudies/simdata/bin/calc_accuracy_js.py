@@ -81,8 +81,6 @@ with open(sim_file, 'r') as fh:
             stop = 'N'
         else:
             stop = '*'
-        
-        
         # check estimation of stop codon stats.
         if seq_id in fa_dict:
             #print [seq_id, vgene, dgene, jgene, cdr3]
