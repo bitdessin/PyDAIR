@@ -2,6 +2,7 @@
 Case studies
 ============
 
+
 The procedures of several case studies with PyDAIR are shown in this page.
 The study sets can be downloaded via :command:`git clone` command from
 `GitHub PyDAIR repository <https://github.com/bioinfoteam/PyDAIR>`_.
@@ -11,8 +12,10 @@ The study sets can be downloaded via :command:`git clone` command from
     
     git clone git@github.com:bioinfoteam/PyDAIR.git
 
+
 All study sets are saved in the :file:`casestudies` directory
 of the downloaded :file:`PyDAIR` directory.
+
 
 .. code-block:: bash
     
@@ -53,7 +56,7 @@ The *simdata* dataset consists of 100,000 artificial sequences of human IgH.
 which were generated JoinSimulation\ [#Russ2015]_.
 The raw data are saved as compressed TSV format in :file:`data/simdata.txt`.
 We use :command:`bzip2` command to decompress the raw data,
-and then convert the raw data into FASTA format using custom Python script.
+and then convert the raw data into FASTA format using the custom Python script.
 
 
 .. code-block:: bash
@@ -78,9 +81,8 @@ We use :command:`makeblast` command to create BLAST databases of V, D, and J gen
 
 
 After we prepared IgH sequences (:file:`simdata.fa`) and BLAST databases
-(:file:`ighv` :file:`ighd` :file:`ighj`),
-we use :command:`pydair parse` command to identify V, D, and J genes,
-and determine CDR3 segments.
+(:file:`ighv` :file:`ighd` :file:`ighj`), we use :command:`pydair parse`
+command to identify V, D, J, and CDR3 segments.
 
 
 .. code-block:: bash
@@ -96,19 +98,7 @@ In addition, the digest version of result will be saved into
 :file:`results/simdata.vdj.pydair.simple` with TSV format.
 
 
-The percentage of correctly and incorrectly identification of V, D, and J genes
-can be calculated with the custom Python script.
-The calculation result wil be saved into :file:`simdata.stats.txt`.
-
-
-.. code-block:: bash
-    
-    python ./bin/calc_accuracy.py ./data/simdata.txt \
-                                  ./results/simdata.vdj.pydair.simple \
-                                  ./results/simdata.stats.txt
-
-
-Finally, we use :command:`pydair stats` to summarize the anlaysis results.
+Then, we use :command:`pydair stats` to summarize the anlaysis results.
 
 
 .. code-block:: bash
@@ -116,15 +106,20 @@ Finally, we use :command:`pydair stats` to summarize the anlaysis results.
     pydair stats -i ./results/simdata.vdj.pydair \
                  -n simdata \
                  -o ./results/stats \
-                 --contain_ambiguous_D \
                  --estimate-vdj-combination
+
 
 
 The summarized results are saved into :file:`./restuls` directory with
 the prefix of :file:`stats`.
 The HTML report saved in :file:`./result/stats.report.html` (:download:`simdata_report.html`).
 
+
+
 ..  
+    python ./bin/calc_accuracy_details.py ./data/simdata.txt \
+                                  ./results/simdata.vdj.pydair \
+                                  ./results/simdata.stats.p
     To evaluate the relations between the number of sequences and execution time,
     we create some subsets.
     
@@ -156,10 +151,11 @@ The HTML report saved in :file:`./result/stats.report.html` (:download:`simdata_
         for ji in {0..5}; do
             p=sim${vi}_${ji}
             python ./bin/calc_accuracy_details.py ./data/simdata.sub.txt \
-                                          ./results/${p}.vdj.pydair.simple \
+                                          ./results/${p}.vdj.pydair \
                                           ./results/estperformance.${p}
         done
     done
+    >R calc_glid_acc.R
 
   
 --------------------------------------------------------------------
@@ -305,7 +301,6 @@ and the summarized report were created (:download:`humanhiv_report.html`).
     pydair stats -i ./results/SRR654171.vdj.pydair ./results/SRR654169.vdj.pydair \
                  -n N152 IAVI84 \
                  -o ./results/stats \
-                 --contain_ambiguous_D \
                  --estimate-vdj-combination
 
 
@@ -418,7 +413,6 @@ All summarized data are saved into :file:`results` directory with prefix `stats`
     pydair stats -i ./results/ERR849859.vdj.pydair ./results/ERR849860.vdj.pydair \
                  -n ERR849859 ERR849860 \
                  -o ./results/stats \
-                 --contain_ambiguous_D \
                  --estimate-vdj-combination
     
 
@@ -479,12 +473,15 @@ to downlaod Rep-Seq data and covert them to FASTQ format file.
 
 .. code-block:: bash
     
-    sra=("SRR017328" "SRR017329" "SRR017330" "SRR017331" "SRR017332" "SRR017333" "SRR017334" "SRR017335" "SRR017336" "SRR017337" "SRR017338" "SRR017339" "SRR017340" "SRR017341")
+    sra=("SRR017328" "SRR017329" "SRR017330" "SRR017331" "SRR017332" "SRR017333" "SRR017334" \
+         "SRR017335" "SRR017336" "SRR017337" "SRR017338" "SRR017339" "SRR017340" "SRR017341")
+    
     for sid in ${sra[@]}
     do
         prefetch ${sid}
         fastq-dump ${sid} -O ./data/
     done
+
 
 
 Both FASTQ files contain IgH and IgL sequences.
@@ -499,6 +496,7 @@ to extract the IgH sequences according to the primers.
                  --discard-untrimmed -m 300 -o ./data/${sid}.p.fastq -O 10 -e 0.3 \
                  --info-file ./results/${sid}.primers.info.txt \
                  ./data/${sid}.fastq
+
 
 .. code-block:: bash
         
@@ -559,7 +557,7 @@ with :command:`awk` and "command:`sed` commands.
                     ./results/SRR017340.igm.vdj.pydair ./results/SRR017341.igm.vdj.pydair \
                  -n SRR017328 SRR017329 SRR017330 SRR017331 SRR017332 SRR017333 SRR017334 \
                     SRR017335 SRR017336 SRR017337 SRR017338 SRR017339 SRR017340 SRR017341 \
-                 -o ./results/stats.igm --contain_ambiguous_D --estimate-vdj-combination
+                 -o ./results/stats.igm --estimate-vdj-combination
     
     pydair stats -i ./results/SRR017328.igz.vdj.pydair ./results/SRR017329.igz.vdj.pydair \
                     ./results/SRR017330.igz.vdj.pydair ./results/SRR017331.igz.vdj.pydair \
@@ -570,7 +568,7 @@ with :command:`awk` and "command:`sed` commands.
                     ./results/SRR017340.igz.vdj.pydair ./results/SRR017341.igz.vdj.pydair \
                  -n SRR017328 SRR017329 SRR017330 SRR017331 SRR017332 SRR017333 SRR017334 \
                     SRR017335 SRR017336 SRR017337 SRR017338 SRR017339 SRR017340 SRR017341 \
-                 -o ./results/stats.igz --contain_ambiguous_D --estimate-vdj-combination
+                 -o ./results/stats.igz --estimate-vdj-combination
     
     
 

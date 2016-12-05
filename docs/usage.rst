@@ -6,20 +6,19 @@ Installation
 ============
 
 
-PyDAIR can be installed via :command:`pip` command.
+PyDAIR is a Python package which can be installed via :command:`pip` command.
 
 .. code-block:: bash
 
-    pip install --user
-
+    pip install pydair --user
 
 
 Requirements:
 
 * Python 2.7 or Python 3.4
-* `NumPy <http://www.numpy.org/>`_
-* `Pandas <http://pandas.pydata.org/>`_
-* `BioPython <http://biopython.org/>`_
+* `NumPy <http://www.numpy.org/>`_ (Python package)
+* `Pandas <http://pandas.pydata.org/>`_ (Python package)
+* `BioPython <http://biopython.org/>`_ (Python package)
 * `NCBI BLAST+ <https://www.ncbi.nlm.nih.gov/books/NBK279690/>`_
 
 
@@ -29,29 +28,26 @@ Requirements:
 parse action mode
 =================
 
+The :command:`parse` action mode identifies V, D, J, and CDR3 segments,
+and detects the deletions and insertions in IgH sequences.
+
 Usage
 ^^^^^
-
-The required options in :command:`parse` action mode are 
-``-q``, ``-v``, ``-d``, ``-j``, ``--v-blastdb``, ``--d-blastdb``, ``--j-blastdb``, and ``-o``.
-
-* ``-q`` is used to specify input Ig-Seq data as FASTA format.
-* ``-v``, ``-d``, and ``-j`` are used to specify FASTA format files of V, D, and J sequences.
-* ``--v-blastdb``, ``--d-blastdb``, and ``--j-blastdb`` to specify BLAST database which created from the FASTA files by :command:`makeblastdb`.
-* ``-o`` is used to specify the prefix of output files.
-
 
 .. code-block:: bash
     
     pydair parse -q input_igh_sequences.fa \
+                 -o output1                \
                  -v v.fa                   \
                  -d d.fa                   \
                  -j j.fa                   \
                  --v-blastdb blastdb_v     \
                  --d-blastdb blastdb_d     \
-                 --j-blastdb blastdb_j     \
-                 -o output1
+                 --j-blastdb blastdb_j 
 
+
+The eight options, i.e., ``-q``, ``-o``, ``-v``, ``-d``, ``-j``,
+``--v-blastdb``, ``--d-blastdb``, and ``--j-blastdb``, are required options.
 
 
 Options
@@ -59,98 +55,102 @@ Options
 
 In addition to the required options, 
 the other options such as BLAST parameters for VDJ identification can be specified.
+All options used in :command:`parse` action mode are shown in the following table.
 
 
-+----------------------------+------------------------------------+----------------+
-| options                    |                                    | defult         |
-+============================+====================================+================+
-| ``-q``                     | Path to FASTA file that contains   |                |
-|                            | IgH seqeunces.                     |                |
-+----------------------------+------------------------------------+----------------+
-| ``-o``                     | Path to file for writting results. |                |
-+----------------------------+------------------------------------+----------------+
-| ``-v``                     | Path to FASTA file of V gene       |                |
-|                            | sequence.                          |                |
-+----------------------------+------------------------------------+----------------+
-| ``-d``                     | Path to FASTA file of D gene       |                |
-|                            | sequence.                          |                |
-+----------------------------+------------------------------------+----------------+
-| ``-j``                     | Path to FASTA file of J gene       |                |
-|                            | sequence.                          |                |
-+----------------------------+------------------------------------+----------------+
-| ``-v-blastdb``             | Path to BLAST database that        |                |
-|                            | created from the FASTA file of     |                |
-|                            | ``-v``.                            |                | 
-+----------------------------+------------------------------------+----------------+
-| ``-v-match-score``         | Score (> 0) for a nucleotide match | ``3``          |
-|                            | for V gene.                        |                |
-+----------------------------+------------------------------------+----------------+
-| ``-v-mismatch-score``      | Score (< 0) for a nucleotide       | ``-3``         |
-|                            | mismatch for V gene.               |                |
-+----------------------------+------------------------------------+----------------+
-| ``-v-gap-open-penalty``    | Penalty (> 0) to open a gap for    | ``6``          |
-|                            | V gene.                            |                |
-+----------------------------+------------------------------------+----------------+
-| ``-v-gap-extend-penalty``  | Penalty (> 0) to extend a gap for  | ``6``          |
-|                            | V gene.                            |                |
-+----------------------------+------------------------------------+----------------+
-| ``-v-wordsize``            | Word size to find hotspots by      | ``10``         |
-|                            | BLAST for V gene.                  |                |
-+----------------------------+------------------------------------+----------------+
-| ``-v-evalue-cutoff``       | E-value                            | ``1e-10``      |
-|                            | threshold for assiging V gene.     |                |   
-+----------------------------+------------------------------------+----------------+
-| ``-d-blastdb``             | Path to BLAST database that        |                |
-|                            | created from the FASTA file of     |                |
-|                            | ``-d``.                            |                | 
-+----------------------------+------------------------------------+----------------+
-| ``-d-match-score``         | Score (> 0) for a nucleotide match | ``1``          |
-|                            | for D gene.                        |                |
-+----------------------------+------------------------------------+----------------+
-| ``-d-mismatch-score``      | Score (< 0) for a nucleotide       | ``-1``         |
-|                            | mismatch for D gene.               |                |
-+----------------------------+------------------------------------+----------------+
-| ``-d-gap-open-penalty``    | Penalty (> 0) to open a gap for    | ``0``          |
-|                            | D gene.                            |                |
-+----------------------------+------------------------------------+----------------+
-| ``-d-gap-extend-penalty``  | Penalty (> 0) to extend a gap for  | ``2``          |
-|                            | D gene.                            |                |
-+----------------------------+------------------------------------+----------------+
-| ``-d-wordsize``            | Word size to find hotspots by      | ``4``          |
-|                            | BLAST for D gene.                  |                |
-+----------------------------+------------------------------------+----------------+
-| ``-d-evalue-cutoff``       | E-value                            | ``1e-2``       |
-|                            | threshold for assiging D gene.     |                |   
-+----------------------------+------------------------------------+----------------+
-| ``-j-blastdb``             | Path to BLAST database that        |                |
-|                            | created from the FASTA file of     |                |
-|                            | ``-j``.                            |                | 
-+----------------------------+------------------------------------+----------------+
-| ``-j-match-score``         | Score (> 0) for a nucleotide match | ``3``          |
-|                            | for J gene.                        |                |
-+----------------------------+------------------------------------+----------------+
-| ``-j-mismatch-score``      | Score (< 0) for a nucleotide       | ``-3``         |
-|                            | mismatch for J gene.               |                |
-+----------------------------+------------------------------------+----------------+
-| ``-j-gap-open-penalty``    | Penalty (> 0) to open a gap for    | ``6``          |
-|                            | J gene.                            |                |
-+----------------------------+------------------------------------+----------------+
-| ``-j-gap-extend-penalty``  | Penalty (> 0) to extend a gap for  | ``6``          |
-|                            | J gene.                            |                |
-+----------------------------+------------------------------------+----------------+
-| ``-j-wordsize``            | Word size to find hotspots by      | ``7``          |
-|                            | BLAST for J gene.                  |                |
-+----------------------------+------------------------------------+----------------+
-| ``-j-evalue-cutoff``       | E-value                            | ``1e-5``       |
-|                            | threshold for assiging J gene.     |                |   
-+----------------------------+------------------------------------+----------------+
-| ``-v-motif``               | The motif on V gene to determine   | ``YYC``        |
-|                            | CDR3 segment.                      |                |   
-+----------------------------+------------------------------------+----------------+
-| ``-j-motif``               | The motif on J gene to determine   | ``WG.G``       |
-|                            | CDR3 segment.                      |                |   
-|                            | (e.g, ``WG.G``, ``FG.G``)          |                |   
-+----------------------------+------------------------------------+----------------+
++-----------------------------+------------------------------------+----------------+
+| Options                     | Description                        | Default        |
++=============================+====================================+================+
+| ``-q``                      | Path to FASTA file that contains   |                |
+|                             | IgH seqeunces.                     |                |
++-----------------------------+------------------------------------+----------------+
+| ``-o``                      | Path to file for writting results. |                |
++-----------------------------+------------------------------------+----------------+
+| ``-v``                      | Path to FASTA file of V gene       |                |
+|                             | sequence.                          |                |
++-----------------------------+------------------------------------+----------------+
+| ``-d``                      | Path to FASTA file of D gene       |                |
+|                             | sequence.                          |                |
++-----------------------------+------------------------------------+----------------+
+| ``-j``                      | Path to FASTA file of J gene       |                |
+|                             | sequence.                          |                |
++-----------------------------+------------------------------------+----------------+
+| ``--v-blastdb``             | Path to BLAST database that        |                |
+|                             | created from the FASTA file of     |                |
+|                             | ``-v``.                            |                | 
++-----------------------------+------------------------------------+----------------+
+| ``--v-match-score``         | Score (> 0) for a nucleotide match | ``3``          |
+|                             | for V gene.                        |                |
++-----------------------------+------------------------------------+----------------+
+| ``--v-mismatch-score``      | Score (< 0) for a nucleotide       | ``-3``         |
+|                             | mismatch for V gene.               |                |
++-----------------------------+------------------------------------+----------------+
+| ``--v-gap-open-penalty``    | Penalty (> 0) to open a gap for    | ``6``          |
+|                             | V gene.                            |                |
++-----------------------------+------------------------------------+----------------+
+| ``--v-gap-extend-penalty``  | Penalty (> 0) to extend a gap for  | ``6``          |
+|                             | V gene.                            |                |
++-----------------------------+------------------------------------+----------------+
+| ``--v-wordsize``            | Word size to find hotspots by      | ``10``         |
+|                             | BLAST for V gene.                  |                |
++-----------------------------+------------------------------------+----------------+
+| ``--v-evalue-cutoff``       | E-value                            | ``1e-50``      |
+|                             | threshold for assigning V gene.    |                |   
++-----------------------------+------------------------------------+----------------+
+| ``--d-blastdb``             | Path to BLAST database that        |                |
+|                             | created from the FASTA file of     |                |
+|                             | ``-d``.                            |                | 
++-----------------------------+------------------------------------+----------------+
+| ``--d-match-score``         | Score (> 0) for a nucleotide match | ``1``          |
+|                             | for D gene.                        |                |
++-----------------------------+------------------------------------+----------------+
+| ``--d-mismatch-score``      | Score (< 0) for a nucleotide       | ``-1``         |
+|                             | mismatch for D gene.               |                |
++-----------------------------+------------------------------------+----------------+
+| ``--d-gap-open-penalty``    | Penalty (> 0) to open a gap for    | ``0``          |
+|                             | D gene.                            |                |
++-----------------------------+------------------------------------+----------------+
+| ``--d-gap-extend-penalty``  | Penalty (> 0) to extend a gap for  | ``2``          |
+|                             | D gene.                            |                |
++-----------------------------+------------------------------------+----------------+
+| ``--d-wordsize``            | Word size to find hotspots by      | ``4``          |
+|                             | BLAST for D gene.                  |                |
++-----------------------------+------------------------------------+----------------+
+| ``--d-evalue-cutoff``       | E-value                            | ``1e-2``       |
+|                             | threshold for assigning D gene.    |                |   
++-----------------------------+------------------------------------+----------------+
+| ``--j-blastdb``             | Path to BLAST database that        |                |
+|                             | created from the FASTA file of     |                |
+|                             | ``-j``.                            |                | 
++-----------------------------+------------------------------------+----------------+
+| ``--j-match-score``         | Score (> 0) for a nucleotide match | ``3``          |
+|                             | for J gene.                        |                |
++-----------------------------+------------------------------------+----------------+
+| ``--j-mismatch-score``      | Score (< 0) for a nucleotide       | ``-3``         |
+|                             | mismatch for J gene.               |                |
++-----------------------------+------------------------------------+----------------+
+| ``--j-gap-open-penalty``    | Penalty (> 0) to open a gap for    | ``6``          |
+|                             | J gene.                            |                |
++-----------------------------+------------------------------------+----------------+
+| ``--j-gap-extend-penalty``  | Penalty (> 0) to extend a gap for  | ``6``          |
+|                             | J gene.                            |                |
++-----------------------------+------------------------------------+----------------+
+| ``--j-wordsize``            | Word size to find hotspots by      | ``7``          |
+|                             | BLAST for J gene.                  |                |
++-----------------------------+------------------------------------+----------------+
+| ``--j-evalue-cutoff``       | E-value                            | ``1e-5``       |
+|                             | threshold for assigning J gene.    |                |   
++-----------------------------+------------------------------------+----------------+
+| ``--v-motif``               | The regular expression pattern     | ``YYC``        |
+|                             | of the motif on V gene to identify |                |
+|                             | CDR3 segment.                      |                |
+|                             | (e.g, ``YYC`` ``[FY]YC`` )         |                |   
++-----------------------------+------------------------------------+----------------+
+| ``--j-motif``               | The regular expression pattern     | ``WG.G``       |
+|                             | of the motif on J gene to identify |                |
+|                             | CDR3 segment.                      |                |
+|                             | (e.g, ``WG.G`` ``FG.G`` ``G.G``)   |                |   
++-----------------------------+------------------------------------+----------------+
 
 
 
@@ -163,22 +163,20 @@ and the final results with PYDAIR format.
 
 
 
-+------------------------+------------+-----------------------------------------------------+
-| file                   | format     | contents                                            |
-+========================+============+=====================================================+
-| <prefix>.v.blast.txt   | TSV        | BLAST results for V gene.                           |
-+------------------------+------------+-----------------------------------------------------+
-| <prefix>.j.blast.txt   | TSV        | BLAST results for J gene.                           |
-+------------------------+------------+-----------------------------------------------------+
-| <prefix>.vj.pydair     | PYDAIR     | Intermediate reuslts (V and J has been idenfied).   |
-+------------------------+------------+-----------------------------------------------------+
-| <prefix>.unaligned.fa  | FASTA      | Unaligned region sequences that will be used for    |
-|                        |            | BLAST to identify D.                                |
-+------------------------+------------+-----------------------------------------------------+
-| <prefix>.d.blast.txt   | TSV        | BLAST results for D gene.                           |
-+------------------------+------------+-----------------------------------------------------+
-| <prefix>.vdj.pydair    | PYDAIR     | The final results of :command:`parse` mode.         |
-+------------------------+------------+-----------------------------------------------------+
++--------------------------+------------+-----------------------------------------------------+
+| File name                | Format     | File contents                                       |
++==========================+============+=====================================================+
+| *<prefix>*.v.blast.txt   | TSV        | BLAST results for V gene.                           |
++--------------------------+------------+-----------------------------------------------------+
+| *<prefix>*.j.blast.txt   | TSV        | BLAST results for J gene.                           |
++--------------------------+------------+-----------------------------------------------------+
+| *<prefix>*.unaligned.fa  | FASTA      | Unaligned region sequences that was used for        |
+|                          |            | BLAST to identify D.                                |
++--------------------------+------------+-----------------------------------------------------+
+| *<prefix>*.d.blast.txt   | TSV        | BLAST results for D gene.                           |
++--------------------------+------------+-----------------------------------------------------+
+| *<prefix>*.vdj.pydair    | PYDAIR     | The final results of :command:`parse` mode.         |
++--------------------------+------------+-----------------------------------------------------+
 
 
 
@@ -186,28 +184,28 @@ and the final results with PYDAIR format.
 stats action mode
 =================
 
+The :command:`stats` action mode summarizes the identification results
+and creates an HTML report.
+
 
 Usage
 ^^^^^
 
-Use ``-i`` to specify the PYDAIR format files generated by :command:`parse` action mode,
-use ``-n`` to assigne the sample names to each PYDAIR format file,
-and use ``-o`` to specify the prefix to save the summarized results.
-
 .. code-block:: bash
     
     pydair stats -i output1.pydair output2.pydair output3.pydair  \
-                 -n Fugu1 Fugu2 Fugu3                             \
-                 -o stats_result                                  \
-                 --contain_ambiguous_D
+                 -n Sample1 Sample2 Sample3                       \
+                 -o stats_result
 
+The three options, i.e., ``-i``, ``-n``, and ``-o``
+are required options.
 
 
 Option
 ^^^^^^
 
 +--------------------------------+------------------------------------+----------------+
-| options                        |                                    | defult         |
+| Options                        | Descriptions                       | Default        |
 +================================+====================================+================+
 | ``-i``                         | Path to ``PYDAIR`` format files.   |                |
 |                                | Multiple files should be separated |                |
@@ -219,14 +217,15 @@ Option
 +--------------------------------+------------------------------------+----------------+
 | ``-o``                         | Prefix for writting results.       |                |
 +--------------------------------+------------------------------------+----------------+
-| ``--contain_ambiguous_D``      | If ``True``, summarize all         | ``True``       |
+| ``--discard-ambiguous-D``      | If ``False``, summarize all        | ``False``      |
 |                                | sequences regardless the D segment |                |
 |                                | is identified or not.              |                |
-|                                | If ``False``, summarize only the   |                |
-|                                | seqeunces with identified D        |                |
+|                                | If ``True``, the summarization is  |                |
+|                                | performed after discarding         |                |
+|                                | sequences with ambiguous D         |                |
 |                                | segment.                           |                |
 +--------------------------------+------------------------------------+----------------+
-| ``--productive_only``          | If ``False``, summarize all        | ``False``      |
+| ``--productive-only``          | If ``False``, summarize all        | ``False``      |
 |                                | sequences regardless productive or |                |
 |                                | nonproductive sequences.           |                |
 |                                | If ``True``, summarize only the    |                |
@@ -238,9 +237,6 @@ Option
 +--------------------------------+------------------------------------+----------------+
 
 
-Note that, the productive sequence is defined as the sequence without any stop codons,
-whereas the nonproductive sequence is defined as the sequence with at least one stop codons.
-
 
 
 Output
@@ -248,7 +244,7 @@ Output
 
 
 +-------------------------------------+------------+-----------------------------------------------------+
-| file                                | format     | contents                                            |
+| File name                           | Format     | File contents                                       |
 +=====================================+============+=====================================================+
 | <prefix>.v.freq.tsv                 | TSV        | V gene usage frequency.                             |
 +-------------------------------------+------------+-----------------------------------------------------+
@@ -285,24 +281,26 @@ In PYDAIR format, an entry is begin with ``#BEGIN`` and finished with ``#END``.
 .. code-block:: text
     
     #BEGIN
-    QN M03400:8:000000000-ADYYJ:1:1101:12827:2301
-    VN v1.14
-    DN .
-    JN Jm1
-    OP 1
-    OC _M____;**__**;**__*M
-    QA                  CTGACCCAGTCTGAACCAGTGGTTAAAAGACCTGGAGAATCTCACACACTGACCTGTTCAGCCTCTGGATTCACATTCAGCAGCTATGGGATGAACTGGGTCAGACAGGCTCCTGGAAAAGGACTGGAGTGGATTGCTTATATCTAC------AGCAGCACATACTACTCTGAGTCAGTCAAAGGCCGGTTTAACATCTCCAGAGATAACAACAGAGCACAGCTGAATCTGCATATAAAAAGCCTGAAGACTGAAGATACTGCGGGTTATTATTGTGCTCGAACTGGAAAAGAATACCTTGACTACTGGGGGAAAGGCACAACAGTTACAGTAACGTCTGCAACACCCAAAGCCCCTTCTTGGTTTCCATTGATACAATGCGGAACTGGGACTGGAACCCTGGTCACTCTCGGATGTTTGGCCGCCGACTTCACGCCATCGGACCTAACCTACACCTGGAGAAAAGACGGAGTCGATCTGAAAGACTTCATTCAGTACCCTCCAACCACGAACG
-    VA GTGTTGATGCTCAGACTCTGACCCAGTCTGAACCAGTGGTTAAAAGACCTGGGGAATCTCACACACTGACCTGTTCAGCCTCTGGATTCACATTCAGCAGCTACTGGATGGTCTGGGTCAGACAGGCTCCTGGAAAAGGACTGGAGTGGATCGCTTATATCACCACCAGTAGCAGCCCATACTACTCTGAGTCAGTCAAAGGCCGGTTTATCATCTCCAGAGACAACAACAGAGCACAGCTGAATCTGCAGATTAACAGCCTGAAGACTGAAGATTCTGCTGTTTATTATTGTGCTCGAGAG
-    JA                                                                                                                                                                                                                                                                                                               TACTACGCATACTTTGACTACTGGGGGAAAGGAACAACAGTTACAGTAACATCT
-    UA                                                                                                                                                                                                                                                                                                             CTGGAAAAGA
-    CA                                                                                                                                                                                                                                                                                                      GCTCGAACTGGAAAAGAATACCTTGACTACTGG
-    #CDR3AA ARTGKEYLDYW
+    QN Seq-0-25045;
+    VN J03617|IGHV3-53*03|Homo
+    DN X13972|IGHD5-12*01|Homo
+    JN J00256|IGHJ3*01|Homo
+    OP .
+    QA           CCGTGGAGTCTGGAGGAGGCTTGATCCAGCCTGAGGGGTCCCTGAGACTCTCCCATGCAGCCTCTGGGTTCACTGTCAGTAGAAACTACATGAGCTGGGTCCGCCAGCCTCCAGGGAAGGGGCTGGAGTGGGTCTCAGTCTTCTATTTATAGCGGTGGTAGCACATACTACGCAGACTCTGTGAAGGGCCGATTCACCATCTCCTGAGACTATTCCAAGAACACGCTGTATCTTCAAATGAACAGCCTGAGAGCCGAGGACACGGCCGTGTATTACTGTGCTAGAACTATAGTGGCTACGATTTTTTTATGACTGGGGCCAAGGGACAATGGTCAC
+    VA GAGGTGCAGCTGGTGGAGTCTGGAGGAGGCTTGATCCAGCCTGGGGGGTCCCTGAGACTCTCCTGTGCAGCCTCTGGGTTCACCGTCAGTAGCAACTACATGAGCTGGGTCCGCCAGCCTCCAGGGAAGGGGCTGGAGTGGGTCTCAGT----TATTTATAGCGGTGGTAGCACATACTACGCAGACTCTGTGAAGGGCCGATTCACCATCTCCAGAGACAATTCCAAGAACACGCTGTATCTTCAAATGAACAGCCTGAGAGCCGAGGACACGGCCGTGTATTACTGTGCTAGGGA
+    JA                                                                                                                                                                                                                                                                                                                    TGATGCTTTTGATGTCTGGGGCCAAGGGACAATGGTCACCGTCTCTTCAG
+    UA                                                                                                                                                                                                                                                                                                        ACTATAGTGGCTACGATT
+    CA                                                                                                                                                                                                                                                                                                  GCTAGAACTATAGTGGCTACGATTTTTTTATGAC
+    VD GGA
+    JD TGATGC
+    VJ AACTATAGTGGCTACGATT
+    #CDR3AA ARTIVATIFL*
     #AL QSTART  QEND    SSTART  SEND    IDENTITY    SCORE
-    AL QV 1 276 18  299 91.844  1.29e-100
-    AL QD . .   .   .   .   .
-    AL QJ 288   333 9   54  93.478  5.62e-15
-    AL QU 277   287 .   .   .   .
-    AL QC 270   303 .   .   .   .
+    AL QV 3 284 13  290 96.099  7.10e-112
+    AL QD . .   .   .   100.000 0.003
+    AL QJ 304   336 7   39  93.939  1.34e-09
+    AL QU 285   303 .   .   .   .
+    AL QC 279   313 .   .   .   .
     #END
 
 
@@ -327,9 +325,8 @@ which gives additional information but not required.
 +-----------+------------------------------------------------+
 | ``OP``    | The start position of reading frame of         |
 |           | the query sequence.                            |
-+-----------+------------------------------------------------+
-| ``OC``    | The information about start codons and         |
-|           | stop codons.                                   |
+|           | ``.`` indicates that the sequence is           |
+|           | unproductive.                                  |
 +-----------+------------------------------------------------+
 | ``QA``    | The aligned sequence of query.                 |
 +-----------+------------------------------------------------+
@@ -340,6 +337,14 @@ which gives additional information but not required.
 | ``UA``    | The aligned sequence of un-aligned region.     |
 +-----------+------------------------------------------------+
 | ``CA``    | The aligned sequence of CDR3.                  |
++-----------+------------------------------------------------+
+| ``VD``    | Deleted bases at the 5'-end of V gene.         |
++-----------+------------------------------------------------+
+| ``JD``    | Deleted bases at the 3'-end of J gene.         |
++-----------+------------------------------------------------+
+| ``VJ``    | Inserted bases between 5'-end of V and 3'-end  |
+|           | of J gene. This segment contains D segment,    |
+|           | and this segment is containted in CDR3 segment.|
 +-----------+------------------------------------------------+
 | ``AL``    | The inforamtion about BLAST results and        |
 |           | alignment information. This line code          |

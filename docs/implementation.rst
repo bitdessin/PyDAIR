@@ -14,16 +14,19 @@ parse action
 
 :command:`parse` command is used to identify V, D, J, and CDR3 segments by the five steps.
 
-#. To identify V segment,
+#. **V segment identification** To identify V segment,
    PyDAIR aligns each IgH sequence against user-defined BLAST database of V gene with :command:`blastn`.
    The best matching V gene is selected.
-#. To identify J segment,
+#. **J segment identification** To identify J segment,
    PyDAIR aligns each IgH sequence against user-defined BLAST database of J gene with :command:`blastn`.
    The best matching J gene is selected.
-#. To identify CDR3 segment, PyDAIR search for YYC and WGxG motifs using regular expression matching.
-#. To identify D segment,
-   PyDAIR aligns each each CDR3 segment sequence against user-defined BLAST database of D gene with :command:`blastn`.
-   The best matching J gene is selected.
+#. **CDR3 segment identification** To identify CDR3 segment,
+   PyDAIR search for YYC and WGxG motifs using regular expression matching.
+#. **Insertion and deletion detection**  To identify insertion and deletion on V-D and D-J junctions,
+   PyDAIR calculates the number of unaligned bases from the end of V and the start of J genes.
+#. **D segment identification** To identify D segment,
+   PyDAIR aligns the each insertion segment sequence against user-defined BLAST database of D gene with :command:`blastn`.
+   The best matching D gene is selected.
 #. To determine open reading frame (ORF),
    PyDAIR searches for the start codon (ATG) and the stop codons (TAG, TAA, and TGA).
    PyDAIR tries the three possible reading frames to determine ORF.
@@ -39,10 +42,10 @@ parse action
 stats action
 ============
 
-:command:`stats` command is to calculate V, D, and J segment usage frequencies,
-and to summarize the distribution of length of CDR3 segment.
-The analysis results are saved into TSV (tab-delimited) files.
-In addition, the analysis results are visualized with some charts in an HTML report.
+:command:`stats` command is used for summarizing V, D, and J segment usage frequencies,
+and the distribution of length of CDR3 segment.
+The summarized results are saved into TSV (tab-delimited) files.
+In addition, the summarized results are visualized with some charts in an HTML report.
 
 
 
