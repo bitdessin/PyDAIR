@@ -598,8 +598,8 @@ class PyDAIRStats:
                             freq.j.replace(np.nan, 'NA')
             sample_freqs.append(freqval)
             sample_names.append(sample.name)
-        
         freq_dataframe = pd.concat(sample_freqs, axis = 1)
+        freq_dataframe.columns = sample_names
         
         vdj_v = []
         vdj_d = []
@@ -609,8 +609,13 @@ class PyDAIRStats:
             vdj_v.append(vv)
             vdj_d.append(dd)
             vdj_j.append(jj)
- 
-        freq_vdjcmbn = pd.DataFrame({'v': vdj_v, 'd': vdj_d, 'j': vdj_j}).replace('NA', np.nan)
+        
+        freq_vdjcmbn = pd.concat([pd.Series(vdj_v), pd.Series(vdj_d), pd.Series(vdj_j)], axis = 1).replace('NA', np.nan)
+        freq_vdjcmbn.columns = ['V', 'D', 'J']
+        
+        freq_vdjcmbn.reset_index(drop = True, inplace = True)
+        freq_dataframe.reset_index(drop = True, inplace = True)
+        
         freq = pd.concat([freq_vdjcmbn, freq_dataframe], axis = 1)
         return freq
     
