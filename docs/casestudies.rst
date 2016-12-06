@@ -368,8 +368,8 @@ to removed the low quality reads.
     fastqc ./data/ERR849859.fastq -o ./data/ -q --nogroup
     fastqc ./data/ERR849860.fastq -o ./data/ -q --nogroup
     
-    trimmomatic SE -phred33 ./data/ERR849859.fastq ./data/ERR849859.qc.fastq HEADCROP:10 TRAILING:20 MINLEN:100
-    trimmomatic SE -phred33 ./data/ERR849860.fastq ./data/ERR849860.qc.fastq HEADCROP:10 TRAILING:20 MINLEN:100
+    trimmomatic SE -phred33 ./data/ERR849859.fastq ./data/ERR849859.qc.fastq HEADCROP:10 TRAILING:30 MINLEN:300
+    trimmomatic SE -phred33 ./data/ERR849860.fastq ./data/ERR849860.qc.fastq HEADCROP:10 TRAILING:30 MINLEN:300
     
     fastqc ./data/ERR849859.qc.fastq -o ./data/ -q --nogroup
     fastqc ./data/ERR849860.qc.fastq -o ./data/ -q --nogroup
@@ -496,13 +496,10 @@ to extract the IgH sequences according to the primers.
                  --discard-untrimmed -m 300 -o ./data/${sid}.p.fastq -O 10 -e 0.3 \
                  --info-file ./results/${sid}.primers.info.txt \
                  ./data/${sid}.fastq
-
-
-.. code-block:: bash
-        
         python ./bin/read_classify.py ./results/${sid}.primers.info.txt \
                                   ./data/${sid}.fastq \
                                   ./data/${sid}.x
+    done
 
 
 High-throughput sequencing data generally contains low qualities reads.
@@ -513,11 +510,18 @@ to removed the low quality reads.
 
 .. code-block:: bash
     
+    for sid in ${sra[@]}
+    do
         trimmomatic SE -phred33 ./data/${sid}.x.igm.fq \
-                   ./data/${sid}.igm.qc.fq TRAILING:30 MINLEN:100
+                   ./data/${sid}.igm.qc.fq TRAILING:30 MINLEN:200
         trimmomatic SE -phred33 ./data/${sid}.x.igz.fq \
-                   ./data/${sid}.igz.qc.fq TRAILING:30 MINLEN:100
+                   ./data/${sid}.igz.qc.fq TRAILING:30 MINLEN:200
     done
+
+
+
+Convert FASTQ format to FASTA format.
+
 
 .. code-block:: bash
        
@@ -568,7 +572,7 @@ with :command:`awk` and "command:`sed` commands.
                     ./results/SRR017340.igz.vdj.pydair ./results/SRR017341.igz.vdj.pydair \
                  -n SRR017328 SRR017329 SRR017330 SRR017331 SRR017332 SRR017333 SRR017334 \
                     SRR017335 SRR017336 SRR017337 SRR017338 SRR017339 SRR017340 SRR017341 \
-                 -o ./results/stats.igz --estimate-vdj-combination
+                 -o ./results/stats.igz
     
     
 
