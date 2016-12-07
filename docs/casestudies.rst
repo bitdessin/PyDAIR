@@ -94,8 +94,6 @@ command to identify V, D, J, and CDR3 segments.
 
 
 The result will be saved into :file:`results/simdata.vdj.pydair`.
-In addition, the digest version of result will be saved into
-:file:`results/simdata.vdj.pydair.simple` with TSV format.
 
 
 Then, we use :command:`pydair stats` to summarize the anlaysis results.
@@ -105,14 +103,14 @@ Then, we use :command:`pydair stats` to summarize the anlaysis results.
     
     pydair stats -i ./results/simdata.vdj.pydair \
                  -n simdata \
-                 -o ./results/stats \
+                 -o ./results/simdata \
                  --estimate-vdj-combination
 
 
 
 The summarized results are saved into :file:`./restuls` directory with
-the prefix of :file:`stats`.
-The HTML report saved in :file:`./result/stats.report.html` (:download:`simdata_report.html`).
+the prefix of :file:`simdata`.
+The HTML report saved in :file:`./result/simdata.report.html` (:download:`simdata.report.html`).
 
 
 
@@ -292,15 +290,15 @@ We use :command:`pydair parse` command to assign VDJ genes and determine CDR3 se
 
 
 Then, we use :command:`pydair stats` command to summarize the analysis results.
-All summarized data are saved into :file:`results` directory with prefix `stats`.
-and the summarized report were created (:download:`humanhiv_report.html`).
+All summarized data are saved into :file:`results` directory with prefix `hiv`.
+and the summarized report were created (:download:`hiv.report.html`).
 
 
 .. code-block:: bash
     
     pydair stats -i ./results/SRR654171.vdj.pydair ./results/SRR654169.vdj.pydair \
                  -n N152 IAVI84 \
-                 -o ./results/stats \
+                 -o ./results/hiv \
                  --estimate-vdj-combination
 
 
@@ -406,13 +404,13 @@ We use :command:`pydair parse` command to assign VDJ genes and determine CDR3 se
 
 Then, we use :command:`pydair stats` command to summarize the analysis results.
 All summarized data are saved into :file:`results` directory with prefix `stats`.
-
+The HTML report saved in :file:`./result/mouse.report.html` (:download:`mouse.report.html`).
 
 .. code-block:: bash
     
     pydair stats -i ./results/ERR849859.vdj.pydair ./results/ERR849860.vdj.pydair \
                  -n ERR849859 ERR849860 \
-                 -o ./results/stats \
+                 -o ./results/mouse \
                  --estimate-vdj-combination
     
 
@@ -561,7 +559,7 @@ with :command:`awk` and "command:`sed` commands.
                     ./results/SRR017340.igm.vdj.pydair ./results/SRR017341.igm.vdj.pydair \
                  -n SRR017328 SRR017329 SRR017330 SRR017331 SRR017332 SRR017333 SRR017334 \
                     SRR017335 SRR017336 SRR017337 SRR017338 SRR017339 SRR017340 SRR017341 \
-                 -o ./results/stats.igm --estimate-vdj-combination
+                 -o ./results/zebrafish_igm --estimate-vdj-combination
     
     pydair stats -i ./results/SRR017328.igz.vdj.pydair ./results/SRR017329.igz.vdj.pydair \
                     ./results/SRR017330.igz.vdj.pydair ./results/SRR017331.igz.vdj.pydair \
@@ -572,12 +570,12 @@ with :command:`awk` and "command:`sed` commands.
                     ./results/SRR017340.igz.vdj.pydair ./results/SRR017341.igz.vdj.pydair \
                  -n SRR017328 SRR017329 SRR017330 SRR017331 SRR017332 SRR017333 SRR017334 \
                     SRR017335 SRR017336 SRR017337 SRR017338 SRR017339 SRR017340 SRR017341 \
-                 -o ./results/stats.igz
+                 -o ./results/zebrafish_igz
     
     
 
-The HTML reports are saved in :file:`./result/stats.igm.report.html` (:download:`zebrafish_igm_report.html`),
-and :file:`./result/stats.igz.report.html` (:download:`zebrafish_igz_report.html`).
+The HTML reports are saved in :file:`./result/zebrafish_igm.report.html` (:download:`zebrafish_igm.report.html`),
+and :file:`./result/zebrafish_igz.report.html` (:download:`zebrafish_igz.report.html`).
 
 
 
