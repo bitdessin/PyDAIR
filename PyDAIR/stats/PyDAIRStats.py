@@ -13,14 +13,15 @@ from PyDAIR.io.PyDAIRIO import *
 
 
 class PyDAIRDiversity:
-    """Class for saving diversity study results.
+    """PyDAIRDiversity class.
     
+    A class is used for saving the results of diversity analysis.
     """
     
     def __init__(self):
         """PyDAIRDiversity class initialize method.
         
-        Set up ``None`` object in default.
+        Set up `None` object in default.
         """
         
         self.rarefaction        = {'vdj': None, 'cdr3': None}
@@ -30,12 +31,12 @@ class PyDAIRDiversity:
 
 
 class PyDAIRStatsRecord:
-    """The class for storing the summarised PyDAIR data.
+    """PyDAIRStatsRecord class.
     
-    One PyDAIR file should has one BLGIHStatsRecord class object. If there
-    are more than one PyDAIR files, use a number of PyDAIRStatsRecord class
-    objects to save these data, and save all PyDAIRStatsRecord class objects
-    into PyDAIRStatsRecords class.
+    One PYDAIR file should has one **BLGIHStatsRecord** class object. If there
+    are more than one PYDAIR files, use a number of **PyDAIRStatsRecord** class
+    objects to save these data, and save all **PyDAIRStatsRecord** class objects
+    into **PyDAIRStatsRecords** class.
     This class requires the list of V gene names, D gene names, J gene names,
     CDR3 nucleotide and protein seuqence, and the stop codon tags.
     """
@@ -57,10 +58,14 @@ class PyDAIRStatsRecord:
             v_del (list): Deleted nucleotides of 3'-end V gene.
             j_del (list): Deleted nucleotides of 5'-end J gene.
             vj_ins (list): Inserted nucleotides.
-            discard_ambiguous_D (bool): If ``True``, ambiguous D gene will be discarded before analysis.
-            productive_only (bool): If ``True``, analysis sequence with stop codons.
+            discard_ambiguous_D (bool): Default is `False`. If `True`, the sequences
+                                        with ambiguous D segment will be discarded before
+                                        summarization.
+            productive_only (bool): Default is `False`. If `True`, the sequences contained
+                                    more than one stop codon will be discarded before
+                                    summarization.
+        
         """
-        # calculate the number of entries
         
         # set default data
         self.name = name
@@ -154,11 +159,13 @@ class PyDAIRStatsRecord:
             freq.index = ['ambiguous' if (type(_i) == np.float and np.isnan(_i)) else _i for _i in freq.index]
             freq = freq.sort_index(ascending = True)
         elif data_type == 'cdr3_prot_len':
-            freq = self.cdr3.prot_len.value_counts(dropna = False)
+            # set dropna as True to remove the 0-length CDR3
+            freq = self.cdr3.prot_len.value_counts(dropna = True)
             freq.index = ['ambiguous' if (type(_i) == np.float and np.isnan(_i)) else _i for _i in freq.index]
             freq = freq.sort_index(ascending = True)
         elif data_type == 'cdr3_nucl_len':
-            freq = self.cdr3.nucl_len.value_counts(dropna = False)
+            # set dropna as True to remove the 0-length CDR3
+            freq = self.cdr3.nucl_len.value_counts(dropna = True)
             freq.index = ['ambiguous' if (type(_i) == np.float and np.isnan(_i)) else _i for _i in freq.index]
             freq = freq.sort_index(ascending = True)
         elif data_type == 'v':
@@ -498,12 +505,9 @@ class PyDAIRStats:
                 orf.append(igseq.query.orf)
                 
                 cdr3_data = igseq.get_cdr3_data()
-                if cdr3_data.nucl_seq is None:
-                    cdr3_data.nucl_seq = ''
-                    cdr3_data.prot_seq = ''
-                if '*' in cdr3_data.prot_seq:
-                    cdr3_data.nucl_seq = ''
-                    cdr3_data.prot_seq = ''
+                if cdr3_data.nucl_seq is not None and '*' in cdr3_data.prot_seq:
+                    cdr3_data.nucl_seq = None
+                    cdr3_data.prot_seq = None
                 cdr3_prot_seq.append(cdr3_data.prot_seq)
                 cdr3_nucl_seq.append(cdr3_data.nucl_seq)
                 
