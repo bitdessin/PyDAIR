@@ -1,22 +1,20 @@
 class PyDAIRUtils:
-    """Utilis for PyDAIR application.
-    
-    Contains some convinient methods that are used in PyDAIR application.
+    """PyDAIRUtils class.
+        
+    PyDAIRUtils class contains some convinient methods that are
+    used in PyDAIR application.
     """
     
     def dot_to_none(self, data):
-        """Change ``.`` to ``None`` object.
+        """Change `.` to `None` object.
         
         Args:
-            data (str, list): a string or list class object, that may contain ``.``.
+            data (str): A string or list class object, that may contain `.`.
         
         Returns:
-            The input ``data`` object is returned. The elements of ``.`` in ``data``
-            has been changed to ``None`` object.
+            The input **data** object is returned. However, the elements of `.`
+            in **data** object has been changed to `None` object.
         
-        Change all ``.`` to ``None`` object in the given a string or list class object.
-        The ``.`` is recoreded in PYDAIR format flat file, therefore, the ``.`` is 
-        converted to ``None`` object during parsing flat file.
         """
         
         if isinstance(data, list):
@@ -33,21 +31,20 @@ class PyDAIRUtils:
     
     
     def none_to_dot(self, data, convert_to_str = False, empty_to_dot = True):
-        """Changes ``None`` object to ```` (null character) or ``.``.
+        """Change `None` object to null character or `.`.
         
         Args:
-            data (list): A string or a list class object that may contain ``None`` object.
-            convert_to_str (bool): If ``True``, then convert object to string.
-            empty_to_dot (bool): If ``True``, then convert  ```` to ``.``.
-                                 Default is ``True``.
+            data (str): A string or a list class object that may contain `None` object.
+            convert_to_str (bool): Default is `False`. If `True`, convert any object
+                                   (may be integer or others) to string object.
+            empty_to_dot (bool): Default is `True`. If `True`, convert null
+                                 character to `.`.
         
         Returns:
-            The input ``data`` object is returned. The elements of ``None``
-            has been changed to ``.`` object.
+            The input **data** object is returned. The elements of `None`
+            has been changed to null character (when **empty_to_dot =** `False`)
+            or `.` (when **empty_to_dot =** `True`) object.
         
-        Change all ``None`` object to ``.`` in the given a string or list class object.
-        The ``data`` may contains the object that is not string or None, at that time,
-        specify ``convert_to_str = True`` to forcibly convert object into string.
         """
         
         if isinstance(data, list):

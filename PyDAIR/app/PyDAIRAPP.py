@@ -21,11 +21,15 @@ logging.basicConfig(level = logging.INFO, format = '%(levelname)-8s %(message)s'
 
 
 class PyDAIRAPPParseSeq:
-    """Application class for parsing Rep-Seq sequences.
+    """PyDAIRAPPParseSeq class.
     
     This class implements the methods to parse Rep-Seq sequencces.
-    Briefly, it provides functions to identify V, D, and J genes that
-    are composed of Rep-Seq seqeunces, and to determine CDR3 sequences.
+    It provides functions of
+    (i) V, D, and J segment identification;
+    (ii) CDR3 segment identificaiton;
+    (iii) 3'-end V deletion detection;
+    (iv) 5'-end J deletion detection;
+    and (v) insertion during VDJ junctions detection.
     """
     
     def __init__(self, args):
@@ -33,14 +37,14 @@ class PyDAIRAPPParseSeq:
         
         Args:
             args (PyDAIRParseSeqArgs): PyDAIRParseSeqArgs class object that contains 
-                                       path of Rep-Seq data and BLAST parameters.
+                                       path to Rep-Seq data and BLAST parameters.
         
         >>> valign = PyDAIRBlastArgs('balstdb_v', match = 5, mismatch = 6, gapopen = 4,
-        >>>                          gapextend = 4, wordsize = 21, eval_cutoff = 1e10)
+        >>>                          gapextend = 4, wordsize = 21, eval_cutoff = 1e-90)
         >>> dalign = PyDAIRBlastArgs('balstdb_d', match = 5, mismatch = 6, gapopen = 4,
-        >>>                          gapextend = 4, wordsize = 2, eval_cutoff = 1e3)
+        >>>                          gapextend = 4, wordsize = 2, eval_cutoff = 1e-3)
         >>> jalign = PyDAIRBlastArgs('balstdb_j', match = 5, mismatch = 6, gapopen = 4,
-        >>>                          gapextend = 4, wordsize = 9, eval_cutoff = 1e10)
+        >>>                          gapextend = 4, wordsize = 9, eval_cutoff = 1e-10)
         >>> args = PyDAIRParseSeqArgs('fugu', q = 'q.fa', v = 'v.fa', d = 'd.fa',
         >>>                           j = 'j.fa', o = 'out_prefix', f = 'pydair',
         >>>                           valign = valign, dalign = dalign, jalign = jalign)
@@ -79,15 +83,15 @@ class PyDAIRAPPParseSeq:
     def blast(self, gene = None, program_path = ''):
         """Execute BLAST.
         
-        This method internally calls ``blastn`` program to align Rep-Seq sequencse
-        against the germeline (``gene``) database.
+        This method internally calls `blastn` program to align Rep-Seq sequences
+        against the germeline (**gene**) database.
         The BLAST result is saved in the specified output directory with TSV format.
         The BLAST parameters are given by PyDAIRBlastArgs class object through
-        ``__get_blast_params`` method.
+        `__get_blast_params` method.
         
         Args:
-            gene (str): Specified ``v``, ``d``, or ``j`` for executing BLAST.
-            program_path (str): A path to ``blastn`` programa.
+            gene (str): Specified `v`, `d`, or `j` for executing BLAST.
+            program_path (str): A path to `blastn` programa.
         
         """
         
@@ -205,16 +209,17 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
         
     
     def parse_VJ(self):
-        """Identify V and J genes in Rep-Seq data.
+        """Identify V and J segments.
         
-        Identify V and J genes that used in Rep-Seq data according to the BLAST
+        Identify V and J segments that used in Rep-Seq data according to the BLAST
         outputs of V and J genes.
         This method is performed as the three steps:
-        (i) execute BLAST against V gene and identify V gene that is used in Rep-Seq sequences;
-        (ii) execute BLAST against J gene and identify J gene that is used in Rep-Seq sequences;
-        and (iii) save the results into IgSeq class object.
-        BLAST results of V and J genes are saved in the specified directory.
+        (i) execute BLAST against V gene database and identify V segment;
+        (ii) execute BLAST against J gene database and identify J segment;
+        and (iii) save the results into **IgSeq** class object.
+        
         """
+        
         const_tag_obj = IgConstantTag(self.__v_motif, self.__j_motif)
         
         
@@ -339,19 +344,11 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
         
         Write unaligned sequences or CDR3 sequences into specified file
         with FASTA format.
-        One of `unaligned_seq` and  `cdr3` can be specified to ``seq_type``.
-        If ``unaligned_seq`` is specified, this method saves the unaligned
-        sequences into file.
-        If ``cdr3`` is specified, this method saves the CDR3 sequences into
-        file.
         
         Args:
-            seq_type (str): A sequence type to save. One of ``unaligned_seq``
-                            or ``cdr3`` can be specified.
+            seq_type (str): A sequence type to save. One of `unaligned_seq`
+                            or `cdr3` can be specified.
             mol_type (str): A molecular type. Only 'nucl' is supported.
-        
-        Raises:
-            ValueError: An error occured when specifiy unsupported ``seq_type``.
         
         """
         
@@ -419,12 +416,12 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
     
     
     def parse_VDJ(self):
-        """Identify D genes in Rep-Seq data.
+        """Identify D segment.
         
-        This method should run after ``parse_VJ``.
-        This method is performed as two steps;
-        (i) execute BLAST against D gene and identify D gene that is used in Rep-Seq sequences;
-        and (ii) merging the results of D identification into the results of ``parse_VJ``.
+        This method should run after **parse_VJ**.
+        This method is performed as two steps:
+        (i) execute BLAST against D gene database
+        and (ii) identify D segment.
         """
         
         # create dictionary from FASTA file (only D gene)
@@ -458,7 +455,7 @@ blastn -db %s -query %s -out %s -word_size %s -reward %s -penalty %s -gapopen %s
 
 
 class PyDAIRAPPStats:
-    """Application class for statistical analysis.
+    """PyDAIRAPPStats class.
     
     This class implements the methods to summarize parsed results.
     """
@@ -467,10 +464,7 @@ class PyDAIRAPPStats:
         """PyDAIRAPPStats class initialize method.
         
         Args:
-            args (PyDAIRStatsArgs): PyDAIRStatsArgs class object that contains
-                                    path of analyzed results, and the path to
-                                    save the statistical analysis results.
-        
+            args (PyDAIRStatsArgs): PyDAIRStatsArgs class object.
         """
         
         self.__args = args
@@ -524,11 +518,17 @@ class PyDAIRAPPStats:
     
     
     def write_summary(self, data_types = None):
-        """Write summarized data.
+        """Write summarized results.
         
-        data_types (list): Data type. If ``None``, the write all data types.
+        data_types (list): One of `v`, `d`, `j`, `vdj`, `cdr3_nucl`,
+                           `cdr3_prot`, `v_del_len`, `j_del_len`,
+                           and `vj_ins_len` can be specified.
+                           If `None` is given, then write
+                           all **data_types** results.
         
+        Write the summarized into text file with TSV format.
         """
+        
         if data_types is None:
             data_types = self.__o_path.keys()
         
@@ -552,11 +552,6 @@ class PyDAIRAPPStats:
             else:
                 with open(self.__o_path[data_type][self.__sample_names[sample_i]], 'w') as statsoutfh:
                     statsoutfh.write('Not avaliable')
-        
-    
-    
-    
-    
     
     
         
@@ -564,7 +559,7 @@ class PyDAIRAPPStats:
     def create_report(self):
         """Create report.
         
-        Create HTML report with several statistical analysis results.
+        Create an HTML report.
         """
         
         self.report.render(self.__o_report)

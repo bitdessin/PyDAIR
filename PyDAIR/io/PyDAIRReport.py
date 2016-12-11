@@ -9,19 +9,23 @@ from jinja2 import Environment, FileSystemLoader
 
 
 class PyDAIRReport: 
-    """PyDAIR report render class.
+    """PyDAIRReport class.
     
+    This class renders the anaysis results that obtained from **PyDAIRStats**
+    into an HTML template.
+    It is expected to use **PyDAIRReport** class methods after analyzing data
+    in PYDAIR format file.
     
-    This class renders the anaysis results that obtained from PyDAIRStats into HTML template.
-    It is expected to use PyDAIRReport class methods after analyzing data in PYDAIR format file.
     """
     
     def __init__(self, stats, file_path):
         """PyDAIRReport class initialize method.
         
         Args:
-            stats (PyDAIRStats): A PyDAIRStats class object.
-            file_path (dictionary): A dictionary to the summary files.
+            stats (PyDAIRStats): A **PyDAIRStats** class object.
+            file_path (dictionary): A dictionary that contains the path
+                                    to the summary files.
+        
         """
         
         self.__tmpl_path = str(os.path.dirname(__file__)) + '/../templates'
@@ -41,6 +45,7 @@ class PyDAIRReport:
         
         Render all analysis results into HTML template using Jinja2.
         The template (report.html) is saved in the templates directory of this package.
+        
         """
         
         report_data = {}
@@ -110,11 +115,7 @@ class PyDAIRReport:
             
         report_data['rare_stats'] = rare_stats
         
-        
-        
-        
         html = self.__tmpl.render(report_data)
-        
         report_html = open(file_path, 'w')
         report_html.write(html.encode('utf-8'))
         report_html.close()

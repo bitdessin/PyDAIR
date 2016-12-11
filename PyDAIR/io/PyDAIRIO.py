@@ -9,7 +9,7 @@ from PyDAIR.seq.IgSeq import *
 
 
 class PyDAIRIO: 
-    """PyDAIR Input/Output interface class.
+    """PyDAIRIO class.
     
     This class implements the input/output methods to handle PYDAIR format file.
     """
@@ -19,7 +19,7 @@ class PyDAIRIO:
         
         Args:
             pydair_file_path (str): A file path to open or write.
-            open_mode (str): A character (``r``, ``w`` or ``a``) to specify open mode.
+            open_mode (str): A character (`r`, `w` or `a`) to specify open mode.
         
         Set up file path, open mode, and file format.
         After setting, the method opens the file hanld.
@@ -45,13 +45,13 @@ class PyDAIRIO:
     
     
     def write(self, igseq):
-        """Write ``IgSeq`` objects to a file.
+        """Write **IgSeq** objects to a file.
         
         Args:
             igseq (list): A list of IgSeq objects.
         
-        Write a list of IgSeq object to a file.
-        It is expected to use ``close`` method to close the file handle after writting.
+        Write a list of **IgSeq** object to a file.
+        It is expected to use `close` method to close the file handle after writting.
         """
         
         if (not isinstance(igseq, list)) and (not isinstance(igseq, tuple)):
@@ -159,7 +159,8 @@ AL QC %s\t%s\t%s\t%s\t%s\t%s
     def next(self):
         """Return the next IgSeq object from the iterator.
         
-        Return the next IgSeq object during parsing PYDAIR format file with ``parse`` method.
+        Return the next **IgSeq** object during parsing PYDAIR format
+        file with `parse` method.
         """
         
         return self.__next__()
@@ -168,9 +169,9 @@ AL QC %s\t%s\t%s\t%s\t%s\t%s
     def parse(self):
         """Parse PYDAIR format file into an iterator returning IgSeq object.
         
-        Parse PYDAIR format file into an iterator returning IgSeq object.
-        Typical usage is to loop over the records with ``for`` statement.
-        It is expected to use ``close`` method to close the file handle after parsing.
+        Parse PYDAIR format file into an iterator returning **IgSeq** object.
+        Typical usage is to loop over the records with `for` statement.
+        It is expected to use `close` method to close the file handle after parsing.
         
         >>> pydairio = PyDAIRIO('path_to_file', 'r')
         >>> for igseq in pydairio.parse():
