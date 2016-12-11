@@ -1,15 +1,7 @@
 from setuptools import setup
-#from setuptools import find_packages
 import os
 
 
-
-#try:
-#    import pypandoc
-#    read_md = lambda f: pypandoc.convert(f, 'rst')
-#except ImportError:
-#    print('Warning: pypandoc module not found.')
-#    read_md = lambda f: open(f, 'r').read()
 
 
 # PyDAIR version

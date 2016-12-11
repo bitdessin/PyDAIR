@@ -7,9 +7,17 @@
 PyDAIR
 ======
 
-PyDAIR is a tool for diversity analysis of Ig-Seq data.
-The main functions of PyDAIR are the identification of VDJ genes and determination of CDR3 regions.
 
-- Project page: `PyDAIR <http://bioinfoteam.org/PyDAIR>`_
-- PyPI package: `PyPI <https://pypi.python.org/pypi/PyDAIR/>`_
+Sequencing immunoglobulin using high-throughput sequencing platform (Ig-Seq)
+enables to snapshot the adaptive immune repertoires,
+giving us the insights to better understanding immune responses in health and disease.
+Large amounts of raw data produced by Ig-Seq require effective ways for anlaysis.
+PyDAIR is a tool that aims to identify V, D, J and CDR3 segments,
+and detects insertions and deletions on V-D and D-J junctions.
+
+
+* Project page: `PyDAIR <http://bioinfoteam.org/pydair/>`_
+* PyPI package: `PyPI <https://pypi.python.org/pypi/PyDAIR/>`_
+* Source code: `GitHub <https://github.com/bioinfoteam/PyDAIR>`_
+
 
