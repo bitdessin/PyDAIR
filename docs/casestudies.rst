@@ -26,17 +26,17 @@ of the downloaded :file:`PyDAIR` directory.
 
 
 
-+-------------+--------+-------------------------------------------------------------+
-| dataset     | samles | description                                                 |
-+=============+========+=============================================================+
-| *simdata*   |      1 | Artificial sequences of human IgH.                          |
-+-------------+--------+-------------------------------------------------------------+
-| *hiv*       |      2 | Human HIV-1-neutralizing antibody repertoires.              |
-+-------------+--------+-------------------------------------------------------------+
-| *mose*      |      2 | Mouse immunoglobulin heavy chain.                           |
-+-------------+--------+-------------------------------------------------------------+
-| *zebrafish* |     14 | Immunoglobulin heavy chain of Zebrafish IgM and IgZ.        |
-+-------------+--------+-------------------------------------------------------------+
++-------------+---------+-------------------------------------------------------------+
+| dataset     | samples | description                                                 |
++=============+=========+=============================================================+
+| *simdata*   |       1 | Artificial sequences of human IgH.                          |
++-------------+---------+-------------------------------------------------------------+
+| *hiv*       |       2 | Human HIV-1-neutralizing antibody repertoires.              |
++-------------+---------+-------------------------------------------------------------+
+| *mose*      |       2 | Mouse IgH sequences.                                        |
++-------------+---------+-------------------------------------------------------------+
+| *zebrafish* |      14 | Zebrafish IgH sequences.                                    |
++-------------+---------+-------------------------------------------------------------+
 
 
 
@@ -52,7 +52,7 @@ Analysis of `simdata` dataset
 =============================
 
 
-The *simdata* dataset consists of 100,000 artificial sequences of human IgH.
+The *simdata* dataset consists of 100,000 artificial sequences of human IgH
 which were generated JoinSimulation\ [#Russ2015]_.
 The raw data are saved as compressed TSV format in :file:`data/simdata.txt`.
 We use :command:`bzip2` command to decompress the raw data,
@@ -61,9 +61,11 @@ and then convert the raw data into FASTA format using the custom Python script.
 
 .. code-block:: bash
     
-    cd PyDAIR/casestudies/simdata
-    bzip2 -d data/simdata.txt.bz2
+    cd simdata
+    pwd
+    ## ~/PyDAIR/casestudies/simdata
     
+    bzip2 -d data/simdata.txt.bz2
     python ./bin/convert_csv_to_fastq.py ./data/simdata.txt ./data/simdata.fa
 
 
@@ -87,14 +89,18 @@ command to identify V, D, J, and CDR3 segments.
 
 .. code-block:: bash
     
-    pydair parse -q data/simdata.fa \
-                 -v ./db/human.ighv.fa -d ./db/human.ighd.fa -j ./db/human.ighj.fa \
-                 --v-blastdb ./db/vdb --d-blastdb ./db/ddb --j-blastdb ./db/jdb \
+    pydair parse -q data/simdata.fa    \
+                 -v ./db/human.ighv.fa \
+                 -d ./db/human.ighd.fa \
+                 -j ./db/human.ighj.fa \
+                 --v-blastdb ./db/vdb  \
+                 --d-blastdb ./db/ddb  \
+                 --j-blastdb ./db/jdb  \
                  -o results/simdata
 
 
-The result will be saved into :file:`results/simdata.vdj.pydair`.
-
+The results will be saved into :file:`results` directory with
+the prefix of :file:`simdata`.
 
 Then, we use :command:`pydair stats` to summarize the anlaysis results.
 
@@ -107,19 +113,28 @@ Then, we use :command:`pydair stats` to summarize the anlaysis results.
                  --estimate-vdj-combination
 
 
-
-The summarized results are saved into :file:`./restuls` directory with
-the prefix of :file:`simdata`.
-The HTML report saved in :file:`./result/simdata.report.html` (:download:`simdata.report.html`).
+The summarized results are saved into :file:`results` directory with
+the prefix of :file:`simdata`,
+and the HTML report (:download:`simdata.report.html`) will be saved.
 
 
 
 ..  
-    python ./bin/calc_accuracy_details.py ./data/simdata.txt \
+    ## The following code are used for simulation study
+    ## to evaluate PyDAIR performance.
+    
+    ## -----------------------------------------------------------
+    
+    ## Calculate the sensitivity and FDR from the PyDAIR result.
+    
+    python ./bin/calc_accuracy_details.py ./data/simdata.txt   \
                                   ./results/simdata.vdj.pydair \
                                   ./results/simdata.stats.p
-    To evaluate the relations between the number of sequences and execution time,
-    we create some subsets.
+    
+    ## -----------------------------------------------------------
+    
+    ## Apply PyDAIR against the different number of sequences
+    ## to evaluate the execution time.
     
     head -n   2000 ./data/simdata.fa > ./data/simdata.1000.fa
     head -n  10000 ./data/simdata.fa > ./data/simdata.5000.fa
@@ -130,15 +145,12 @@ The HTML report saved in :file:`./result/simdata.report.html` (:download:`simdat
     head -n 160000 ./data/simdata.fa > ./data/simdata.80000.fa
     head -n 200000 ./data/simdata.fa > ./data/simdata.100000.fa
     
-    Then, we use the custom Python script to analysis all subsetS.
-    
     python ./bin/calc_exetime.py > exetime.log.txt 2>&1
     
+    ## -----------------------------------------------------------
     
-    Additionally, to evaluate the relations between BLAST parameters and
-    the accuracies of gene identification,
-    we try six sets of BLAST parameters for V gene and six for J gene to
-    analysis the first 10,0000 sequences of the original one.
+    ## Apply PyDAIR against sequences with the different BLAST
+    ## parameters.
     
     head -n 20000 ./data/simdata.fa  > ./data/simdata.sub.fa
     head -n 10001 ./data/simdata.txt > ./data/simdata.sub.txt
@@ -148,18 +160,24 @@ The HTML report saved in :file:`./result/simdata.report.html` (:download:`simdat
     for vi in {0..5}; do
         for ji in {0..5}; do
             p=sim${vi}_${ji}
-            python ./bin/calc_accuracy_details.py ./data/simdata.sub.txt \
-                                          ./results/${p}.vdj.pydair \
-                                          ./results/estperformance.${p}
+            python ./bin/calc_accuracy_details.py \
+                           ./data/simdata.sub.txt \
+                           ./results/${p}.vdj.pydair \
+                           ./results/estperformance.${p}
         done
     done
-    >R calc_glid_acc.R
+    
+    ## Start R and run the R scripts in `calc_glid_acc.R` to
+    ## calculate sensitivities and FDR.
+    
+    $ R
+    > source('calc_glid_acc.R')
+    
+    ## -----------------------------------------------------------
+
 
   
 --------------------------------------------------------------------
-
-
-
 
 
 
@@ -290,8 +308,8 @@ We use :command:`pydair parse` command to assign VDJ genes and determine CDR3 se
 
 
 Then, we use :command:`pydair stats` command to summarize the analysis results.
-All summarized data are saved into :file:`results` directory with prefix `hiv`.
-and the summarized report were created (:download:`hiv.report.html`).
+All summarized data are saved into :file:`results` directory with prefix `hiv`,
+and the summarized report (:download:`hiv.report.html`) will be saved.
 
 
 .. code-block:: bash
@@ -404,7 +422,7 @@ We use :command:`pydair parse` command to assign VDJ genes and determine CDR3 se
 
 Then, we use :command:`pydair stats` command to summarize the analysis results.
 All summarized data are saved into :file:`results` directory with prefix `stats`.
-The HTML report saved in :file:`./result/mouse.report.html` (:download:`mouse.report.html`).
+The summarized report (:download:`mouse.report.html`) will be saved.
 
 .. code-block:: bash
     
@@ -483,7 +501,7 @@ to downlaod Rep-Seq data and covert them to FASTQ format file.
 
 
 Both FASTQ files contain IgH and IgL sequences.
-We use `cutadapt <http://cutadapt.readthedocs.io/en/stable/index.html>_`
+We use `cutadapt <http://cutadapt.readthedocs.io/en/stable/index.html>`_
 to extract the IgH sequences according to the primers.
 
 .. code-block:: bash   

@@ -4,6 +4,7 @@ PyDAIR
 
 *Python library for diversity analysis for immune repertoire*
 
+
 Sequencing immunoglobulin using high-throughput sequencing platform (Ig-Seq)
 enables to snapshot the adaptive immune repertoires,
 giving us the insights to better understanding immune responses in health and disease.
@@ -12,8 +13,9 @@ PyDAIR is a tool that aims to identify V, D, J and CDR3 segments,
 and detects insertions and deletions on V-D and D-J junctions.
 
 
-* `source code <https://github.com/bioinfoteam/PyDAIR>`_
-* `PyPI package <https://pypi.python.org/pypi/PyDAIR/>`_
+* Source code: `https://github.com/bioinfoteam/PyDAIR <https://github.com/bioinfoteam/PyDAIR>`_
+* PyPI package: `https://pypi.python.org/pypi/PyDAIR/ <https://pypi.python.org/pypi/PyDAIR/>`_
+
 
 
 

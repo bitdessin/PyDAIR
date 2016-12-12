@@ -30,7 +30,7 @@ setup(
     keywords     = 'blast, bioinformatics',
     author       = 'Bioinformatics Team',
     author_email = 'pydair@bioinfoteam.org',
-    url          = 'http://bioinfoteam.org//PyDAIR/',
+    url          = 'http://bioinfoteam.org/pydair/',
     license      = 'GNU',
     packages     = ['PyDAIR',
                     'PyDAIR.app',

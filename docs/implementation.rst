@@ -12,7 +12,8 @@ On the other hand, the :command:`stats` action is used to summarize and visualiz
 parse action
 ============
 
-:command:`parse` command is used to identify V, D, J, and CDR3 segments by the five steps.
+:command:`parse` command is used to identify V, D, J, and CDR3 segments,
+and detect the indels around V-D and D-J junctions.
 
 #. **V segment identification** To identify V segment,
    PyDAIR aligns each IgH sequence against user-defined BLAST database of V gene with :command:`blastn`.
@@ -22,12 +23,12 @@ parse action
    The best matching J gene is selected.
 #. **CDR3 segment identification** To identify CDR3 segment,
    PyDAIR search for YYC and WGxG motifs using regular expression matching.
-#. **Insertion and deletion detection**  To identify insertion and deletion on V-D and D-J junctions,
+#. **Indels detection**  To identify insertion and deletion on V-D and D-J junctions,
    PyDAIR calculates the number of unaligned bases from the end of V and the start of J genes.
 #. **D segment identification** To identify D segment,
    PyDAIR aligns the each insertion segment sequence against user-defined BLAST database of D gene with :command:`blastn`.
    The best matching D gene is selected.
-#. To determine open reading frame (ORF),
+#. **open reading frame detection**
    PyDAIR searches for the start codon (ATG) and the stop codons (TAG, TAA, and TGA).
    PyDAIR tries the three possible reading frames to determine ORF.
    The sequence is defined as *productive* if one of reading frames dose not contain any stop codons.
