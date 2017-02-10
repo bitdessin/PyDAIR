@@ -12,7 +12,7 @@ from PyDAIR.io.PyDAIRIO import *
 from PyDAIR.utils.PyDAIRArgs import *
 from PyDAIR.app.PyDAIRAPP import *
 from PyDAIR.stats.PyDAIRStats import *
-#from PyDAIR.plot.PyDAIRPlot import *
+from PyDAIR.sim.PyDAIRSim import *
 
 from Bio import SeqIO
 
@@ -566,5 +566,95 @@ class PyDAIRAPPStats:
     
     
     
+ 
+
+
+class PyDAIRAPPSim:
+    """PyDAIRAPPSim class.
     
+    This class offers the functions for generation of artificial IgH sequences.
+    
+    """
+    
+    def __init__(self, args):
+        """PyDAIRAPPSim class initialize method.
+        
+        Args:
+            args (PyDAIRAPPSim): PyDAIRAPPSim class object.
+        """
+        
+        self.args = args
+        
+        v_name, v_seq = self.__read_fasta(args.v_fasta)
+        d_name, d_seq = self.__read_fasta(args.d_fasta)
+        j_name, j_seq = self.__read_fasta(args.j_fasta)
+        
+        v_obj = PyDAIRSimGeneSet(v_name, v_seq, None, args.n_v_5del, args.n_v_3del)
+        d_obj = PyDAIRSimGeneSet(d_name, d_seq, None, args.n_d_5del, args.n_d_3del)
+        j_obj = PyDAIRSimGeneSet(j_name, j_seq, None, args.n_j_5del, args.n_j_3del)
+        vd_obj = PyDAIRSimInsSet(args.n_vd_ins)
+        dj_obj = PyDAIRSimInsSet(args.n_dj_ins)
+        
+        self.simobj = PyDAIRSim(v = v_obj, d = d_obj, j = j_obj,
+                                vd_ins = vd_obj,
+                                dj_ins = dj_obj,
+                                p_mutation = args.p_mutation)
+        
+    
+    def __read_fasta(self, file_path):
+        name = []
+        seq = []
+        with open(file_path, 'r') as fh:
+            for record in SeqIO.parse(fh, 'fasta'):
+                name.append(record.id)
+                seq.append(str(record.seq).upper())
+        return([name, seq])
+    
+    def generate_seq(self):
+        """Generate artificial sequences.
+        
+        """
+        
+        self.simobj.generate_seqs(self.args.n, self.args.seed, self.args.output)
+    
+     
+
+
+class PyDAIRAPPEval:
+    """PyDAIRAPPEval class.
+    
+    The class is used for evaluating the PyDAIR performanes.
+    
+    """
+    
+    def __init__(self, args):
+        """Set up arguments in this class.
+        
+        Args:
+            args (PyDAIREvalArgs): Arguments should be passed to this class.
+        
+        """
+        
+        self.args = args
+        self.evalobj = PyDAIRSimEval(self.args.sim_condition,
+                                     self.args.parse_result)
+    
+    
+    def eval(self):
+        """Evaluate performances.
+        
+        Calculate the correctly and incorrectly identification results
+        from parsed results.
+        
+        """
+        
+        self.evalobj.eval(file_name = self.args.output)
+    
+
+
+
+    
+
+
+  
 

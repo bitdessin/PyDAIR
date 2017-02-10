@@ -170,3 +170,52 @@ class PyDAIRStatsArgs:
         self.estimate_vdj_combination = estimate_vdj_combination
         self.n_tries             = n_tries
 
+
+
+
+class PyDAIRSimArgs:
+    """PyDAIRSimArgs class.
+    
+    PyDAIRSimArgs class is used for saving parameters for generation of artificial
+    IgH sequences.
+    
+    """
+    
+    def __init__(self, o, n,
+                       v_fa, n_v_5del, n_v_3del,
+                       d_fa, n_d_5del, n_d_3del,
+                       j_fa, n_j_5del, n_j_3del,
+                       n_vd_ins, n_dj_ins, p_mutation, random_seed = None):
+        """Set up parameters for generation of artificial IgH sequences.
+        
+        """
+        
+        self.output = o
+        self.n = n
+        self.v_fasta = v_fa
+        self.d_fasta = d_fa
+        self.j_fasta = j_fa
+        self.n_v_5del = n_v_5del
+        self.n_v_3del = n_v_3del
+        self.n_d_5del = n_d_5del
+        self.n_d_3del = n_d_3del
+        self.n_j_5del = n_j_5del
+        self.n_j_3del = n_j_3del
+        self.n_vd_ins = n_vd_ins
+        self.n_dj_ins = n_dj_ins
+        self.p_mutation = p_mutation
+        self.seed = random_seed
+
+
+
+
+class PyDAIREvalArgs:
+    """PyDAIREvalArgs class.
+    
+    """
+    
+    def __init__(self, sim_condition, parse_result, output):
+        self.output = output
+        self.sim_condition = sim_condition
+        self.parse_result = parse_result
+

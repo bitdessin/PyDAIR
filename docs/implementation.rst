@@ -28,7 +28,7 @@ and detect the indels around V-D and D-J junctions.
 #. **D segment identification** To identify D segment,
    PyDAIR aligns the each insertion segment sequence against user-defined BLAST database of D gene with :command:`blastn`.
    The best matching D gene is selected.
-#. **open reading frame detection**
+#. **Open reading frame detection**
    PyDAIR searches for the start codon (ATG) and the stop codons (TAG, TAA, and TGA).
    PyDAIR tries the three possible reading frames to determine ORF.
    The sequence is defined as *productive* if one of reading frames dose not contain any stop codons.

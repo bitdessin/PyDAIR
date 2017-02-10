@@ -39,6 +39,7 @@ class Test_app(unittest.TestCase):
         pydairapp.blast('v')
         pydairapp.blast('j')
         pydairapp.parse_VJ()
+        pydairapp.write_pydair()
         pydairapp.write_fasta('unaligned_seq')
         pydairapp.blast('d')
         pydairapp.parse_VDJ()
@@ -56,6 +57,26 @@ class Test_app(unittest.TestCase):
         pydairapp = PyDAIRAPPStats(pydair_args)
         pydairapp.write_summary()
         pydairapp.create_report()
+    
+    
+    def test_app_eval(self):
+        app_args = PyDAIREvalArgs(_data_path + '/sample.simseq.fa',
+                                  _data_path + '/sample.simseq.parsed.pydair',
+                                  _result_path + '/test_output_app_eval.txt')
+        evalobj = PyDAIRAPPEval(app_args)
+        evalobj.eval()
+    
+    
+    def test_app_sim(self):
+        app_args = PyDAIRSimArgs(_result_path + '/test_output_app_sim.fa',
+                                 100,
+                                 _db_path + '/v.fa', 20, 3,
+                                 _db_path + '/d.fa', 3, 3,
+                                 _db_path + '/j.fa', 5, 3,
+                                 5, 5, 0.05, 1010)
+        simobj = PyDAIRAPPSim(app_args)
+        simobj.generate_seq()
+    
     
     
 if __name__ == '__main__':

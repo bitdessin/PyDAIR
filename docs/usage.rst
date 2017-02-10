@@ -381,6 +381,148 @@ and the identity and BLAST score of alignemnt.
 
 
 
+sim action mode
+===============
+
+The :command:`sim` action mode generates artificial IgH sequences
+and outputs as a FASTA file.
+
+Usage
+^^^^^
+
+.. code-block:: bash
+    
+    pydair sim -n 10000 -o output_sim.fa \
+               --v-fasta v.fa \
+               --d-fasta d.fa \
+               --j-fasta j.fa
+    
+
+The option `-n` is used for specifying the number of sequences should be generated,
+`-o` is used for specifying file path to save the generated sequences.
+In addition, `--v-fasta`, `--d-fasta`, and `--j-fasta` is used for
+specifiying the population pools for VDJ ramdom sampling.
+
+
+Options
+^^^^^^^
+
+In addition to the required options,
+the parameters of nucleotide additions, deletions and mutations can be specified.
+
++-----------------------------+------------------------------------+----------------+
+| Options                     | Description                        | Default        |
++=============================+====================================+================+
+| ``-n``                      | The number of sequences should be  | `10000`        |
+|                             | generated.                         |                |
++-----------------------------+------------------------------------+----------------+
+| ``-o``                      | Path to file for writting results. |                |
++-----------------------------+------------------------------------+----------------+
+| ``--v-fasta``               | Path to FASTA file of V gene       |                |
+|                             | sequence (the population for       |                |
+|                             | sampling).                         |                |
++-----------------------------+------------------------------------+----------------+
+| ``--d-fasta``               | Path to FASTA file of D gene       |                |
+|                             | sequence (the population for       |                |
+|                             | sampling).                         |                |
++-----------------------------+------------------------------------+----------------+
+| ``--j-fasta``               | Path to FASTA file of J gene       |                |
+|                             | sequence (the population for       |                |
+|                             | sampling).                         |                |
++-----------------------------+------------------------------------+----------------+
+| ``--n-v-5del``              | The mean of Poisson distribution   | ``10``         |
+|                             | that for sampling the number of    |                |
+|                             | nucleotides deleting from 5'-end   |                |
+|                             | of V gene.                         |                |
++-----------------------------+------------------------------------+----------------+
+| ``--n-v-3del``              | The mean of Poisson distribution   | ``3``          |
+|                             | that for sampling the number of    |                |
+|                             | nucleotides deleting from 5'-end   |                |
+|                             | of V gene.                         |                |
++-----------------------------+------------------------------------+----------------+
+| ``--n-d-5del``              | The mean of Poisson distribution   | ``3``          |
+|                             | that for sampling the number of    |                |
+|                             | nucleotides deleting from 5'-end   |                |
+|                             | of D gene.                         |                |
++-----------------------------+------------------------------------+----------------+
+| ``--n-d-3del``              | The mean of Poisson distribution   | ``3``          |
+|                             | that for sampling the number of    |                |
+|                             | nucleotides deleting from 5'-end   |                |
+|                             | of D gene.                         |                |
++-----------------------------+------------------------------------+----------------+
+| ``--n-j-5del``              | The mean of Poisson distribution   | ``5``          |
+|                             | that for sampling the number of    |                |
+|                             | nucleotides deleting from 5'-end   |                |
+|                             | of J gene.                         |                |
++-----------------------------+------------------------------------+----------------+
+| ``--n-j-3del``              | The mean of Poisson distribution   | ``10``         |
+|                             | that for sampling the number of    |                |
+|                             | nucleotides deleting from 5'-end   |                |
+|                             | of J gene.                         |                |
++-----------------------------+------------------------------------+----------------+
+| ``--n-vd-ins``              | The mean of Poisson distribution   | ``5``          |
+|                             | that for sampling the number of    |                |
+|                             | nucleotides inserting into VD      |                |
+|                             | junciton.                          |                |
++-----------------------------+------------------------------------+----------------+
+| ``--n-dj-ins``              | The mean of Poisson distribution   | ``5``          |
+|                             | that for sampling the number of    |                |
+|                             | nucleotides inserting into DJ      |                |
+|                             | junciton.                          |                |
++-----------------------------+------------------------------------+----------------+
+| ``--p-mutation``            | The probability to mutate a        | ``0.05``       |
+|                             | nucleotide.                        |                |
++-----------------------------+------------------------------------+----------------+
+
+
+
+
+
+
+eval action mode
+================
+
+The :command:`eval` action mode is used for evaluating performances of PyDAIR.
+It usually used after ``sim`` and ``parse`` mode.
+
+.. code-block:: bash
+    
+    pydair sim -n 10000 -o output_sim.fa \
+               --v-fasta v.fa \
+               --d-fasta d.fa \
+               --j-fasta j.fa
+    
+    pydair parse -q output_sim.fa \
+                 -o output1                \
+                 -v v.fa                   \
+                 -d d.fa                   \
+                 -j j.fa                   \
+                 --v-blastdb blastdb_v     \
+                 --d-blastdb blastdb_d     \
+                 --j-blastdb blastdb_j 
+    
+    pydair eval -o eval_result.txt
+                --sim-condition output_sim.fa \
+                --parse-result output1.vdj.pydair
+    
+
+The results are saved into text file with TSV format.
+
+
+Options
+^^^^^^^
+
++-----------------------------+------------------------------------+----------------+
+| Options                     | Description                        | Default        |
++=============================+====================================+================+
+| ``-o``                      | Path to file for writting results. |                |
++-----------------------------+------------------------------------+----------------+
+| ``--sim-condition``         | The FASTA file which generated by  |                |
+|                             | `sim` action mode.                 |                |
++-----------------------------+------------------------------------+----------------+
+| ``--parse-result``          | The PYDAIR file which generated by |                |
+|                             | `parse` action mode.               |                |
++-----------------------------+------------------------------------+----------------+
 
 
 

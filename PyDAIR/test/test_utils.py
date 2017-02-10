@@ -11,6 +11,7 @@ _result_path = os.path.join(os.path.dirname(__file__), 'data/results')
 class Test_pydair_utils_pydairArgs(unittest.TestCase):
     def setUp(self):
         pass
+    
     def test_pydair_args_parseseq(self):
         valign = PyDAIRBlastArgs('path_to_blast_db_v', 4, -2, 3, 3, 6, 1e12)
         dalign = PyDAIRBlastArgs('path_to_blast_db_d', 4, -2, 3, 3, 6, 1e12)
@@ -34,15 +35,31 @@ class Test_pydair_utils_pydairUtils(unittest.TestCase):
     def setUp(self):
         self.pydair_utils = PyDAIRUtils()
         pass
+    
     def test_dot_to_none(self):
         print(self.pydair_utils.dot_to_none('.'))
         print(self.pydair_utils.dot_to_none('acggtgcacag'))
         print(self.pydair_utils.dot_to_none(['.']))
         print(self.pydair_utils.dot_to_none(['.', 'acagcagtt', None]))
+    
     def test_none_to_dot(self):
         print(self.pydair_utils.none_to_dot('cgatcgta'))
         print(self.pydair_utils.none_to_dot(None))
         print(self.pydair_utils.none_to_dot(['cgatcgta', '', None]))
+
+
+class Test_pydair_utils_pydairSimArgs(unittest.TestCase):
+    def setUp(self):
+        pass
+    
+    def test_pydair_args_sim(self):
+        pydair_args = PyDAIRSimArgs('output', 10000, 
+                                    'path_to_fasta_v', 10, 3,
+                                    'path_to_fasta_d', 10, 3,
+                                    'path_to_fasta_j', 10, 3,
+                                    n_vd_ins = 5, n_dj_ins = 5, p_mutation = 0.05)
+    
+    
 
 
 if __name__ == '__main__':

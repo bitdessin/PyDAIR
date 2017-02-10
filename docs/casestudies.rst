@@ -33,7 +33,7 @@ of the downloaded :file:`PyDAIR` directory.
 +-------------+---------+-------------------------------------------------------------+
 | *hiv*       |       2 | Human HIV-1-neutralizing antibody repertoires.              |
 +-------------+---------+-------------------------------------------------------------+
-| *mose*      |       2 | Mouse IgH sequences.                                        |
+| *mouse*     |       2 | Mouse IgH sequences.                                        |
 +-------------+---------+-------------------------------------------------------------+
 | *zebrafish* |      14 | Zebrafish IgH sequences.                                    |
 +-------------+---------+-------------------------------------------------------------+
@@ -325,7 +325,7 @@ and the summarized report (:download:`hiv.report.html`) will be saved.
 
 
 
-Analysis of mouse heavy chain
+Analysis of `mouse` dataset
 =============================
 
 The datasets contains two mice of C57BL/6 and BALB/c.
@@ -435,7 +435,7 @@ The summarized report (:download:`mouse.report.html`) will be saved.
 --------------------------------------------------------------------
 
 
-Analysis of zebrafish antibody repertoires
+Analysis of `zebrafish` dataset
 ==========================================
 
 .. note:: To perform analysis from FASTQ file, one may need to install 
