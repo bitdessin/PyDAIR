@@ -36,6 +36,7 @@ setup(
                     'PyDAIR.app',
                     'PyDAIR.io',
                     'PyDAIR.seq',
+                    'PyDAIR.sim',
                     'PyDAIR.stats', 
                     'PyDAIR.utils'],
     package_dir  = {'PyDAIR': 'PyDAIR'},
