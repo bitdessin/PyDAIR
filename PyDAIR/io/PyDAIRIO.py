@@ -261,32 +261,32 @@ AL QC %s\t%s\t%s\t%s\t%s\t%s
             if buf[0:2] == 'AL':
                 buf_record = buf[6:].split('\t')
                 if buf[3:5] == 'QV':
-                    alignv_qstart   = buf_record[0] if buf_record[0] is not '.' else None
-                    alignv_qend     = buf_record[1] if buf_record[1] is not '.' else None
-                    alignv_sstart   = buf_record[2] if buf_record[2] is not '.' else None
-                    alignv_send     = buf_record[3] if buf_record[3] is not '.' else None
-                    alignv_identity = buf_record[4] if buf_record[4] is not '.' else None
-                    alignv_score    = buf_record[5] if buf_record[5] is not '.' else None
+                    alignv_qstart   = int(buf_record[0]) if buf_record[0] is not '.' else None
+                    alignv_qend     = int(buf_record[1]) if buf_record[1] is not '.' else None
+                    alignv_sstart   = int(buf_record[2]) if buf_record[2] is not '.' else None
+                    alignv_send     = int(buf_record[3]) if buf_record[3] is not '.' else None
+                    alignv_identity = float(buf_record[4]) if buf_record[4] is not '.' else None
+                    alignv_score    = float(buf_record[5]) if buf_record[5] is not '.' else None
                 if buf[3:5] == 'QD':
-                    alignd_qstart   = buf_record[0] if buf_record[0] is not '.' else None
-                    alignd_qend     = buf_record[1] if buf_record[1] is not '.' else None
-                    alignd_sstart   = buf_record[2] if buf_record[2] is not '.' else None
-                    alignd_send     = buf_record[3] if buf_record[3] is not '.' else None
-                    alignd_identity = buf_record[4] if buf_record[4] is not '.' else None
-                    alignd_score    = buf_record[5] if buf_record[5] is not '.' else None
+                    alignd_qstart   = int(buf_record[0]) if buf_record[0] is not '.' else None
+                    alignd_qend     = int(buf_record[1]) if buf_record[1] is not '.' else None
+                    alignd_sstart   = int(buf_record[2]) if buf_record[2] is not '.' else None
+                    alignd_send     = int(buf_record[3]) if buf_record[3] is not '.' else None
+                    alignd_identity = float(buf_record[4]) if buf_record[4] is not '.' else None
+                    alignd_score    = float(buf_record[5]) if buf_record[5] is not '.' else None
                 if buf[3:5] == 'QJ':
-                    alignj_qstart   = buf_record[0] if buf_record[0] is not '.' else None
-                    alignj_qend     = buf_record[1] if buf_record[1] is not '.' else None
-                    alignj_sstart   = buf_record[2] if buf_record[2] is not '.' else None
-                    alignj_send     = buf_record[3] if buf_record[3] is not '.' else None
-                    alignj_identity = buf_record[4] if buf_record[4] is not '.' else None
-                    alignj_score    = buf_record[5] if buf_record[5] is not '.' else None
+                    alignj_qstart   = int(buf_record[0]) if buf_record[0] is not '.' else None
+                    alignj_qend     = int(buf_record[1]) if buf_record[1] is not '.' else None
+                    alignj_sstart   = int(buf_record[2]) if buf_record[2] is not '.' else None
+                    alignj_send     = int(buf_record[3]) if buf_record[3] is not '.' else None
+                    alignj_identity = float(buf_record[4]) if buf_record[4] is not '.' else None
+                    alignj_score    = float(buf_record[5]) if buf_record[5] is not '.' else None
                 if buf[3:5] == 'QU':
-                    untmpl_start    = buf_record[0] if buf_record[0] is not '.' else None
-                    untmpl_end      = buf_record[1] if buf_record[1] is not '.' else None
+                    untmpl_start    = int(buf_record[0]) if buf_record[0] is not '.' else None
+                    untmpl_end      = int(buf_record[1]) if buf_record[1] is not '.' else None
                 if buf[3:5] == 'QC':
-                    cdr3_start      = buf_record[0] if buf_record[0] is not '.' else None
-                    cdr3_end        = buf_record[1] if buf_record[1] is not '.' else None
+                    cdr3_start      = int(buf_record[0]) if buf_record[0] is not '.' else None
+                    cdr3_end        = int(buf_record[1]) if buf_record[1] is not '.' else None
                     
             if buf[0:4] == '#END':
                 qv_clipped, vv_clipped = self.__clip_alignment(aligned_q_seq, alignv_qstart, alignv_qend,

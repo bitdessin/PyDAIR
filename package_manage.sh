@@ -35,7 +35,19 @@ rm ./PyDAIR/test/*.pyc
 rm ./PyDAIR/test/.DS_Store
 rm ./PyDAIR/utils/*.pyc
 rm ./PyDAIR/utils/.DS_Store
+rm ./PyDAIR/sim/*.pyc
+rm ./PyDAIR/sim/.DS_Store
 
+rm -rf ./PyDAIR/__pycache__
+rm -rf ./PyDAIR/app/__pycache__
+rm -rf ./PyDAIR/bin/__pycache__
+rm -rf ./PyDAIR/io/__pycache__
+rm -rf ./PyDAIR/plot/__pycache__
+rm -rf ./PyDAIR/seq/__pycache__
+rm -rf ./PyDAIR/sim/__pycache__
+rm -rf ./PyDAIR/stats/__pycache__
+rm -rf ./PyDAIR/test/__pycache__
+rm -rf ./PyDAIR/utils/__pycache__
 
 
 ## PyPI registration commands

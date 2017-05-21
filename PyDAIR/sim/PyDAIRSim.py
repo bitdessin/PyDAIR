@@ -13,7 +13,10 @@ from PyDAIR.utils.PyDAIRUtils import *
 class PyDAIRSimGeneSet:
     """PyDAIRSimGeneSet class.
     
-    The class for saving the parameters to sample V/D/J gene.
+    The class is for sampling sequences of single of V, D or J gene.
+    The sequence name and sequence which are read from FASTA file
+    are saved in this class. In addition, the sampling parameters are
+    saved in this class.
     
     """
     
@@ -251,14 +254,14 @@ class PyDAIRSimEval:
             v3del_results.append(_v3delt)
             j5del_results.append(_j5delt)
         
-        sumtxt = ['Feature\tCorrect\tIncorrect\tUnidentifiable\Total']
+        sumtxt = ['Feature\tCorrect\tIncorrect\tUnidentifiable\tTotal']
         sumtxt.append(self.__eval_calc_sum('V', v_results))
         sumtxt.append(self.__eval_calc_sum('D', d_results))
         sumtxt.append(self.__eval_calc_sum('J', j_results))
         sumtxt.append(self.__eval_calc_sum('V3DEL', v3del_results))
         sumtxt.append(self.__eval_calc_sum('J5DEL', j5del_results))
         
-        outfh.write('\n\n'+ '\n'.join(sumtxt))
+        outfh.write('\n\n'+ '\n'.join(sumtxt) + '\n')
         
         outfh.close()
             

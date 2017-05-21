@@ -51,23 +51,16 @@ of the downloaded :file:`PyDAIR` directory.
 Analysis of `simdata` dataset
 =============================
 
-
-The *simdata* dataset consists of 100,000 artificial sequences of human IgH
-which were generated JoinSimulation\ [#Russ2015]_.
-The raw data are saved as compressed TSV format in :file:`data/simdata.txt`.
-We use :command:`bzip2` command to decompress the raw data,
-and then convert the raw data into FASTA format using the custom Python script.
-
+We use :command:`sim` mode to generate 10,000 artificial IgH sequences using
+human VDJ genes.
 
 .. code-block:: bash
-    
     cd simdata
-    pwd
-    ## ~/PyDAIR/casestudies/simdata
+    pydair sim -n 10000 -o ./data/simseq.fa \
+               -v ./db/human.ighv.fa \
+               -d ./db/human.ighd.fa \
+               -j ./db/human.ighj.fa
     
-    bzip2 -d data/simdata.txt.bz2
-    python ./bin/convert_csv_to_fastq.py ./data/simdata.txt ./data/simdata.fa
-
 
 Sequences of V, D, and J genes of human IgH are saved in the :file:`db` directory.
 We use :command:`makeblast` command to create BLAST databases of V, D, and J genes.
@@ -89,14 +82,14 @@ command to identify V, D, J, and CDR3 segments.
 
 .. code-block:: bash
     
-    pydair parse -q data/simdata.fa    \
+    pydair parse -q data/simseq.fa    \
                  -v ./db/human.ighv.fa \
                  -d ./db/human.ighd.fa \
                  -j ./db/human.ighj.fa \
                  --v-blastdb ./db/vdb  \
                  --d-blastdb ./db/ddb  \
                  --j-blastdb ./db/jdb  \
-                 -o results/simdata
+                 -o results/simseq
 
 
 The results will be saved into :file:`results` directory with
@@ -107,9 +100,9 @@ Then, we use :command:`pydair stats` to summarize the anlaysis results.
 
 .. code-block:: bash
     
-    pydair stats -i ./results/simdata.vdj.pydair \
+    pydair stats -i ./results/simseq.vdj.pydair \
                  -n simdata \
-                 -o ./results/simdata \
+                 -o ./results/simseq \
                  --estimate-vdj-combination
 
 
@@ -117,66 +110,20 @@ The summarized results are saved into :file:`results` directory with
 the prefix of :file:`simdata`,
 and the HTML report (:download:`simdata.report.html`) will be saved.
 
+To calculate the performace, use :command:`eval` mode.
+
+.. code-block:: bash
+    pydair eval -o ./results/eval.results.txt \
+                --sim-condition ./data/simseq.fa \
+                --parse-result ./results/simseq.vdj.pydair
 
 
-..  
-    ## The following code are used for simulation study
-    ## to evaluate PyDAIR performance.
-    
-    ## -----------------------------------------------------------
-    
-    ## Calculate the sensitivity and FDR from the PyDAIR result.
-    
-    python ./bin/calc_accuracy_details.py ./data/simdata.txt   \
-                                  ./results/simdata.vdj.pydair \
-                                  ./results/simdata.stats.p
-    
-    ## -----------------------------------------------------------
-    
-    ## Apply PyDAIR against the different number of sequences
-    ## to evaluate the execution time.
-    
-    head -n   2000 ./data/simdata.fa > ./data/simdata.1000.fa
-    head -n  10000 ./data/simdata.fa > ./data/simdata.5000.fa
-    head -n  20000 ./data/simdata.fa > ./data/simdata.10000.fa
-    head -n  40000 ./data/simdata.fa > ./data/simdata.20000.fa
-    head -n  80000 ./data/simdata.fa > ./data/simdata.40000.fa
-    head -n 120000 ./data/simdata.fa > ./data/simdata.60000.fa
-    head -n 160000 ./data/simdata.fa > ./data/simdata.80000.fa
-    head -n 200000 ./data/simdata.fa > ./data/simdata.100000.fa
-    
-    python ./bin/calc_exetime.py > exetime.log.txt 2>&1
-    
-    ## -----------------------------------------------------------
-    
-    ## Apply PyDAIR against sequences with the different BLAST
-    ## parameters.
-    
-    head -n 20000 ./data/simdata.fa  > ./data/simdata.sub.fa
-    head -n 10001 ./data/simdata.txt > ./data/simdata.sub.txt
-    
-    python ./bin/glid_blast.py
-    
-    for vi in {0..5}; do
-        for ji in {0..5}; do
-            p=sim${vi}_${ji}
-            python ./bin/calc_accuracy_details.py \
-                           ./data/simdata.sub.txt \
-                           ./results/${p}.vdj.pydair \
-                           ./results/estperformance.${p}
-        done
-    done
-    
-    ## Start R and run the R scripts in `calc_glid_acc.R` to
-    ## calculate sensitivities and FDR.
-    
-    $ R
-    > source('calc_glid_acc.R')
-    
-    ## -----------------------------------------------------------
 
 
-  
+
+
+
+
 --------------------------------------------------------------------
 
 
