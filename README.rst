@@ -17,6 +17,6 @@ and detects insertions and deletions on V-D and D-J junctions.
 
 
 * PyPI package: `PyPI <https://pypi.python.org/pypi/PyDAIR/>`_
-* Source code: `GitHub <https://github.com/bioinfoteam/PyDAIR>`_
+* Source code: `GitHub <https://github.com/biunit/PyDAIR>`_
 
 
