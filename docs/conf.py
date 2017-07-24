@@ -55,8 +55,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'PyDAIR'
-copyright = u'2016, Bioinformatics Team'
-author = u'Bioinformatics Team'
+copyright = u'2016, biunit'
+author = u'biunit'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -454,7 +454,7 @@ def skip(app, what, name, obj, skip, options):
     return skip
 
 def setup(app):
+    app.add_stylesheet("style.css")
     app.connect("autodoc-skip-member", skip)
-    app.add_stylesheet("./style.css")
 
 

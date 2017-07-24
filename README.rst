@@ -16,6 +16,7 @@ PyDAIR is a tool that aims to identify V, D, J and CDR3 segments,
 and detects insertions and deletions on V-D and D-J junctions.
 
 
+* Documents: `Document <https://biunit.org/pydair/>_`
 * PyPI package: `PyPI <https://pypi.python.org/pypi/PyDAIR/>`_
 * Source code: `GitHub <https://github.com/biunit/PyDAIR>`_
 

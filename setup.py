@@ -30,7 +30,7 @@ setup(
     keywords     = 'blast, bioinformatics',
     author       = 'biunit',
     author_email = 'pydair@biunit.org',
-    url          = 'https://github.com/biunit/PyDAIR',
+    url          = 'https://biunit.org/pydair',
     license      = 'GNU',
     packages     = ['PyDAIR',
                     'PyDAIR.app',

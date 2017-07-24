@@ -7,7 +7,7 @@ from PyDAIR.app import *
 
 
 
-__version__ = '0.1.12'
+__version__ = '0.1.13'
 
 '''
         DvvNneie'hgyttItmei'e.i,eceuhuaaetmywimtaum

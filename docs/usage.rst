@@ -2,39 +2,53 @@
 Usages
 ======
 
+
 Installation
 ============
 
 
 PyDAIR is a Python package which can be installed via :command:`pip` command.
 
-.. code-block:: bash
+.. code-block:: text
 
-    pip install pydair --user
-
-
-Requirements:
-
-* Python 2.7 or Python 3.4
-* `NumPy <http://www.numpy.org/>`_ (Python package)
-* `Pandas <http://pandas.pydata.org/>`_ (Python package)
-* `BioPython <http://biopython.org/>`_ (Python package)
-* `NCBI BLAST+ <https://www.ncbi.nlm.nih.gov/books/NBK279690/>`_
+    pip install pydair
 
 
+In addtion to installation of PyDAIR,
+NCBI BLAST+ is also required to be installed.
+For Linux users, BALST can be installed via :command:`apt-get` command.
+
+
+.. code-block:: text
+    
+    apt-get install ncbi-blast+
+
+
+For Macintosh users, BLAST can be installed via :command:`brew` command
+after adding :command:`homebrew/science` repository.
+
+
+.. code-block:: text
+    
+    brew tap homebrew/science
+    brew install blast
 
 
 
-parse action mode
-=================
 
-The :command:`parse` action mode identifies V, D, J, and CDR3 segments,
+
+
+
+parse mode
+==========
+
+The :command:`parse` mode assigns V, D, J, and CDR3 segments,
 and detects the deletions and insertions in IgH sequences.
 
 Usage
 ^^^^^
 
-.. code-block:: bash
+.. code-block:: text
     
     pydair parse -q input_igh_sequences.fa \
                  -o output1                \
@@ -46,8 +60,9 @@ Usage
                  --j-blastdb blastdb_j 
 
 
-The eight options, i.e., ``-q``, ``-o``, ``-v``, ``-d``, ``-j``,
-``--v-blastdb``, ``--d-blastdb``, and ``--j-blastdb``, are required options.
+The eight options, i.e., :command:`-q`, :command:`-o`, :command:`-v`,
+:command:`-d`, :command:`-j`, :command:`--v-blastdb`, :command:`--d-blastdb`,
+and :command:`--j-blastdb`, are required options.
 
 
 Options
@@ -55,102 +70,103 @@ Options
 
 In addition to the required options, 
 the other options such as BLAST parameters for VDJ identification can be specified.
-All options used in :command:`parse` action mode are shown in the following table.
+All options used in :command:`parse` mode are shown in the following table.
 
 
-+-----------------------------+------------------------------------+----------------+
-| Options                     | Description                        | Default        |
-+=============================+====================================+================+
-| ``-q``                      | Path to FASTA file that contains   |                |
-|                             | IgH seqeunces.                     |                |
-+-----------------------------+------------------------------------+----------------+
-| ``-o``                      | Path to file for writting results. |                |
-+-----------------------------+------------------------------------+----------------+
-| ``-v``                      | Path to FASTA file of V gene       |                |
-|                             | sequence.                          |                |
-+-----------------------------+------------------------------------+----------------+
-| ``-d``                      | Path to FASTA file of D gene       |                |
-|                             | sequence.                          |                |
-+-----------------------------+------------------------------------+----------------+
-| ``-j``                      | Path to FASTA file of J gene       |                |
-|                             | sequence.                          |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--v-blastdb``             | Path to BLAST database that        |                |
-|                             | created from the FASTA file of     |                |
-|                             | ``-v``.                            |                | 
-+-----------------------------+------------------------------------+----------------+
-| ``--v-match-score``         | Score (> 0) for a nucleotide match | ``3``          |
-|                             | for V gene.                        |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--v-mismatch-score``      | Score (< 0) for a nucleotide       | ``-3``         |
-|                             | mismatch for V gene.               |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--v-gap-open-penalty``    | Penalty (> 0) to open a gap for    | ``6``          |
-|                             | V gene.                            |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--v-gap-extend-penalty``  | Penalty (> 0) to extend a gap for  | ``6``          |
-|                             | V gene.                            |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--v-wordsize``            | Word size to find hotspots by      | ``10``         |
-|                             | BLAST for V gene.                  |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--v-evalue-cutoff``       | E-value                            | ``1e-50``      |
-|                             | threshold for assigning V gene.    |                |   
-+-----------------------------+------------------------------------+----------------+
-| ``--d-blastdb``             | Path to BLAST database that        |                |
-|                             | created from the FASTA file of     |                |
-|                             | ``-d``.                            |                | 
-+-----------------------------+------------------------------------+----------------+
-| ``--d-match-score``         | Score (> 0) for a nucleotide match | ``1``          |
-|                             | for D gene.                        |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--d-mismatch-score``      | Score (< 0) for a nucleotide       | ``-1``         |
-|                             | mismatch for D gene.               |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--d-gap-open-penalty``    | Penalty (> 0) to open a gap for    | ``0``          |
-|                             | D gene.                            |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--d-gap-extend-penalty``  | Penalty (> 0) to extend a gap for  | ``2``          |
-|                             | D gene.                            |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--d-wordsize``            | Word size to find hotspots by      | ``4``          |
-|                             | BLAST for D gene.                  |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--d-evalue-cutoff``       | E-value                            | ``1e-2``       |
-|                             | threshold for assigning D gene.    |                |   
-+-----------------------------+------------------------------------+----------------+
-| ``--j-blastdb``             | Path to BLAST database that        |                |
-|                             | created from the FASTA file of     |                |
-|                             | ``-j``.                            |                | 
-+-----------------------------+------------------------------------+----------------+
-| ``--j-match-score``         | Score (> 0) for a nucleotide match | ``3``          |
-|                             | for J gene.                        |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--j-mismatch-score``      | Score (< 0) for a nucleotide       | ``-3``         |
-|                             | mismatch for J gene.               |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--j-gap-open-penalty``    | Penalty (> 0) to open a gap for    | ``6``          |
-|                             | J gene.                            |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--j-gap-extend-penalty``  | Penalty (> 0) to extend a gap for  | ``6``          |
-|                             | J gene.                            |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--j-wordsize``            | Word size to find hotspots by      | ``7``          |
-|                             | BLAST for J gene.                  |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--j-evalue-cutoff``       | E-value                            | ``1e-5``       |
-|                             | threshold for assigning J gene.    |                |   
-+-----------------------------+------------------------------------+----------------+
-| ``--v-motif``               | The regular expression pattern     | ``YYC``        |
-|                             | of the motif on V gene to identify |                |
-|                             | CDR3 segment.                      |                |
-|                             | (e.g, ``YYC`` ``[FY]YC`` )         |                |   
-+-----------------------------+------------------------------------+----------------+
-| ``--j-motif``               | The regular expression pattern     | ``WG.G``       |
-|                             | of the motif on J gene to identify |                |
-|                             | CDR3 segment.                      |                |
-|                             | (e.g, ``WG.G`` ``FG.G`` ``G.G``)   |                |   
-+-----------------------------+------------------------------------+----------------+
++------------------------------------+------------------------------------+----------------+
+| Options                            | Description                        | Default        |
++====================================+====================================+================+
+| :command:`-q`                      | Path to FASTA file that contains   |                |
+|                                    | IgH seqeunces.                     |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`-o`                      | Path to file for writting results. |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`-v`                      | Path to FASTA file of V gene       |                |
+|                                    | sequence.                          |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`-d`                      | Path to FASTA file of D gene       |                |
+|                                    | sequence.                          |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`-j`                      | Path to FASTA file of J gene       |                |
+|                                    | sequence.                          |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--v-blastdb`             | Path to BLAST database that        |                |
+|                                    | created from the FASTA file of     |                |
+|                                    | :command`-v`.                      |                | 
++------------------------------------+------------------------------------+----------------+
+| :command:`--v-match-score`         | Score (> 0) for a nucleotide match | ``3``          |
+|                                    | for V gene.                        |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--v-mismatch-score`      | Score (< 0) for a nucleotide       | ``-3``         |
+|                                    | mismatch for V gene.               |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--v-gap-open-penalty`    | Penalty (> 0) to open a gap for    | ``6``          |
+|                                    | V gene.                            |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--v-gap-extend-penalty`  | Penalty (> 0) to extend a gap for  | ``6``          |
+|                                    | V gene.                            |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--v-wordsize`            | Word size to find hotspots by      | ``10``         |
+|                                    | BLAST for V gene.                  |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--v-evalue-cutoff`       | E-value                            | ``1e-50``      |
+|                                    | threshold for assigning V gene.    |                |   
++------------------------------------+------------------------------------+----------------+
+| :command:`--d-blastdb`             | Path to BLAST database that        |                |
+|                                    | created from the FASTA file of     |                |
+|                                    | :command:`-d`.                     |                | 
++------------------------------------+------------------------------------+----------------+
+| :command:`--d-match-score`         | Score (> 0) for a nucleotide match | ``1``          |
+|                                    | for D gene.                        |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--d-mismatch-score`      | Score (< 0) for a nucleotide       | ``-1``         |
+|                                    | mismatch for D gene.               |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--d-gap-open-penalty`    | Penalty (> 0) to open a gap for    | ``0``          |
+|                                    | D gene.                            |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--d-gap-extend-penalty`  | Penalty (> 0) to extend a gap for  | ``2``          |
+|                                    | D gene.                            |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--d-wordsize`            | Word size to find hotspots by      | ``4``          |
+|                                    | BLAST for D gene.                  |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--d-evalue-cutoff`       | E-value                            | ``1e-2``       |
+|                                    | threshold for assigning D gene.    |                |   
++------------------------------------+------------------------------------+----------------+
+| :command:`--j-blastdb`             | Path to BLAST database that        |                |
+|                                    | created from the FASTA file of     |                |
+|                                    | :command:`-j`.                     |                | 
++------------------------------------+------------------------------------+----------------+
+| :command:`--j-match-score`         | Score (> 0) for a nucleotide match | ``3``          |
+|                                    | for J gene.                        |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--j-mismatch-score`      | Score (< 0) for a nucleotide       | ``-3``         |
+|                                    | mismatch for J gene.               |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--j-gap-open-penalty`    | Penalty (> 0) to open a gap for    | ``6``          |
+|                                    | J gene.                            |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--j-gap-extend-penalty`  | Penalty (> 0) to extend a gap for  | ``6``          |
+|                                    | J gene.                            |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--j-wordsize`            | Word size to find hotspots by      | ``7``          |
+|                                    | BLAST for J gene.                  |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--j-evalue-cutoff`       | E-value                            | ``1e-5``       |
+|                                    | threshold for assigning J gene.    |                |   
++------------------------------------+------------------------------------+----------------+
+| :command:`--v-motif`               | The regular expression pattern     | ``YYC``        |
+|                                    | of the motif on V gene to identify |                |
+|                                    | CDR3 segment.                      |                |
+|                                    | (e.g, ``YYC`` and ``[FY]YC`` )     |                |   
++------------------------------------+------------------------------------+----------------+
+| :command:`--j-motif`               | The regular expression pattern     | ``WG.G``       |
+|                                    | of the motif on J gene to identify |                |
+|                                    | CDR3 segment.                      |                |
+|                                    | (e.g, ``WG.G``, ``FG.G``, and      |                |
+|                                    | ``[WF]G.G``)                       |                |   
++------------------------------------+------------------------------------+----------------+
 
 
 
@@ -158,9 +174,8 @@ Output
 ^^^^^^
 
 
-The :command:`parse` action generates some intermediate results with TSV format
+The :command:`parse` mode generates some intermediate results with TSV format
 and the final results with PYDAIR format.
-
 
 
 +--------------------------+------------+-----------------------------------------------------+
@@ -175,66 +190,71 @@ and the final results with PYDAIR format.
 +--------------------------+------------+-----------------------------------------------------+
 | *<prefix>*.d.blast.txt   | TSV        | BLAST results for D gene.                           |
 +--------------------------+------------+-----------------------------------------------------+
+| *<prefix>*.vj.pydair     | PYDAIR     | Intermediate result which lacks of results of D     |
+|                          |            | gene identification.                                |
++--------------------------+------------+-----------------------------------------------------+
 | *<prefix>*.vdj.pydair    | PYDAIR     | The final results of :command:`parse` mode.         |
 +--------------------------+------------+-----------------------------------------------------+
 
+Except for the :file:`<prefix>.vdj.pydair` file, other files can be removed to save disk space.
 
 
 
-stats action mode
-=================
 
-The :command:`stats` action mode summarizes the identification results
-and creates an HTML report.
+stats mode
+==========
+
+The :command:`stats` mode summarizes the identification results and creates an HTML report.
 
 
 Usage
 ^^^^^
 
-.. code-block:: bash
+.. code-block:: text
     
     pydair stats -i output1.pydair output2.pydair output3.pydair  \
                  -n Sample1 Sample2 Sample3                       \
                  -o stats_result
 
-The three options, i.e., ``-i``, ``-n``, and ``-o``
-are required options.
+
+The three options, i.e., :command:`-i`, :command:`-n`,
+and :command:`-o`, are required options.
 
 
 Option
 ^^^^^^
 
-+--------------------------------+------------------------------------+----------------+
-| Options                        | Descriptions                       | Default        |
-+================================+====================================+================+
-| ``-i``                         | Path to ``PYDAIR`` format files.   |                |
-|                                | Multiple files should be separated |                |
-|                                | by a blank.                        |                |
-+--------------------------------+------------------------------------+----------------+
-| ``-n``                         | Sample names of each ``PYDAIR``    |                |
-|                                | files. Multiple names should be    |                |
-|                                | separated by a blank.              |                |
-+--------------------------------+------------------------------------+----------------+
-| ``-o``                         | Prefix for writting results.       |                |
-+--------------------------------+------------------------------------+----------------+
-| ``--discard-ambiguous-D``      | If ``False``, summarize all        | ``False``      |
-|                                | sequences regardless the D segment |                |
-|                                | is identified or not.              |                |
-|                                | If ``True``, the summarization is  |                |
-|                                | performed after discarding         |                |
-|                                | sequences with ambiguous D         |                |
-|                                | segment.                           |                |
-+--------------------------------+------------------------------------+----------------+
-| ``--productive-only``          | If ``False``, summarize all        | ``False``      |
-|                                | sequences regardless productive or |                |
-|                                | nonproductive sequences.           |                |
-|                                | If ``True``, summarize only the    |                |
-|                                | productive sequences.              |                |
-+--------------------------------+------------------------------------+----------------+
-| ``--estimate-vdj-combination`` | If ``True``, perform rarefaction   | ``False``      |
-|                                | analysis to study the diversity of |                |
-|                                | VDJ combinations.                  |                |
-+--------------------------------+------------------------------------+----------------+
++---------------------------------------+------------------------------------+----------------+
+| Options                               | Descriptions                       | Default        |
++=======================================+====================================+================+
+| :command:`-i`                         | Path to ``PYDAIR`` format files.   |                |
+|                                       | Multiple files should be separated |                |
+|                                       | by a blank.                        |                |
++---------------------------------------+------------------------------------+----------------+
+| :command:`-n`                         | Sample names of each ``PYDAIR``    |                |
+|                                       | files. Multiple names should be    |                |
+|                                       | separated by a blank.              |                |
++---------------------------------------+------------------------------------+----------------+
+| :command:`-o`                         | Prefix for writting results.       |                |
++---------------------------------------+------------------------------------+----------------+
+| :command:`--discard-ambiguous-D`      | If ``False``, summarize all        | ``False``      |
+|                                       | sequences regardless the D segment |                |
+|                                       | is identified or not.              |                |
+|                                       | If ``True``, the summarization is  |                |
+|                                       | performed after discarding         |                |
+|                                       | sequences with ambiguous D         |                |
+|                                       | segment.                           |                |
++---------------------------------------+------------------------------------+----------------+
+| :command:`--productive-only`          | If ``False``, summarize all        | ``False``      |
+|                                       | sequences regardless productive or |                |
+|                                       | nonproductive sequences.           |                |
+|                                       | If ``True``, summarize only the    |                |
+|                                       | productive sequences.              |                |
++---------------------------------------+------------------------------------+----------------+
+| :command:`--estimate-vdj-combination` | If ``True``, perform rarefaction   | ``False``      |
+|                                       | analysis to study the diversity of |                |
+|                                       | VDJ combinations.                  |                |
++---------------------------------------+------------------------------------+----------------+
 
 
 
@@ -242,6 +262,8 @@ Option
 Output
 ^^^^^^
 
+The summarization results are saved in TSV format files and an HTML file.
+Users can open the HTML file with web browsers to check the summarization.
 
 +-------------------------------------+------------+-----------------------------------------------------+
 | File name                           | Format     | File contents                                       |
@@ -268,13 +290,162 @@ Output
 
 
 
+
+sim mode
+===============
+
+The :command:`sim` mode generates artificial IgH sequences and outputs as a FASTA file.
+
+Usage
+^^^^^
+
+.. code-block:: text
+    
+    pydair sim -n 10000 -o output_sim.fa \
+               --v-fasta v.fa \
+               --d-fasta d.fa \
+               --j-fasta j.fa
+    
+
+The option :command:`-n` is used for specifying the number of sequences should be generated,
+:command:`-o` is used for specifying file path to save the generated sequences.
+In addition, :command:`--v-fasta`, :command:`--d-fasta`, and :command:`--j-fasta` are used for
+specifiying the population pools for VDJ ramdom sampling.
+
+
+Options
+^^^^^^^
+
+In addition to the required options,
+the parameters of nucleotide additions, deletions and mutations can be specified.
+
++------------------------------------+------------------------------------+----------------+
+| Options                            | Description                        | Default        |
++====================================+====================================+================+
+| :command:`-n`                      | The number of sequences should be  | ``10000``      |
+|                                    | generated.                         |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`-o`                      | Path to file for writting results. |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--v-fasta`               | Path to FASTA file of V gene       |                |
+|                                    | sequence (the population for       |                |
+|                                    | sampling).                         |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--d-fasta`               | Path to FASTA file of D gene       |                |
+|                                    | sequence (the population for       |                |
+|                                    | sampling).                         |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--j-fasta`               | Path to FASTA file of J gene       |                |
+|                                    | sequence (the population for       |                |
+|                                    | sampling).                         |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--n-v-5del`              | The mean of Poisson distribution   | ``10``         |
+|                                    | that for sampling the number of    |                |
+|                                    | nucleotides deleting from 5'-end   |                |
+|                                    | of V gene.                         |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--n-v-3del`              | The mean of Poisson distribution   | ``3``          |
+|                                    | that for sampling the number of    |                |
+|                                    | nucleotides deleting from 3'-end   |                |
+|                                    | of V gene.                         |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--n-d-5del`              | The mean of Poisson distribution   | ``3``          |
+|                                    | that for sampling the number of    |                |
+|                                    | nucleotides deleting from 5'-end   |                |
+|                                    | of D gene.                         |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--n-d-3del`              | The mean of Poisson distribution   | ``3``          |
+|                                    | that for sampling the number of    |                |
+|                                    | nucleotides deleting from 3'-end   |                |
+|                                    | of D gene.                         |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--n-j-5del`              | The mean of Poisson distribution   | ``5``          |
+|                                    | that for sampling the number of    |                |
+|                                    | nucleotides deleting from 5'-end   |                |
+|                                    | of J gene.                         |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--n-j-3del`              | The mean of Poisson distribution   | ``10``         |
+|                                    | that for sampling the number of    |                |
+|                                    | nucleotides deleting from 3'-end   |                |
+|                                    | of J gene.                         |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--n-vd-ins`              | The mean of Poisson distribution   | ``5``          |
+|                                    | that for sampling the number of    |                |
+|                                    | nucleotides inserting into VD      |                |
+|                                    | junciton.                          |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--n-dj-ins`              | The mean of Poisson distribution   | ``5``          |
+|                                    | that for sampling the number of    |                |
+|                                    | nucleotides inserting into DJ      |                |
+|                                    | junciton.                          |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--p-mutation`            | The probability to mutate a        | ``0.05``       |
+|                                    | nucleotide.                        |                |
++------------------------------------+------------------------------------+----------------+
+
+
+
+
+
+
+eval mode
+================
+
+The :command:`eval` mode is used for evaluating performances of PyDAIR.
+This mode usually is used after :command:`sim` and :command:`parse` modes.
+
+
+.. code-block:: text
+    
+    pydair sim -n 10000 -o output_sim.fa \
+               --v-fasta v.fa \
+               --d-fasta d.fa \
+               --j-fasta j.fa
+    
+    pydair parse -q output_sim.fa \
+                 -o output1                \
+                 -v v.fa                   \
+                 -d d.fa                   \
+                 -j j.fa                   \
+                 --v-blastdb blastdb_v     \
+                 --d-blastdb blastdb_d     \
+                 --j-blastdb blastdb_j 
+    
+    pydair eval -o eval_result.txt
+                --sim-condition output_sim.fa \
+                --parse-result output1.vdj.pydair
+    
+
+The evaluation results are saved into text file with TSV format.
+
+
+Options
+^^^^^^^
+
++------------------------------------+------------------------------------+----------------+
+| Options                            | Description                        | Default        |
++====================================+====================================+================+
+| :command:`-o`                      | Path to file for writting results. |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--sim-condition`         | The FASTA file which generated by  |                |
+|                                    | :command:`sim` mode.               |                |
++------------------------------------+------------------------------------+----------------+
+| :command:`--parse-result`          | The PYDAIR file which generated by |                |
+|                                    | :command:`parse` mode.             |                |
++------------------------------------+------------------------------------+----------------+
+
+
+
+
+
+
 PYDAIR format
 =============
 
 PYDAIR format is an human readable text file format.
-Each entry in PYDAIR format file represents a result of
-VDJ identification and CDR3 segment identification for a query IgH sequence. 
 PYDAIR format file can contain multiple entries.
+Each entry in PYDAIR format file represents a result of
+V, D, J and CDR3 segment identification of a query IgH sequence. 
 In PYDAIR format, an entry is begin with ``#BEGIN`` and finished with ``#END``.
 
 
@@ -308,7 +479,7 @@ In PYDAIR format, an entry is begin with ``#BEGIN`` and finished with ``#END``.
 Each line begins with a 2-character line code
 that indicates the type of information contained in the line.
 There are 13 line codes defined.
-In addition, the line begining with a ``#`` is a comment line,
+The line begining with a ``#`` is a comment line,
 which gives additional information but not required.
 
 
@@ -377,152 +548,4 @@ The five columns indicates that the alignement start and end
 positions in query sequence,
 the alignemnt start and end positions in subject (V, D, J, unaligned, and CDR3) sequence,
 and the identity and BLAST score of alignemnt.
-
-
-
-
-sim action mode
-===============
-
-The :command:`sim` action mode generates artificial IgH sequences
-and outputs as a FASTA file.
-
-Usage
-^^^^^
-
-.. code-block:: bash
-    
-    pydair sim -n 10000 -o output_sim.fa \
-               --v-fasta v.fa \
-               --d-fasta d.fa \
-               --j-fasta j.fa
-    
-
-The option `-n` is used for specifying the number of sequences should be generated,
-`-o` is used for specifying file path to save the generated sequences.
-In addition, `--v-fasta`, `--d-fasta`, and `--j-fasta` is used for
-specifiying the population pools for VDJ ramdom sampling.
-
-
-Options
-^^^^^^^
-
-In addition to the required options,
-the parameters of nucleotide additions, deletions and mutations can be specified.
-
-+-----------------------------+------------------------------------+----------------+
-| Options                     | Description                        | Default        |
-+=============================+====================================+================+
-| ``-n``                      | The number of sequences should be  | `10000`        |
-|                             | generated.                         |                |
-+-----------------------------+------------------------------------+----------------+
-| ``-o``                      | Path to file for writting results. |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--v-fasta``               | Path to FASTA file of V gene       |                |
-|                             | sequence (the population for       |                |
-|                             | sampling).                         |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--d-fasta``               | Path to FASTA file of D gene       |                |
-|                             | sequence (the population for       |                |
-|                             | sampling).                         |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--j-fasta``               | Path to FASTA file of J gene       |                |
-|                             | sequence (the population for       |                |
-|                             | sampling).                         |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--n-v-5del``              | The mean of Poisson distribution   | ``10``         |
-|                             | that for sampling the number of    |                |
-|                             | nucleotides deleting from 5'-end   |                |
-|                             | of V gene.                         |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--n-v-3del``              | The mean of Poisson distribution   | ``3``          |
-|                             | that for sampling the number of    |                |
-|                             | nucleotides deleting from 5'-end   |                |
-|                             | of V gene.                         |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--n-d-5del``              | The mean of Poisson distribution   | ``3``          |
-|                             | that for sampling the number of    |                |
-|                             | nucleotides deleting from 5'-end   |                |
-|                             | of D gene.                         |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--n-d-3del``              | The mean of Poisson distribution   | ``3``          |
-|                             | that for sampling the number of    |                |
-|                             | nucleotides deleting from 5'-end   |                |
-|                             | of D gene.                         |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--n-j-5del``              | The mean of Poisson distribution   | ``5``          |
-|                             | that for sampling the number of    |                |
-|                             | nucleotides deleting from 5'-end   |                |
-|                             | of J gene.                         |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--n-j-3del``              | The mean of Poisson distribution   | ``10``         |
-|                             | that for sampling the number of    |                |
-|                             | nucleotides deleting from 5'-end   |                |
-|                             | of J gene.                         |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--n-vd-ins``              | The mean of Poisson distribution   | ``5``          |
-|                             | that for sampling the number of    |                |
-|                             | nucleotides inserting into VD      |                |
-|                             | junciton.                          |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--n-dj-ins``              | The mean of Poisson distribution   | ``5``          |
-|                             | that for sampling the number of    |                |
-|                             | nucleotides inserting into DJ      |                |
-|                             | junciton.                          |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--p-mutation``            | The probability to mutate a        | ``0.05``       |
-|                             | nucleotide.                        |                |
-+-----------------------------+------------------------------------+----------------+
-
-
-
-
-
-
-eval action mode
-================
-
-The :command:`eval` action mode is used for evaluating performances of PyDAIR.
-It usually used after ``sim`` and ``parse`` mode.
-
-.. code-block:: bash
-    
-    pydair sim -n 10000 -o output_sim.fa \
-               --v-fasta v.fa \
-               --d-fasta d.fa \
-               --j-fasta j.fa
-    
-    pydair parse -q output_sim.fa \
-                 -o output1                \
-                 -v v.fa                   \
-                 -d d.fa                   \
-                 -j j.fa                   \
-                 --v-blastdb blastdb_v     \
-                 --d-blastdb blastdb_d     \
-                 --j-blastdb blastdb_j 
-    
-    pydair eval -o eval_result.txt
-                --sim-condition output_sim.fa \
-                --parse-result output1.vdj.pydair
-    
-
-The results are saved into text file with TSV format.
-
-
-Options
-^^^^^^^
-
-+-----------------------------+------------------------------------+----------------+
-| Options                     | Description                        | Default        |
-+=============================+====================================+================+
-| ``-o``                      | Path to file for writting results. |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--sim-condition``         | The FASTA file which generated by  |                |
-|                             | `sim` action mode.                 |                |
-+-----------------------------+------------------------------------+----------------+
-| ``--parse-result``          | The PYDAIR file which generated by |                |
-|                             | `parse` action mode.               |                |
-+-----------------------------+------------------------------------+----------------+
-
-
 

@@ -3,45 +3,38 @@ Case studies
 ============
 
 
-The procedures of several case studies with PyDAIR are shown in this page.
-The study sets can be downloaded via :command:`git clone` command from
-`GitHub PyDAIR repository <https://github.com/bioinfoteam/PyDAIR>`_.
+There are 3 examples to study IgH sequence diversity by using PyDAIR written in this page.
+The datasets of these three examples can be downloaded from
+`GitHub PyDAIR repository <https://github.com/biunit/PyDAIR>`_
+via :command:`git` command.
 
 
-.. code-block:: bash
+.. code-block:: text
     
-    git clone git@github.com:bioinfoteam/PyDAIR.git
+    git clone git@github.com:biunit/PyDAIR.git
 
 
-All study sets are saved in the :file:`casestudies` directory
-of the downloaded :file:`PyDAIR` directory.
+Datasets of these three exmaples, named *simdata*, *hiv*, and *fugu*,
+are stored in the :file:`PyDAIR/casestudies` directory.
 
 
-.. code-block:: bash
+.. code-block:: text
     
-    cd PyDAIR
-    cd casestudies
+    cd PyDAIR/casestudies
     ls
-    ## hiv       mouse     simdata   zebrafish
+    ## fugu   hiv     simdata
 
 
-
-+-------------+---------+-------------------------------------------------------------+
-| dataset     | samples | description                                                 |
-+=============+=========+=============================================================+
-| *simdata*   |       1 | Artificial sequences of human IgH.                          |
-+-------------+---------+-------------------------------------------------------------+
-| *hiv*       |       2 | Human HIV-1-neutralizing antibody repertoires.              |
-+-------------+---------+-------------------------------------------------------------+
-| *mouse*     |       2 | Mouse IgH sequences.                                        |
-+-------------+---------+-------------------------------------------------------------+
-| *zebrafish* |      14 | Zebrafish IgH sequences.                                    |
-+-------------+---------+-------------------------------------------------------------+
-
-
-
---------------------------------------------------------------------
-
++-------------+---------+--------+----------------------------------------------------------------+
+| dataset     | samples | reads  | description                                                    |
++=============+=========+========+================================================================+
+| *simdata*   |       1 | single | A case study for evaluating PyDAIR performances with           |
+|             |         |        | artificial IgH sequences.                                      |
++-------------+---------+--------+----------------------------------------------------------------+
+| *hiv*       |       2 | single | Human HIV-1-neutralizing antibody repertoires.                 |
++-------------+---------+--------+----------------------------------------------------------------+
+| *fugu*      |       3 | paired | Takifugu IgT and IgM sequences.                                |
++-------------+---------+--------+----------------------------------------------------------------+
 
 
 
@@ -51,22 +44,62 @@ of the downloaded :file:`PyDAIR` directory.
 Analysis of `simdata` dataset
 =============================
 
-We use :command:`sim` mode to generate 10,000 artificial IgH sequences using
-human VDJ genes.
+We show the procedure to evaluate PyDAIR performances with artificial IgH sequences.
+The procedure can be described as three steps:
+(i) generate artificial IgH sequences with :command:`sim` mode;
+(ii) analyze the artificial IgH sequences with :command:`parse` and :command:`stats` modes;
+and (iii) evaluate PyDAIR performances with :command:`eval` mode.
 
-.. code-block:: bash
+
+Artificial sequence generation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We use :command:`sim` mode to generate 10,000 artificial IgH sequences.
+:command:`sim` mode can randomly choose single of V, D, J genes from FASTA files
+which are stored in the :file:`db` directory,
+and merged the VDJ genes into a sequence after random mutations.
+
+
+.. code-block:: text
+    
     cd simdata
     pydair sim -n 10000 -o ./data/simseq.fa \
                -v ./db/human.ighv.fa \
                -d ./db/human.ighd.fa \
                -j ./db/human.ighj.fa
-    
 
-Sequences of V, D, and J genes of human IgH are saved in the :file:`db` directory.
-We use :command:`makeblast` command to create BLAST databases of V, D, and J genes.
+
+The artificial IgH sequences are stored in :file:`data/simseq.fa` file.
+The sequence headers include the simulated conditions such as selected VDJ genes,
+5' and 3' deletions and V-D and D-J insertions.
 
 
 .. code-block:: bash
+    
+    head ./data/simseq.fa
+    ## >SEQ-000000001|IGHV3-30*02|IGHD1-14*01|IGHJ2*01|V5DEL:CAGGTGCA|V3DEL:AGA|D5DEL:G|D3DEL:|J5DEL:CTACTGG|J3DEL:CTCCTCAG|VDINS:ACAC|DJINS:CT
+    ## GCTGGAGGAGTCTGGGGGAGGCGTGGTCCAGCCTGGGGGGTCCATGAGTCTCTCCTGTGCAGCGTCTGGATTCACCTTCAGTAGCTATGGCATGCACTGGGCCCGCCAGGCTCCAGGCAAGGGGCTGGAGAGGGTGGCATTTATACCGTATGATGGAATTATTAAATACTATGCAGACCCGTGAAGGGCCGATCACCATCTCCACAGACATTTCCAAGAACACGCTGTATCTGCAAATGAACAGCCCGAGAGCTGAGGACGCGGCTGTGTATTACTGTGCGAAACACGTATAACCGGAACCACCTTACTGCGATCTCTGGGGCCGTGGCACCCTGGTCACAGT
+    ## >SEQ-000000002|IGHV3-49*04|IGHD2/OR15-2a*01|IGHJ3*01|V5DEL:GAGGTGCAGCTG|V3DEL:AGAGA|D5DEL:A|D3DEL:ATGCC|J5DEL:TGATGC|J3DEL:ACCGTCTCTTCAG|VDINS:ATAT|DJINS:TTGTTC
+    ## GTGGAGTCTGGGGGAGGCTTGGTACAGCCAGGGCGGTTCCTGAGACTCTCCTGTACAGCTTCTGGATTCACCTTTGGTGATTAGCTATGAGCTGGGTCCGCCAGGCTCCAGGGAGGGGCTGGAGTGGGTAGGTTTCATGAGAAGCAAAGATTATGGTGGGACAACAGAATACGCCGCGTCTGTGAAGGCAGATTCACCATCTCAAGTGATGATTCCAAAAGCATCGCCTATTGCAAATGAACAGCCTGAAAACCGAGGAACAGCCGTGTATCACTGTACTATTTGAATATTGTAATAGTACTACTTTCTTTGTTCTTTTGATGTCTGGGGCCAAGGGACAATGGTC
+    ## >SEQ-000000003|IGHV3-66*02|IGHD2-15*01|IGHJ6*01|V5DEL:GAGGTGCAGCTG|V3DEL:GAGA|D5DEL:|D3DEL:TCC|J5DEL:ATTACT|J3DEL:CCGTCTCCTCAG|VDINS:AA|DJINS:GG
+    ## GTGGAGTCTGGGGAAGGCTTGGTCCAGCCTGGGGGGTCCCTGAGACTCTCCTGTGCAGCCTCTGGATTCACCGTCAGTAGCAACTACATGAGCTGGGTCCGCCAGGCTCCAGGGAAGGGGCTGGAGTGGGTCTCAGTTATTTATAGAGGTGGTGGCACATACTACGCAGATCGGTGAAGGGCCGATACACCACCTCCAGAGACAATTCCAAGAACACGCTGTATCTCAAATCACAGCCTGAGAGCTGAGGACACGGCTGTGTATTACTGTGCAAAGGATATTGTAGTGGTGGTAGCTGCTACGGACTACTGCTAAGCTATGGACGTCTGGGGGCAAGGGACACGGTCA
+    ## >SEQ-000000004|IGHV7-40*03|IGHD3-10*02|IGHJ4*02|V5DEL:TTTTCAAT|V3DEL:GAGAGA|D5DEL:G|D3DEL:TAAC|J5DEL:ACTA|J3DEL:CGTCTCCTCAG|VDINS:ATCCG|DJINS:GCCCTACC
+    ## AGAAAAGTCATATAATCTAAGTGTCAATCCGTGGATGTTAGATAAAATATGATATATGTAAATCATGGAATACTGGCAGCCAGCATGGTATGAATTCAGTGTGTCTAGCCCCTGGACAAGGGCTTGAGTGGATGGGATGGATCATCACCTACACTGGGAACCCAACATATACCAACGGCTTCACAGGACGGTTTCTATTCTCCATGGACACCTCTGTCAGCATGGCGTATCTGCAGATCAGCAGCCTAAAGGCTGAGGACACGGCCGTGTATGACTGTATATCCGTATCACTATGTTCGGGGAGTTGTTAGCCCTACCCTTTGACTACTCGGCCAGGGAACGCTGGTCAC
+    ## >SEQ-000000005|IGHV3-7*03|IGHD4-4*01|IGHJ4*03|V5DEL:GAGGTGCAG|V3DEL:AGAGA|D5DEL:T|D3DEL:C|J5DEL:GCTA|J3DEL:CGTCTCCTCAG|VDINS:GAGCTGTCT|DJINS:ATTCGC
+    ## CTGGTGGAGTCTGGGGGAGGCTTGGTCTAGCCTGGGGGGTCCCGAGACTCTCCTGTGCAGGCTCGGGATTCACCTTTAGTAGCTATTGGATCAGCTGGGTCCGCCAGGCTCGAGGGAAGGGGTTGGAGTGGGTGGCCAACATAAAGATAGATGGAAGTGAGAAATACTATGTGGACTCTGTGAAGGGCCGATTTACCATCTCCAGAGACAACGCCAAGAACTCACTTATCTGCAAATGAACAGCCTGAGAGCCGAGCACACGGCCGTGTATTCCTGTGCGGAGCAGTCTGACTACAGTAACTAATTCGTCTTGGACTACTGGGGCCAAGGGACCCTGGTCAC
+
+
+
+Sequence diversity study
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+We then use :command:`parse` and :command:`stats` modes to analyze the artificial IgH sequences.
+Since :command:`parse` mode internally uses BLAST to identify VDJ segments,
+it is required to create BLAST databases with :command:`makeblast` command.
+
+
+
+.. code-block:: text
     
     cd db
     makeblastdb -in human.ighv.fa -out vdb -dbtype nucl -parse_seqids
@@ -75,61 +108,59 @@ We use :command:`makeblast` command to create BLAST databases of V, D, and J gen
     cd ../
 
 
-After we prepared IgH sequences (:file:`simdata.fa`) and BLAST databases
-(:file:`ighv` :file:`ighd` :file:`ighj`), we use :command:`pydair parse`
-command to identify V, D, J, and CDR3 segments.
+Then, we analyze the artificial sequences using :command:`parse` mode
+and summarizing the analyzed results using :command:`stats`.
 
 
-.. code-block:: bash
+.. code-block:: text
     
-    pydair parse -q data/simseq.fa    \
+    mkdir results
+    
+    pydair parse -q data/simseq.fa     \
                  -v ./db/human.ighv.fa \
                  -d ./db/human.ighd.fa \
                  -j ./db/human.ighj.fa \
                  --v-blastdb ./db/vdb  \
                  --d-blastdb ./db/ddb  \
                  --j-blastdb ./db/jdb  \
-                 -o results/simseq
+                 -o ./results/simseq
 
-
-The results will be saved into :file:`results` directory with
-the prefix of :file:`simdata`.
-
-Then, we use :command:`pydair stats` to summarize the anlaysis results.
-
-
-.. code-block:: bash
-    
     pydair stats -i ./results/simseq.vdj.pydair \
                  -n simdata \
                  -o ./results/simseq \
                  --estimate-vdj-combination
 
 
-The summarized results are saved into :file:`results` directory with
-the prefix of :file:`simdata`,
-and the HTML report (:download:`simdata.report.html`) will be saved.
+The summarized statistics are saved into :file:`results` directory
+with the prefix of :file:`simseq`.
+In addition, the summarization report is saved as HTML format file
+(:download:`simseq.report.html`).
 
-To calculate the performace, use :command:`eval` mode.
+After executions of :command:`sim`, :command:`parse`, and :command:`stats` modes,
+we finally use :command:`eval` mode to calculate the number of
+correctly and incorrectly VDJ identifications.
 
-.. code-block:: bash
+
+.. code-block:: text
+    
     pydair eval -o ./results/eval.results.txt \
                 --sim-condition ./data/simseq.fa \
                 --parse-result ./results/simseq.vdj.pydair
+    
+    cat ./results/eval.results.txt
+    ##
+    ## 
+    ##
+    ##
 
 
 
-
-
-
-
-
---------------------------------------------------------------------
 
 
 
 Analysis of `hiv` dataset
 =========================
+
 
 .. note:: To perform analysis from FASTQ file, user may need to install 
           `NCBI SRA Toolkit <https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software>`_,
@@ -137,46 +168,19 @@ Analysis of `hiv` dataset
           and `cutadapt <http://cutadapt.readthedocs.io/en/stable/index.html>`_.
 
 
-We show the precedures for repertoire diversity study of
-human immunoglobulin heavy (IgH) chains from B cell with PyDAIR.
-The IgH sequences were sequenced from the two donors IVAI84 and N152 using 454 pyrosequencing
-in\ [#Zhu2013]_.
-IgH sequence in IAVI84 donor is broadly contained neutralizing antibodies,
+We here show an example to analyze human IgH sequences with PyDAIR.
+The IgH sequences, we will use here, were sequenced from the two donors
+IVAI84 and N152 using 454 pyrosequencing in Zhu et al paper\ [#Zhu2013]_.
+IgH sequences in IAVI84 donor is broadly contained neutralizing antibodies,
 and N152 is the brodly neutralizing antibody 10E8 was recently identified in HIV-1-infected donor.
 
+All data can be obtained from NCBI SRA with NCBI SRA Toolkit with the
+accession numbers of SRR654169 and SRR654171.
 
-The *hiv* dataset are saved in :file:`hiv` directory.
-We use :command:`cd` command to go to :file:`hiv` directory.
 
-
-.. code-block:: bash
+.. code-block:: text
     
-    cd PyDAIR/casestudies/hiv
-
-
-Before analysis, we create BLAST database with human
-germline gene sequences using :command:`makeblastdb`.
-
-
-.. code-block:: bash
-    
-    cd db
-    makeblastdb -in human.ighv.fa -out vdb -dbtype nucl -parse_seqids
-    makeblastdb -in human.ighd.fa -out ddb -dbtype nucl -parse_seqids
-    makeblastdb -in human.ighj.fa -out jdb -dbtype nucl -parse_seqids
-    cd ../
-
-
-The IgH sequencing data for the two donors are available on
-`NCBI SRA <www.ncbi.nlm.nih.gov/sra>`_ with the accession number of SRR654169 and SRR654171,
-while SRR654169 is sequenced from IAVI84 donor
-and SRR654171 is sequenced from N152 donor.
-We use 
-`NCBI SRA Toolkit <https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software>`_
-to downlaod Rep-Seq data and covert them to FASTQ format file.
-
-
-.. code-block:: bash
+    cd hiv
     
     prefetch SRR654169
     prefetch SRR654171
@@ -184,12 +188,12 @@ to downlaod Rep-Seq data and covert them to FASTQ format file.
     fastq-dump SRR654171 -O ./data/
 
 
-Both FASTQ files contain IgH and IgL sequences.
-We use `cutadapt <http://cutadapt.readthedocs.io/en/stable/index.html>_`
+Since the original data consists of both IgH and IgL sequences,
+we use `cutadapt <http://cutadapt.readthedocs.io/en/stable/index.html>`_
 to extract the IgH sequences according to the primers.
 
 
-.. code-block:: bash
+.. code-block:: text
     
     cutadapt -g VH15L=CCATCTCATCCCTGCGTGTCTCCGACTCAGACAGGTGCCCACTCCCAGGTGCAG \
              -g VH15L2=CCATCTCATCCCTGCGTGTCTCCGACTCAGGCAGCCACAGGTGCCCACTCC \
@@ -204,62 +208,64 @@ to extract the IgH sequences according to the primers.
              -g VH34L3=CCATCTCATCCCTGCGTGTCTCCGACTCAGGTTGCAGTTTTAAAAGGTGTCCAGTG \
              --discard-untrimmed -m 300 -o ./data/SRR654171.p.fastq -O 10 -e 0.3 \
              ./data/SRR654171.fastq
-    
 
 
 High-throughput sequencing data generally contains low qualities reads.
-We use 
-`Trimmomatic <http://www.usadellab.org/cms/?page=trimmomatic>`_
-to removed the low quality reads.
+Here we use `Trimmomatic <http://www.usadellab.org/cms/?page=trimmomatic>`_
+to removed such low quality reads.
 
 
-.. code-block:: bash
-    
-    fastqc ./data/SRR654169.p.fastq -o ./data/ -q --nogroup
-    fastqc ./data/SRR654171.p.fastq -o ./data/ -q --nogroup
+.. code-block:: text
     
     trimmomatic SE -phred33 ./data/SRR654169.p.fastq ./data/SRR654169.qc.fastq TRAILING:30 MINLEN:300
     trimmomatic SE -phred33 ./data/SRR654171.p.fastq ./data/SRR654171.qc.fastq TRAILING:30 MINLEN:300
     
-    fastqc ./data/SRR654169.qc.fastq -o ./data/ -q --nogroup
-    fastqc ./data/SRR654171.qc.fastq -o ./data/ -q --nogroup
 
-
-After trimming of low quality bases and removing low short sequences,
+After trimming of low quality bases and removing short sequences,
 we convert FASTQ format file to FASTA format file
-with :command:`awk` and "command:`sed` commands.
+with :command:`awk` and :command:`sed` commands.
 
 
-.. code-block:: bash
+.. code-block:: text
     
     awk 'NR % 4 == 1 || NR % 4 == 2' ./data/SRR654169.qc.fastq | sed -e 's/^@/\>/' > ./data/SRR654169.fa
     awk 'NR % 4 == 1 || NR % 4 == 2' ./data/SRR654171.qc.fastq | sed -e 's/^@/\>/' > ./data/SRR654171.fa
 
 
-As mentioned above, pydair parse was used to assign VDJ genes and define CDR3 sequences.
-Analysis results were summarized via pydair stats. All the summarized data are saved into
-results directory with prefix stats.
-We use :command:`pydair parse` command to assign VDJ genes and determine CDR3 sequence.
+After preprocessing of Ig-Seq data,
+we then prepared BLAST databases with human VDJ gene sequences.
 
 
-.. code-block:: bash
+.. code-block:: text
+    
+    cd db
+    makeblastdb -in human.ighv.fa -out vdb -dbtype nucl -parse_seqids
+    makeblastdb -in human.ighd.fa -out ddb -dbtype nucl -parse_seqids
+    makeblastdb -in human.ighj.fa -out jdb -dbtype nucl -parse_seqids
+    cd ../
+
+
+Finally, we use :command:`parse` mode to assign VDJ genes and determine CDR3 sequence for each FASTA file.
+
+.. code-block:: text
     
     pydair parse -q ./data/SRR654169.fa \
                  -v ./db/human.ighv.fa -d ./db/human.ighd.fa -j ./db/human.ighj.fa \
                  --v-blastdb ./db/vdb --d-blastdb ./db/ddb --j-blastdb ./db/jdb \
                  -o ./results/SRR654169
+    
     pydair parse -q ./data/SRR654171.fa \
                  -v ./db/human.ighv.fa -d ./db/human.ighd.fa -j ./db/human.ighj.fa \
                  --v-blastdb ./db/vdb --d-blastdb ./db/ddb --j-blastdb ./db/jdb \
                  -o ./results/SRR654171
 
 
-Then, we use :command:`pydair stats` command to summarize the analysis results.
-All summarized data are saved into :file:`results` directory with prefix `hiv`,
+Then, we use :command:`stats` mode to summarize the analysis results.
+All summarized data are saved into :file:`results` directory with prefix :file:`hiv`,
 and the summarized report (:download:`hiv.report.html`) will be saved.
 
 
-.. code-block:: bash
+.. code-block:: text
     
     pydair stats -i ./results/SRR654171.vdj.pydair ./results/SRR654169.vdj.pydair \
                  -n N152 IAVI84 \
@@ -268,279 +274,223 @@ and the summarized report (:download:`hiv.report.html`) will be saved.
 
 
 
---------------------------------------------------------------------
 
 
 
-Analysis of `mouse` dataset
-=============================
-
-The datasets contains two mice of C57BL/6 and BALB/c.
-Data is from\ [#Collins2015]_.
-
-First, we use :command:`git clone` command to download
-the case study set that consists of
-human germline genes in FASTA format from
-`GitHub PyDAIR repository <https://github.com/bioinfoteam/PyDAIR>`_.
 
 
-.. code-block:: bash
-    
-    git clone git@github.com:bioinfoteam/PyDAIR.git
-
-
-The data are saved in :file:`PyDAIR/casestudies/mouse`.
-We use :command:`cd` command to go to :file:`hiv` directory.
-
-
-.. code-block:: bash
-    
-    cd PyDAIR/casestudies/mouse
-
-
-Before analysis, we create BLAST database with human
-germline gene sequences using :command:`makeblastdb`.
-
-
-.. code-block:: bash
-    
-    cd db
-    makeblastdb -in mouse.ighv.fa -out vdb -dbtype nucl -parse_seqids
-    makeblastdb -in mouse.ighd.fa -out ddb -dbtype nucl -parse_seqids
-    makeblastdb -in mouse.ighj.fa -out jdb -dbtype nucl -parse_seqids
-    cd ../
-
-
-
-.. code-block:: bash
-    
-    wget -c ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR849/ERR849859/ERR849859.fastq.gz
-    wget -c ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR849/ERR849860/ERR849860.fastq.gz
-    gunzip ERR849859.fastq.gz
-    gunzip ERR849860.fastq.gz
-
-
-High-throughput sequencing data generally contains low qualities reads.
-We use 
-`Trimmomatic <http://www.usadellab.org/cms/?page=trimmomatic>`_
-to removed the low quality reads.
-
-
-.. code-block:: bash
-    
-    fastqc ./data/ERR849859.fastq -o ./data/ -q --nogroup
-    fastqc ./data/ERR849860.fastq -o ./data/ -q --nogroup
-    
-    trimmomatic SE -phred33 ./data/ERR849859.fastq ./data/ERR849859.qc.fastq HEADCROP:10 TRAILING:30 MINLEN:300
-    trimmomatic SE -phred33 ./data/ERR849860.fastq ./data/ERR849860.qc.fastq HEADCROP:10 TRAILING:30 MINLEN:300
-    
-    fastqc ./data/ERR849859.qc.fastq -o ./data/ -q --nogroup
-    fastqc ./data/ERR849860.qc.fastq -o ./data/ -q --nogroup
-
-
-After trimming of low quality bases and removing low short sequences,
-we convert FASTQ format file to FASTA format file
-with :command:`awk` and "command:`sed` commands.
-
-
-.. code-block:: bash
-    
-    awk 'NR % 4 == 1 || NR % 4 == 2' ./data/ERR849859.fastq | sed -e 's/^@/\>/' > ./data/ERR849859.fa
-    awk 'NR % 4 == 1 || NR % 4 == 2' ./data/ERR849860.fastq | sed -e 's/^@/\>/' > ./data/ERR849860.fa
-
-
-As mentioned above, pydair parse was used to assign VDJ genes and define CDR3 sequences.
-Analysis results were summarized via pydair stats. All the summarized data are saved into
-results directory with prefix stats.
-We use :command:`pydair parse` command to assign VDJ genes and determine CDR3 sequence.
-
-
-.. code-block:: bash
-    
-    pydair parse -q ./data/ERR849859.fa \
-                 -v ./db/mouse.ighv.fa -d ./db/mouse.ighd.fa -j ./db/mouse.ighj.fa \
-                 --v-blastdb ./db/vdb --d-blastdb ./db/ddb --j-blastdb ./db/jdb \
-                 -o ./results/ERR849859
-    pydair parse -q ./data/ERR849860.fa \
-                 -v ./db/mouse.ighv.fa -d ./db/mouse.ighd.fa -j ./db/mouse.ighj.fa \
-                 --v-blastdb ./db/vdb --d-blastdb ./db/ddb --j-blastdb ./db/jdb \
-                 -o ./results/ERR849860
-
-
-Then, we use :command:`pydair stats` command to summarize the analysis results.
-All summarized data are saved into :file:`results` directory with prefix `stats`.
-The summarized report (:download:`mouse.report.html`) will be saved.
-
-.. code-block:: bash
-    
-    pydair stats -i ./results/ERR849859.vdj.pydair ./results/ERR849860.vdj.pydair \
-                 -n ERR849859 ERR849860 \
-                 -o ./results/mouse \
-                 --estimate-vdj-combination
-    
-
---------------------------------------------------------------------
-
-
-Analysis of `zebrafish` dataset
+Analysis of `fugu` dataset
 ==========================================
 
 .. note:: To perform analysis from FASTQ file, one may need to install 
           `NCBI SRA Toolkit <https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software>`_
+          `cutadapt <http://cutadapt.readthedocs.io/en/stable/index.html>`_,
           and `Trimmomatic <http://www.usadellab.org/cms/?page=trimmomatic>`_.
 
-We show the precedures for repertoire diversity study of
-zebrafish immunoglobulin in IgM and IgZ with PyDAIR.
-The IgZ and IgM sequences were sequenced from 14 zebrafish\ [#Weinstein2009]_.
+The protocol shows the diversity analysis of torafugu IgM and IgT sequences with PyDAIR.
 
-First, we used :command:`git clone` command to download the case study set that consist of
-zebrafish germline genes in FASTA format from
-`GitHub PyDAIR repository <https://github.com/bioinfoteam/PyDAIR>`_.
+First of all, we create BLAST databases of VDJ genes of torafugu.
+To decrease false positives caused by BLAST, we create databases of
+D and J genes for IgM and IgT, separately.
+Moreover, we also create databases of V genes for each V family (i.e., V1, V2, and V3).
 
 
-.. code-block:: bash
+.. code-block:: text
     
-    git clone git@github.com:bioinfoteam/PyDAIR.git
+    #git clone git@github.com:bioinfoteam/PyDAIR.git
+    cd PyDAIR/casestudies/fugu
 
-
-The data are saved in :file:`PyDAIR/casestudies/zebrafish`.
-We use :command:`cd` command to go to :file:`zebrafish` directory.
-
-
-.. code-block:: bash
-    
-    cd PyDAIR/casestudies/zebrafish
-
-
-
-Before analysis, we create BLAST database with human
-germline gene sequences using :command:`makeblastdb`.
-
-
-.. code-block:: bash
-    
     cd db
-    makeblastdb -in zebrafish.ighv.fa -out vdb -dbtype nucl -parse_seqids
-    makeblastdb -in zebrafish.ighd.fa -out ddb -dbtype nucl -parse_seqids
-    makeblastdb -in zebrafish.ighj.fa -out jdb -dbtype nucl -parse_seqids
+    makeblastdb -in V1.fa -out v1db -dbtype nucl -parse_seqids
+    makeblastdb -in V2.fa -out v2db -dbtype nucl -parse_seqids
+    makeblastdb -in V3.fa -out v3db -dbtype nucl -parse_seqids
+    makeblastdb -in Dm.fa -out dmdb -dbtype nucl -parse_seqids
+    makeblastdb -in Dt.fa -out dtdb -dbtype nucl -parse_seqids
+    makeblastdb -in Jm.fa -out jmdb -dbtype nucl -parse_seqids
+    makeblastdb -in Jt.fa -out jtdb -dbtype nucl -parse_seqids
     cd ../
 
 
-The IgH sequencing data for the two donors are available on
-`NCBI SRA <www.ncbi.nlm.nih.gov/sra>`_ with the accession number of SRR654169 and SRR654171,
-while SRR654169 is sequenced from IAVI84 donor
-and SRR654171 is sequenced from N152 donor.
-We use 
-`NCBI SRA Toolkit <https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software>`_
-to downlaod Rep-Seq data and covert them to FASTQ format file.
+Then, we download Ig-Seq data from DDBJ SRA using :command:`wget` command.
 
-.. code-block:: bash
+
+
+.. code-block:: text
     
-    sra=("SRR017328" "SRR017329" "SRR017330" "SRR017331" "SRR017332" "SRR017333" "SRR017334" \
-         "SRR017335" "SRR017336" "SRR017337" "SRR017338" "SRR017339" "SRR017340" "SRR017341")
+    ftp://ftp.ddbj.nig.ac.jp/ddbj_database/dra/DRA004/DRA004021/......./DRA004021_1.fastq.bz2
+    ftp://ftp.ddbj.nig.ac.jp/ddbj_database/dra/DRA004/DRA004021/......./DRA004021_2.fastq.bz2
+    ftp://ftp.ddbj.nig.ac.jp/ddbj_database/dra/DRA004/DRA004021/......./DRA004022_1.fastq.bz2
+    ftp://ftp.ddbj.nig.ac.jp/ddbj_database/dra/DRA004/DRA004021/......./DRA004022_2.fastq.bz2
+    ftp://ftp.ddbj.nig.ac.jp/ddbj_database/dra/DRA004/DRA004021/......./DRA004023_1.fastq.bz2
+    ftp://ftp.ddbj.nig.ac.jp/ddbj_database/dra/DRA004/DRA004021/......./DRA004023_2.fastq.bz2
+        
+    bzip2 -d DRA004021_1.fastq.bz2
+    bzip2 -d DRA004021_2.fastq.bz2
+    bzip2 -d DRA004022_1.fastq.bz2
+    bzip2 -d DRA004022_2.fastq.bz2
+    bzip2 -d DRA004023_1.fastq.bz2
+    bzip2 -d DRA004023_2.fastq.bz2
     
-    for sid in ${sra[@]}
+    mv DRA004021_1.fastq fugu1_1.fastq
+    mv DRA004021_2.fastq fugu1_2.fastq
+    mv DRA004022_1.fastq fugu2_1.fastq
+    mv DRA004022_2.fastq fugu2_2.fastq
+    mv DRA004023_1.fastq fugu3_1.fastq
+    mv DRA004023_2.fastq fugu3_2.fastq
+    
+
+
+We sort of Ig-Seq reads based on the primers (i.e., (V1, V2, V3) x (Ct, Cm))
+using `cutadapt <http://cutadapt.readthedocs.io/en/stable/index.html>`_.
+
+
+.. code-block:: text
+
+    for (( i = 1; i < 4; ++i ))
     do
-        prefetch ${sid}
-        fastq-dump ${sid} -O ./data/
+        for (( j = 1; j < 3; ++j ))
+        do
+            cutadapt -g  nFVH1=CTGACCCAGTCTGAACCAGT   \
+                     -g  nFVH2=TGAACAGTTGACACAGCCAGC  \
+                     -g  nFVH3=GCCTGAAGTAAAAAGACCTGGA \
+                     -g nVhCm1=CGTTCATGGTTGGAGGGTAC   \
+                     -g nVhCt1=TCTGGGAAGAAGTCGAGAGC   \
+                     --info-file fugu${i}_${j}.primers.info.txt \
+                     --untrimmed-output /dev/null -o /dev/null  \
+                     -O 10 -e 0.2 fugu${i}_${j}.fq >> log.cutadapt.txt
+        done    
     done
 
-
-
-Both FASTQ files contain IgH and IgL sequences.
-We use `cutadapt <http://cutadapt.readthedocs.io/en/stable/index.html>`_
-to extract the IgH sequences according to the primers.
-
-.. code-block:: bash   
-    
-    for sid in ${sra[@]}
+    for (( i = 1; i < 4; ++i ))
     do
-        cutadapt -g IGM=TGCACTGAGACAAACCGAAG -g IGZ=TCAGAGGCCAGACATCCAAT \
-                 --discard-untrimmed -m 300 -o ./data/${sid}.p.fastq -O 10 -e 0.3 \
-                 --info-file ./results/${sid}.primers.info.txt \
-                 ./data/${sid}.fastq
-        python ./bin/read_classify.py ./results/${sid}.primers.info.txt \
-                                  ./data/${sid}.fastq \
-                                  ./data/${sid}.x
+        python ../bin/read_classify.py --fq1 fugu${i}_1.fq --fq2 fugu${i}_2.fq \
+                                       --log1 fugu${i}_1.primers.info.txt      \
+                                       --log2 fugu${i}_2.primers.info.txt
     done
+
+    
 
 
 High-throughput sequencing data generally contains low qualities reads.
-We use 
-`Trimmomatic <http://www.usadellab.org/cms/?page=trimmomatic>`_
+We use `Trimmomatic <http://www.usadellab.org/cms/?page=trimmomatic>`_
 to removed the low quality reads.
 
 
-.. code-block:: bash
+.. code-block:: text
+
+    cgene=("cm" "ct")
+    vgene=("v1" "v2" "v3")
     
-    for sid in ${sra[@]}
+    for (( i = 1; i < 4; ++i ))
     do
-        trimmomatic SE -phred33 ./data/${sid}.x.igm.fq \
-                   ./data/${sid}.igm.qc.fq TRAILING:30 MINLEN:200
-        trimmomatic SE -phred33 ./data/${sid}.x.igz.fq \
-                   ./data/${sid}.igz.qc.fq TRAILING:30 MINLEN:200
+        for (( c = 0; c < ${#cgene[@]}; ++c ))
+        do
+            for (( v = 0; v < ${#vgene[@]}; ++v ))
+            do
+                java -jar ../bin/Trimmomatic-0.35/trimmomatic-0.35.jar PE -phred33 -threads 2 \
+                     -trimlog log.trimmomatic.fugu${i}.${vgene[${v}]}.${cgene[${c}]}.txt      \
+                     fugu${i}_1.${vgene[${v}]}.${cgene[${c}]}.fq \
+                     fugu${i}_2.${vgene[${v}]}.${cgene[${c}]}.fq \
+                     fugu${i}_1.${vgene[${v}]}.${cgene[${c}]}.qc.fq \
+                     fugu${i}_1.${vgene[${v}]}.${cgene[${c}]}.qc_unpaired.fq \
+                     fugu${i}_2.${vgene[${v}]}.${cgene[${c}]}.qc.fq \
+                     fugu${i}_2.${vgene[${v}]}.${cgene[${c}]}.qc_unpaired.fq \
+                     LEADING:20 TRAILING:20 MINLEN:30 >> log.qc.txt 2>&1
+            done
+        done
+    done
+
+
+Since these data are paired-end reads,
+we use PEAR merge the paired-end into single reads considering the overlaps.
+
+.. code-block:: text
+
+    cgene=("cm" "ct")
+    vgene=("v1" "v2" "v3")
+    
+    for (( i = 1; i < 4; ++i ))
+    do
+        for (( c = 0; c < ${#cgene[@]}; ++c ))
+        do
+            for (( v = 0; v < ${#vgene[@]}; ++v ))
+            do
+                ../bin/pear -f fugu${i}_1.${vgene[${v}]}.${cgene[${c}]}.qc.fq \
+                            -r fugu${i}_2.${vgene[${v}]}.${cgene[${c}]}.qc.fq \
+                            -o fugu${i}.${vgene[${v}]}.${cgene[${c}]}.pear.fq \
+                            -j 2 -v 10 -n 300 -p 0.05 >> log.pear.txt
+            done
+        done
     done
 
 
 
-Convert FASTQ format to FASTA format.
+Then, convert FASTQ format to FASTA format using :command:`awk` and :command:`sed` commands.
 
 
-.. code-block:: bash
-       
-    for sid in ${sra[@]}
+.. code-block:: text
+ 
+    for (( i = 1; i < 4; ++i ))
     do
-        awk 'NR % 4 == 1 || NR % 4 == 2' ./data/${sid}.igm.qc.fq | sed -e 's/^@/\>/' > ./data/${sid}.igm.fa
-        awk 'NR % 4 == 1 || NR % 4 == 2' ./data/${sid}.igz.qc.fq | sed -e 's/^@/\>/' > ./data/${sid}.igz.fa
+        awk 'NR % 4 == 1 || NR % 4 == 2' fugu${i}.v1.cm.pear.fq.assembled.fastq | sed 's/^@/>/' > fugu${i}.v1.cm.fa
+        awk 'NR % 4 == 1 || NR % 4 == 2' fugu${i}.v2.cm.pear.fq.assembled.fastq | sed 's/^@/>/' > fugu${i}.v2.cm.fa
+        awk 'NR % 4 == 1 || NR % 4 == 2' fugu${i}.v3.cm.pear.fq.assembled.fastq | sed 's/^@/>/' > fugu${i}.v3.cm.fa
+        awk 'NR % 4 == 1 || NR % 4 == 2' fugu${i}.v1.ct.pear.fq.assembled.fastq | sed 's/^@/>/' > fugu${i}.v1.ct.fa
+        awk 'NR % 4 == 1 || NR % 4 == 2' fugu${i}.v2.ct.pear.fq.assembled.fastq | sed 's/^@/>/' > fugu${i}.v2.ct.fa
+        awk 'NR % 4 == 1 || NR % 4 == 2' fugu${i}.v3.ct.pear.fq.assembled.fastq | sed 's/^@/>/' > fugu${i}.v3.ct.fa
     done
 
-
-After trimming of low quality bases and removing low short sequences,
-we convert FASTQ format file to FASTA format file
-with :command:`awk` and "command:`sed` commands.
+      
 
 
+After preparations, we use :command:`parse` and :command:`stats` to
+analyze sequence diversities and summarize them.
 
-.. code-block:: bash
+
+.. code-block:: text
     
-    for sid in ${sra[@]}
+    cgene=("m" "t")         # cm, ct
+    vgene=("1" "2" "3")     # v1, v2, v3
+    
+    # Identify V, D, and J genes
+    for (( i = 1; i < 4; ++i ))
     do
-        pydair parse -q ./data/${sid}.igm.fa \
-                 -v ./db/zebrafish.ighv.fa -d ./db/zebrafish.ighd.fa -j ./db/zebrafish.ighj.fa \
-                 --v-blastdb ./db/vdb --d-blastdb ./db/ddb --j-blastdb ./db/jdb \
-                 -o ./results/${sid}.igm
-        pydair parse -q ./data/${sid}.igz.fa \
-                 -v ./db/zebrafish.ighv.fa -d ./db/zebrafish.ighd.fa -j ./db/zebrafish.ighj.fa \
-                 --v-blastdb ./db/vdb --d-blastdb ./db/ddb --j-blastdb ./db/jdb \
-                 -o ./results/${sid}.igz
+        for (( c = 0; c < ${#cgene[@]}; ++c ))
+        do
+            for (( v = 0; v < ${#vgene[@]}; ++v ))
+            do
+                pydair parse -q fugu${i}.v${vgene[${v}]}.c${cgene[${c}]}.fa \
+                             -v ../db/V${vgene[${v}]}.fa \
+                             -d ../db/D${cgene[${c}]}.fa \
+                             -j ../db/J${cgene[${c}]}.fa \
+                             --v-blastdb ../db/v${vgene[${v}]}db --v-evalue-cutoff 1e-90 \
+                             --d-blastdb ../db/d${cgene[${c}]}db \
+                             --j-blastdb ../db/j${cgene[${c}]}db --j-evalue-cutoff 1e-9 \
+                             -o fugu${i}.v${vgene[${v}]}.c${cgene[${c}]}
+            done
+        done
     done
     
-    pydair stats -i ./results/SRR017328.igm.vdj.pydair ./results/SRR017329.igm.vdj.pydair \
-                    ./results/SRR017330.igm.vdj.pydair ./results/SRR017331.igm.vdj.pydair \
-                    ./results/SRR017332.igm.vdj.pydair ./results/SRR017333.igm.vdj.pydair \
-                    ./results/SRR017334.igm.vdj.pydair ./results/SRR017335.igm.vdj.pydair \
-                    ./results/SRR017336.igm.vdj.pydair ./results/SRR017337.igm.vdj.pydair \
-                    ./results/SRR017338.igm.vdj.pydair ./results/SRR017339.igm.vdj.pydair \
-                    ./results/SRR017340.igm.vdj.pydair ./results/SRR017341.igm.vdj.pydair \
-                 -n SRR017328 SRR017329 SRR017330 SRR017331 SRR017332 SRR017333 SRR017334 \
-                    SRR017335 SRR017336 SRR017337 SRR017338 SRR017339 SRR017340 SRR017341 \
-                 -o ./results/zebrafish_igm --estimate-vdj-combination
-    
-    pydair stats -i ./results/SRR017328.igz.vdj.pydair ./results/SRR017329.igz.vdj.pydair \
-                    ./results/SRR017330.igz.vdj.pydair ./results/SRR017331.igz.vdj.pydair \
-                    ./results/SRR017332.igz.vdj.pydair ./results/SRR017333.igz.vdj.pydair \
-                    ./results/SRR017334.igz.vdj.pydair ./results/SRR017335.igz.vdj.pydair \
-                    ./results/SRR017336.igz.vdj.pydair ./results/SRR017337.igz.vdj.pydair \
-                    ./results/SRR017338.igz.vdj.pydair ./results/SRR017339.igz.vdj.pydair \
-                    ./results/SRR017340.igz.vdj.pydair ./results/SRR017341.igz.vdj.pydair \
-                 -n SRR017328 SRR017329 SRR017330 SRR017331 SRR017332 SRR017333 SRR017334 \
-                    SRR017335 SRR017336 SRR017337 SRR017338 SRR017339 SRR017340 SRR017341 \
-                 -o ./results/zebrafish_igz
-    
+    for (( i = 1; i < 4; ++i ))
+    do
+        for (( c = 0; c < ${#cgene[@]}; ++c ))
+        do
+            cat fugu${i}.v1.c${cgene[${c}]}.vdj.pydair >  fugu${i}.c${cgene[${c}]}.pydair
+            cat fugu${i}.v2.c${cgene[${c}]}.vdj.pydair >> fugu${i}.c${cgene[${c}]}.pydair
+            cat fugu${i}.v3.c${cgene[${c}]}.vdj.pydair >> fugu${i}.c${cgene[${c}]}.pydair
+        done
+    done
+
+    for ((c = 0; c < ${#cgene[@]}; ++c))
+    do
+        pydair stats -i fugu1.c${cgene[${c}]}.pydair fugu2.c${cgene[${c}]}.pydair fugu3.c${cgene[${c}]}.pydair \
+                     -n Fugu1 Fugu2 Fugu3 \
+                     -o fugustats_c${cgene[${c}]} \
+                     --estimate-vdj-combination
+    done
+
     
 
-The HTML reports are saved in :file:`./result/zebrafish_igm.report.html` (:download:`zebrafish_igm.report.html`),
-and :file:`./result/zebrafish_igz.report.html` (:download:`zebrafish_igz.report.html`).
 
 
 
@@ -549,10 +499,7 @@ and :file:`./result/zebrafish_igz.report.html` (:download:`zebrafish_igz.report.
 References
 ==========
 
-.. [#Russ2015] Russ DE, Ho KY2, Longo NS3. HTJoinSolver: Human immunoglobulin VDJ partitioning using approximate dynamic programming constrained by conserved motifs. *BMC Bioinformatics* 2015, **16**\ :170. doi: `10.1186/s12859-015-0589-x <https://dx.doi.org/10.1186/s12859-015-0589-x>`_.
 .. [#Zhu2013] Zhu J, Ofek G, Yang Y, Zhang B, Louder MK, Lu G, McKee K, Pancera M, Skinner J, Zhang Z, Parks R, Eudailey J, Lloyd KE, Blinn J, Alam SM, Haynes BF, Simek M, Burton DR, Koff WC; NISC Comparative Sequencing Program, Mullikin JC, Mascola JR, Shapiro L, Kwong PD. Mining the antibodyome for HIV-1-neutralizing antibodies with next-generation sequencing and phylogenetic pairing of heavy/light chains. *Proc Natl Acad Sci U S A.* 2013, **110**\ (16):6470-5. doi: `10.1073/pnas.1219320110 <https://dx.doi.org/10.1073/pnas.1219320110>`_.
-.. [#Collins2015] Collins AM, Wang Y, Roskin KM, Marquis CP, Jackson KJ. The mouse antibody heavy chain repertoire is germline-focused and highly variable between inbred strains. *Philos Trans R Soc Lond B Biol Sci.* 2015, **370**\ (1676):20140236. dio: `10.1098/rstb.2014.0236 <https://dx.doi.org/10.1098/rstb.2014.0236>`_.
-.. [#Weinstein2009] Weinstein JA, Jiang N, White RA 3rd, Fisher DS, Quake SR. High-throughput sequencing of the zebrafish antibody repertoire. *Science* 2009, **324**\ (5928):807-10. doi: `10.1126/science.1170020 <https://dx.doi.org/10.1126/science.1170020>`_.
 
 
 
