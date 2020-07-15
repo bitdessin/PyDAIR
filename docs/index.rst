@@ -30,7 +30,7 @@ and each read represents single of IgH (or IgL) nucleotide sequences.
 Thus, the beginning of step to study Ig repertoire diversity involves
 identification of V, D, and J segments for each read.
 
-PyDAIR is a tool that aims to study diversity of IgH sequences based on Ig-Seq data.
+PyDAIR\ [#Fu2018]_ is a tool that aims to study diversity of IgH sequences based on Ig-Seq data.
 PyDAIR identifies V, D, and J gene segments using BLAST,
 and identifies CDR3 segment using regular expression matching from millions of reads.
 Furthermore, PyDAIR enables detection of insertions and deletions on VD and DJ junctions,
@@ -39,6 +39,11 @@ and results visualization in HTML report.
 PyDAIR can be applied to any organism without database restriction.
 
 
+
+References
+==========
+
+.. [#Fu2018] Fu X, Sun J, Tan E, Shimizu K, Reza MS, Watabe S and Asakawa S. High-Throughput Sequencing of the Expressed Torafugu (Takifugu rubripes) Antibody Sequences Distinguishes IgM and IgT Repertoires and Reveals Evidence of Convergent Evolution. *Front. Immunol.* 2018, **9**:251. doi: `10.3389/fimmu.2018.00251 <https://dx.doi.org/10.3389/fimmu.2018.00251>`_.
 
 
 

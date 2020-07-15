@@ -2,8 +2,6 @@
 
 
 ## Installation comamnds
-pip3 uninstall pydair -y
-pip3 install --no-deps -e .
 
 pip uninstall pydair -y
 pip install --no-deps -e .
@@ -53,5 +51,5 @@ rm -rf ./PyDAIR/utils/__pycache__
 ## PyPI registration commands
 # python setup.py sdist
 # python setup.py bdist_wheel --universal
-# twine upload dist/*
+# python setup.py sdist upload
 
